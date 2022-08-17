@@ -28,7 +28,7 @@ public abstract class TinyRenderable2D extends Renderable2D<ModelLocatable>
      */
     public TinyRenderable2D(final ModelLocatable source)
     {
-        super(source, source.getModel().getSimulator());
+        super(source, source.getModel().getSimulator().getReplication());
         setScaleObject(true);
         setScaleY(false);
     }
