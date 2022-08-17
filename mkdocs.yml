@@ -1,0 +1,17 @@
+site_name: MEDLABS
+site_url: https://simulation.tudelft.nl/medlabs
+site_favicon: images/favicon.png
+copyright: (c) 2015-2022 Delft University of Technology
+
+theme: readthedocs
+
+markdown_extensions:
+  - admonition
+  
+extra_css:
+  - custom.css
+    
+nav:
+  - Home: index.md
+  - MEDLABS documentation: https://simulation.tudelft.nl/medlabs/manual/index.html
+  - MEDLABS API: https://simulation.tudelft.nl/medlabs/apidocs/index.html

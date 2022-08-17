@@ -1,0 +1,204 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  
+  <groupId>nl.tudelft.simulation</groupId>
+  <artifactId>medlabs-parent</artifactId>
+  <version>2.01.00</version>
+
+  <name>MedLabs parent project</name>
+  <description>MedLabs disease spread parent project</description>
+  
+  <packaging>pom</packaging>
+  
+  <modules>
+  	<module>medlabs</module>
+  	<module>medlabs-demo</module>
+  </modules>
+  
+ <properties>
+    <jdk.version>11</jdk.version>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <maven.compiler.source>${jdk.version}</maven.compiler.source>
+    <maven.compiler.target>${jdk.version}</maven.compiler.target>
+    <maven.compiler.release>${jdk.version}</maven.compiler.release>
+    <osm.version>0.48.3</osm.version>
+    <dsol.version>3.07.06</dsol.version>
+    <fastcsv.version>2.1.0</fastcsv.version>
+    <junit.version>4.13.2</junit.version>
+    <jodatime.version>2.10.13</jodatime.version>
+    <poi.version>5.1.0</poi.version>
+    <mysql.version>8.0.27</mysql.version>
+    <jgrapht-version>1.5.1</jgrapht-version>
+    <trove.version>3.0.3</trove.version>
+    <jfree.version>1.0.16</jfree.version>
+    <xstream.version>1.4.18</xstream.version>
+  </properties>
+
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>dsol</groupId>
+        <artifactId>dsol-swing</artifactId>
+        <version>${dsol.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>dsol</groupId>
+        <artifactId>dsol-introspection</artifactId>
+        <version>${dsol.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>dsol</groupId>
+        <artifactId>dsol-animation-gis</artifactId>
+        <version>${dsol.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.openstreetmap.osmosis</groupId>
+        <artifactId>osmosis-set</artifactId>
+        <version>${osm.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.openstreetmap.osmosis</groupId>
+        <artifactId>osmosis-xml</artifactId>
+        <version>${osm.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>junit</groupId>
+        <artifactId>junit</artifactId>
+        <version>${junit.version}</version>
+        <scope>test</scope>
+      </dependency>
+
+      <dependency>
+        <groupId>org.openstreetmap.osmosis</groupId>
+        <artifactId>osmosis-core</artifactId>
+        <version>${osm.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.openstreetmap.osmosis</groupId>
+        <artifactId>osmosis-osm-binary</artifactId>
+        <version>${osm.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.openstreetmap.osmosis</groupId>
+        <artifactId>osmosis-pbf</artifactId>
+        <version>${osm.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>joda-time</groupId>
+        <artifactId>joda-time</artifactId>
+        <version>${jodatime.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.apache.poi</groupId>
+        <artifactId>poi</artifactId>
+        <version>${poi.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.apache.poi</groupId>
+        <artifactId>poi-ooxml</artifactId>
+        <version>${poi.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>mysql</groupId>
+        <artifactId>mysql-connector-java</artifactId>
+        <version>${mysql.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>jlfgr</groupId>
+        <artifactId>jlfgr</artifactId>
+        <version>1.0</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.jgrapht</groupId>
+        <artifactId>jgrapht-core</artifactId>
+        <version>${jgrapht-version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>tablelayout</groupId>
+        <artifactId>TableLayout</artifactId>
+        <version>20020517</version>
+      </dependency>
+
+      <dependency>
+        <groupId>com.thoughtworks.xstream</groupId>
+        <artifactId>xstream</artifactId>
+        <version>${xstream.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>jfree</groupId>
+        <artifactId>jcommon</artifactId>
+        <version>${jfree.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>de.siegmar</groupId>
+        <artifactId>fastcsv</artifactId>
+        <version>${fastcsv.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>net.sf.trove4j</groupId>
+        <artifactId>trove4j</artifactId>
+        <version>${trove.version}</version>
+      </dependency>
+
+    </dependencies>
+  </dependencyManagement>
+
+  <repositories>
+    <repository>
+      <name>DSOL Public Repository</name>
+      <id>dsol</id>
+      <url>https://simulation.tudelft.nl/maven</url>
+    </repository>
+    <repository>
+      <name>osmosis Public Repository</name>
+      <id>osmosis</id>
+      <url>https://repo1.maven.org/maven2/org/openstreetmap</url>
+    </repository>
+  </repositories>
+
+  <build>
+    <sourceDirectory>src/main/java</sourceDirectory>
+
+    <testSourceDirectory>src/test/java</testSourceDirectory>
+    <resources>
+      <resource>
+        <directory>src/main/resources</directory>
+      </resource>
+    </resources>
+    <testResources>
+      <testResource>
+        <directory>src/test/resources</directory>
+      </testResource>
+    </testResources>
+
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>3.8.1</version>
+        <configuration>
+          <source>${maven.compiler.source}</source>
+          <target>${maven.compiler.target}</target>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+  
+</project>
