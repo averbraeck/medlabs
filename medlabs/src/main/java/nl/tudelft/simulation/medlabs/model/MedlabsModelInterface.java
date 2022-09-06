@@ -153,7 +153,7 @@ public interface MedlabsModelInterface extends SimpleModelInterface
     DiseaseTransmission getDiseaseTransmission();
 
     /**
-     * Set the disease monitor to report changes for statistics
+     * Set the disease monitor to report changes for statistics.
      * @param diseaseMonitor DiseaseMonitor; the disease monitor to report changes for statistics
      */
     void setDiseaseMonitor(DiseaseMonitor diseaseMonitor);

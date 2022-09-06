@@ -66,6 +66,7 @@ public class MedlabsAnimationTab extends DSOLAnimationGisTab
      * @param visibilityEvaluator VisibilityEvaluator&lt;?&gt;; the evaluator
      * @param toolTipTextArray String[]; the tool tip texts to show when hovering over the button
      * @param initiallyVisibleArray boolean[]; whether the classes are initially shown or not
+     * @param <T> the locatable type for the animation
      */
     public <T extends Locatable> void addToggleAnimationStringText(final String[] nameArray, final Class<T> locatableClass,
             final VisibilityEvaluator<T> visibilityEvaluator, final String[] toolTipTextArray,

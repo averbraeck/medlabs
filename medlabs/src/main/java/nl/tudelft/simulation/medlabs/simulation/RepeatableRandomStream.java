@@ -19,7 +19,7 @@ public class RepeatableRandomStream extends Java2Random
     private static final long serialVersionUID = 1L;
 
     /**
-     * do not use
+     * do not use.
      */
     private RepeatableRandomStream()
     {
@@ -27,10 +27,10 @@ public class RepeatableRandomStream extends Java2Random
     }
 
     /**
-     * do not use
-     * @param seed
+     * do not use.
+     * @param seed long; the seed
      */
-    private RepeatableRandomStream(long seed)
+    private RepeatableRandomStream(final long seed)
     {
         super(seed);
     }
@@ -47,7 +47,7 @@ public class RepeatableRandomStream extends Java2Random
     }
 
     /**
-     * Return a random stream that is the same every time for a certain name
+     * Return a random stream that is the same every time for a certain name.
      * @param identifier
      * @return a random stream that is the same every time for a certain name
      */
