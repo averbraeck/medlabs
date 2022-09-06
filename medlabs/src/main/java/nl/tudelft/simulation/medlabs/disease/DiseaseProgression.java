@@ -39,7 +39,6 @@ public abstract class DiseaseProgression extends AbstractModelNamed
     /**
      * @param model MedlabsModelInterface; the model
      * @param name String; the name of the disease for reporting
-     * @param index int; the index number of the disease
      */
     public DiseaseProgression(final MedlabsModelInterface model, final String name)
     {
