@@ -1,21 +1,21 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
-  
+
   <groupId>nl.tudelft.simulation</groupId>
   <artifactId>medlabs-parent</artifactId>
   <version>2.01.00</version>
 
   <name>MedLabs parent project</name>
   <description>MedLabs disease spread parent project</description>
-  
+
   <packaging>pom</packaging>
-  
+
   <modules>
-  	<module>medlabs</module>
-  	<module>medlabs-demo</module>
+    <module>medlabs</module>
+    <module>medlabs-demo</module>
   </modules>
-  
- <properties>
+
+  <properties>
     <jdk.version>11</jdk.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <maven.compiler.source>${jdk.version}</maven.compiler.source>
@@ -33,6 +33,15 @@
     <jfree.version>1.0.16</jfree.version>
     <xstream.version>1.4.18</xstream.version>
   </properties>
+
+  <dependencies>
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>${junit.version}</version>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
 
   <dependencyManagement>
     <dependencies>
@@ -64,13 +73,6 @@
         <groupId>org.openstreetmap.osmosis</groupId>
         <artifactId>osmosis-xml</artifactId>
         <version>${osm.version}</version>
-      </dependency>
-
-      <dependency>
-        <groupId>junit</groupId>
-        <artifactId>junit</artifactId>
-        <version>${junit.version}</version>
-        <scope>test</scope>
       </dependency>
 
       <dependency>
@@ -200,5 +202,5 @@
       </plugin>
     </plugins>
   </build>
-  
+
 </project>
