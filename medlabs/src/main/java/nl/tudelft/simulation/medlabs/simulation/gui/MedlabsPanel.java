@@ -175,7 +175,7 @@ public class MedlabsPanel extends DSOLPanel
             try
             {
                 XYChart chart = new XYChart(simulator, diseasePhase.toString());
-                chart.add(diseasePhase.toString(), getModel().getDiseaseMonitor(), diseasePhase.DISEASE_STATISTICS_EVENT);
+                chart.add(diseasePhase.getName(), getModel().getDiseaseMonitor(), diseasePhase.DISEASE_STATISTICS_EVENT);
                 diseaseCharts.setCell(chart.getSwingPanel(), col, row);
 
                 col++;
