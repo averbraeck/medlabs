@@ -2,8 +2,6 @@ package nl.tudelft.simulation.medlabs.parser;
 
 import static org.junit.Assert.assertEquals;
 
-import java.util.Map;
-
 import org.djutils.exceptions.Try;
 import org.junit.Test;
 
