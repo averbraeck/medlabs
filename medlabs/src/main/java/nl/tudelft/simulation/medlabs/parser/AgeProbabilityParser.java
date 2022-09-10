@@ -6,7 +6,7 @@ import java.util.Map;
 import nl.tudelft.simulation.medlabs.common.MedlabsException;
 
 /**
- * The AgeDistributionParser utility class can parse a string with probabilities for age groups. The format is, e.g.,
+ * The AgeProbabilityParser utility class can parse a string with probabilities for age groups. The format is, e.g.,
  * 
  * <pre>
  *   age{0-19: 0.021, 20-29: 0.016, 30-39: 0.05, 40-49: 0.11, 50-59: 0.21, 60-69: 0.44, 70-79: 0.60, 80-100: 0.32}
