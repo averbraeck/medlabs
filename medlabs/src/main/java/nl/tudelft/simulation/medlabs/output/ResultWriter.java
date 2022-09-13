@@ -4,20 +4,20 @@ import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.rmi.RemoteException;
-import java.util.HashMap;
 import java.util.Map;
 
 import org.djutils.event.EventInterface;
 import org.djutils.event.EventListenerInterface;
 
 import nl.tudelft.simulation.medlabs.common.MedlabsRuntimeException;
-import nl.tudelft.simulation.medlabs.disease.DiseaseProgression;
 import nl.tudelft.simulation.medlabs.disease.DiseasePhase;
+import nl.tudelft.simulation.medlabs.disease.DiseaseProgression;
 import nl.tudelft.simulation.medlabs.location.Location;
 import nl.tudelft.simulation.medlabs.location.LocationType;
 import nl.tudelft.simulation.medlabs.model.MedlabsModelInterface;
 import nl.tudelft.simulation.medlabs.person.Person;
 import nl.tudelft.simulation.medlabs.person.PersonMonitor;
+import nl.tudelft.simulation.medlabs.person.PersonType;
 import nl.tudelft.simulation.medlabs.person.Student;
 import nl.tudelft.simulation.medlabs.person.Worker;
 
@@ -66,6 +66,24 @@ public class ResultWriter implements EventListenerInterface
     /** The file with detailed information about a dead person. */
     private PrintWriter deadPersonWriter;
 
+    /** The file with the number of infections per person type per day. */
+    private PrintWriter dayInfPersonWriter;
+
+    /** The file with the total number of infections per person type. */
+    private PrintWriter totInfPersonWriter;
+
+    /** The file with the number of infections from a person type to a person type per day. */
+    private PrintWriter dayInfPersonToPersonWriter;
+
+    /** The file with the total number of infections from a person type to a person type. */
+    private PrintWriter totInfPersonToPersonWriter;
+
+    /** The file with the number of infections per location type from a person type to a person type per day. */
+    private PrintWriter dayInfLocPersonToPersonWriter;
+
+    /** The file with the total number of infections per location type from a person type to a person type. */
+    private PrintWriter totInfLocPersonToPersonWriter;
+
     /**
      * Create a writer of results to file.
      * @param model the model
@@ -81,7 +99,7 @@ public class ResultWriter implements EventListenerInterface
             this.locationTypeWriter = new PrintWriter(outputPath + "/locationTypeNrs.csv");
             writeLocationTypeHeader();
             writeLocationTypeLine();
-            
+
             DiseaseProgression disease = model.getDiseaseProgression();
             this.diseasePhaseWriter = new PrintWriter(outputPath + "/diseasePhaseNrs_" + disease.getName() + ".csv");
             writeDiseasePhaseHeader(disease);
@@ -114,10 +132,32 @@ public class ResultWriter implements EventListenerInterface
             this.deadPersonWriter = new PrintWriter(outputPath + "/deadPersons.csv");
             writeDeadPersonHeader();
             model.getPersonMonitor().addListener(this, PersonMonitor.DEAD_PERSON_EVENT);
-        }
-        catch (
 
-        IOException ioe)
+            this.dayInfPersonWriter = new PrintWriter(outputPath + "/dayInfPersonType.csv");
+            writeDayInfPersonTypeHeader();
+            model.getPersonMonitor().addListener(this, PersonMonitor.DAY_INFECTIONS_PERSON_TYPE);
+
+            this.totInfPersonWriter = new PrintWriter(outputPath + "/totInfPersonType.csv");
+            writeTotInfPersonTypeHeader();
+            model.getPersonMonitor().addListener(this, PersonMonitor.TOT_INFECTIONS_PERSON_TYPE);
+
+            this.dayInfPersonToPersonWriter = new PrintWriter(outputPath + "/dayInfPersonTypeToPersonType.csv");
+            writeDayInfPersonToPersonTypeHeader();
+            model.getPersonMonitor().addListener(this, PersonMonitor.DAY_INFECTIONS_PERSON_TO_PERSON_TYPE);
+
+            this.totInfPersonToPersonWriter = new PrintWriter(outputPath + "/totInfPersonTypeToPersonType.csv");
+            writeTotInfPersonToPersonTypeHeader();
+            model.getPersonMonitor().addListener(this, PersonMonitor.TOT_INFECTIONS_PERSON_TO_PERSON_TYPE);
+
+            this.dayInfLocPersonToPersonWriter = new PrintWriter(outputPath + "/dayInfLocPersonTypeToPersonType.csv");
+            writeDayInfLocPersonToPersonTypeHeader();
+            model.getPersonMonitor().addListener(this, PersonMonitor.DAY_INFECTIONS_LOC_PERSON_TO_PERSON_TYPE);
+
+            this.totInfPersonToPersonWriter = new PrintWriter(outputPath + "/totInfLocPersonTypeToPersonType.csv");
+            writeTotInfLocPersonToPersonTypeHeader();
+            model.getPersonMonitor().addListener(this, PersonMonitor.TOT_INFECTIONS_LOC_PERSON_TO_PERSON_TYPE);
+        }
+        catch (IOException ioe)
         {
             throw new MedlabsRuntimeException(ioe);
         }
@@ -178,27 +218,25 @@ public class ResultWriter implements EventListenerInterface
 
     private void writeDiseasePhaseHeader(final DiseaseProgression disease)
     {
-        PrintWriter diseasePhaseWriter = this.diseasePhaseWriter;
-        diseasePhaseWriter.print("\"Time(h)\"");
+        this.diseasePhaseWriter.print("\"Time(h)\"");
         for (DiseasePhase diseasePhase : disease.getDiseasePhases())
         {
-            diseasePhaseWriter.print(",\"" + diseasePhase.getName() + "\"");
+            this.diseasePhaseWriter.print(",\"" + diseasePhase.getName() + "\"");
         }
-        diseasePhaseWriter.write("\n");
-        diseasePhaseWriter.flush();
+        this.diseasePhaseWriter.write("\n");
+        this.diseasePhaseWriter.flush();
     }
 
     private void writeDiseasePhaseLine(final DiseaseProgression disease)
     {
-        PrintWriter diseasePhaseWriter = this.diseasePhaseWriter;
-        diseasePhaseWriter.print(this.model.getSimulator().getSimulatorTime());
+        this.diseasePhaseWriter.print(this.model.getSimulator().getSimulatorTime());
         for (DiseasePhase diseasePhase : disease.getDiseasePhases())
         {
-            diseasePhaseWriter.print("," + diseasePhase.getNumberOfPersons());
+            this.diseasePhaseWriter.print("," + diseasePhase.getNumberOfPersons());
         }
-        diseasePhaseWriter.write("\n");
-        diseasePhaseWriter.flush();
-        this.model.getSimulator().scheduleEventRel(0.5, this, this, "writeDiseasePhaseLine", new Object[] { disease });
+        this.diseasePhaseWriter.write("\n");
+        this.diseasePhaseWriter.flush();
+        this.model.getSimulator().scheduleEventRel(0.5, this, this, "writeDiseasePhaseLine", new Object[] {disease});
     }
 
     private void writeInfectionLocationHeader()
@@ -313,7 +351,7 @@ public class ResultWriter implements EventListenerInterface
         // this.model.getSimulator().scheduleEventRel(24.0 * personDumpInterval, this, this, "writePersonDump",
         // new Object[] { personDumpInterval });
         this.model.getSimulator().scheduleEventRel(1.0 * personDumpInterval, this, this, "writePersonDump",
-                new Object[] { personDumpInterval });
+                new Object[] {personDumpInterval});
     }
 
     private void writeInfectedPersonHeader()
@@ -375,6 +413,176 @@ public class ResultWriter implements EventListenerInterface
         this.deadPersonWriter.flush();
     }
 
+    /* ****************************** INFECTIONS PER PERSON TYPE **************************************** */
+
+    private void writeDayInfPersonTypeHeader()
+    {
+        this.dayInfPersonWriter.print("\"time\"");
+        int ptSize = this.model.getPersonTypeIdMap().size();
+        for (int i = 0; i < ptSize; i++)
+        {
+            PersonType pt = this.model.getPersonTypeIdMap().get(i);
+            this.dayInfPersonWriter.print(",\"" + pt.getName() + "\"");
+        }
+        this.dayInfPersonWriter.println();
+        this.dayInfPersonWriter.flush();
+    }
+
+    private void writeTotInfPersonTypeHeader()
+    {
+        this.totInfPersonWriter.print("\"time\"");
+        int ptSize = this.model.getPersonTypeIdMap().size();
+        for (int i = 0; i < ptSize; i++)
+        {
+            PersonType pt = this.model.getPersonTypeIdMap().get(i);
+            this.totInfPersonWriter.print(",\"" + pt.getName() + "\"");
+        }
+        this.totInfPersonWriter.println();
+        this.totInfPersonWriter.flush();
+    }
+
+    private void writeDayInfPersonTypeLine(final int[] nrs)
+    {
+        double time = this.model.getSimulator().getSimulatorTime();
+        this.dayInfPersonWriter.print(Math.round(time));
+        int ptSize = this.model.getPersonTypeIdMap().size();
+        for (int i = 0; i < ptSize; i++)
+        {
+            this.dayInfPersonWriter.print("," + nrs[i]);
+        }
+        this.dayInfPersonWriter.println();
+        this.dayInfPersonWriter.flush();
+    }
+
+    private void writeTotInfPersonTypeLine(final int[] nrs)
+    {
+        double time = this.model.getSimulator().getSimulatorTime();
+        this.totInfPersonWriter.print(Math.round(time));
+        int ptSize = this.model.getPersonTypeIdMap().size();
+        for (int i = 0; i < ptSize; i++)
+        {
+            this.totInfPersonWriter.print("," + nrs[i]);
+        }
+        this.totInfPersonWriter.println();
+        this.totInfPersonWriter.flush();
+    }
+
+    /* ****************************** INFECTIONS FROM PERSON TYPE TO PERSON TYPE ********************************* */
+
+    private void writeDayInfPersonToPersonTypeHeader()
+    {
+        this.dayInfPersonToPersonWriter.print("\"time\",\"infecting_person_type\"");
+        int ptSize = this.model.getPersonTypeIdMap().size();
+        for (int i = 0; i < ptSize; i++)
+        {
+            PersonType pt = this.model.getPersonTypeIdMap().get(i);
+            this.dayInfPersonToPersonWriter.print(",\"" + pt.getName() + "\"");
+        }
+        this.dayInfPersonToPersonWriter.println();
+        this.dayInfPersonToPersonWriter.flush();
+    }
+
+    private void writeTotInfPersonToPersonTypeHeader()
+    {
+        this.totInfPersonToPersonWriter.print("\"time\",\"infecting_person_type\"");
+        int ptSize = this.model.getPersonTypeIdMap().size();
+        for (int i = 0; i < ptSize; i++)
+        {
+            PersonType pt = this.model.getPersonTypeIdMap().get(i);
+            this.totInfPersonToPersonWriter.print(",\"" + pt.getName() + "\"");
+        }
+        this.totInfPersonToPersonWriter.println();
+        this.totInfPersonToPersonWriter.flush();
+    }
+
+    private void writeDayInfPersonToPersonTypeLine(final int[] nrs)
+    {
+        double time = this.model.getSimulator().getSimulatorTime();
+        String infectingPersonType = this.model.getPersonTypeIdMap().get(nrs[0]).getName();
+        this.dayInfPersonToPersonWriter.print(Math.round(time) + ",\"" + infectingPersonType + "\"");
+        int ptSize = this.model.getPersonTypeIdMap().size();
+        for (int i = 0; i < ptSize; i++)
+        {
+            this.dayInfPersonToPersonWriter.print("," + nrs[i + 1]);
+        }
+        this.dayInfPersonToPersonWriter.println();
+        this.dayInfPersonToPersonWriter.flush();
+    }
+
+    private void writeTotInfPersonToPersonTypeLine(final int[] nrs)
+    {
+        double time = this.model.getSimulator().getSimulatorTime();
+        String infectingPersonType = this.model.getPersonTypeIdMap().get(nrs[0]).getName();
+        this.totInfPersonToPersonWriter.print(Math.round(time) + ",\"" + infectingPersonType + "\"");
+        int ptSize = this.model.getPersonTypeIdMap().size();
+        for (int i = 0; i < ptSize; i++)
+        {
+            this.totInfPersonToPersonWriter.print("," + nrs[i + 1]);
+        }
+        this.totInfPersonToPersonWriter.println();
+        this.totInfPersonToPersonWriter.flush();
+    }
+
+    /* ****************************** INFECTIONS FROM PERSON TYPE TO PERSON TYPE ********************************* */
+
+    private void writeDayInfLocPersonToPersonTypeHeader()
+    {
+        this.dayInfLocPersonToPersonWriter.print("\"time\",\"location_type\",\"infecting_person_type\"");
+        int ptSize = this.model.getPersonTypeIdMap().size();
+        for (int i = 0; i < ptSize; i++)
+        {
+            PersonType pt = this.model.getPersonTypeIdMap().get(i);
+            this.dayInfLocPersonToPersonWriter.print(",\"" + pt.getName() + "\"");
+        }
+        this.dayInfLocPersonToPersonWriter.println();
+        this.dayInfLocPersonToPersonWriter.flush();
+    }
+
+    private void writeTotInfLocPersonToPersonTypeHeader()
+    {
+        this.totInfLocPersonToPersonWriter.print("\"time\",\"location_type\",\"infecting_person_type\"");
+        int ptSize = this.model.getPersonTypeIdMap().size();
+        for (int i = 0; i < ptSize; i++)
+        {
+            PersonType pt = this.model.getPersonTypeIdMap().get(i);
+            this.totInfLocPersonToPersonWriter.print(",\"" + pt.getName() + "\"");
+        }
+        this.totInfLocPersonToPersonWriter.println();
+        this.totInfLocPersonToPersonWriter.flush();
+    }
+
+    private void writeDayInfLocPersonToPersonTypeLine(final int[] nrs)
+    {
+        double time = this.model.getSimulator().getSimulatorTime();
+        String locationType = this.model.getLocationTypeIndexMap().get((byte) nrs[0]).getName();
+        String infectingPersonType = this.model.getPersonTypeIdMap().get(nrs[1]).getName();
+        this.dayInfLocPersonToPersonWriter
+                .print(Math.round(time) + ",\"" + locationType + "\",\"" + infectingPersonType + "\"");
+        int ptSize = this.model.getPersonTypeIdMap().size();
+        for (int i = 0; i < ptSize; i++)
+        {
+            this.dayInfLocPersonToPersonWriter.print("," + nrs[i + 1]);
+        }
+        this.dayInfLocPersonToPersonWriter.println();
+        this.dayInfLocPersonToPersonWriter.flush();
+    }
+
+    private void writeTotInfLocPersonToPersonTypeLine(final int[] nrs)
+    {
+        double time = this.model.getSimulator().getSimulatorTime();
+        String locationType = this.model.getLocationTypeIndexMap().get((byte) nrs[0]).getName();
+        String infectingPersonType = this.model.getPersonTypeIdMap().get(nrs[1]).getName();
+        this.totInfLocPersonToPersonWriter
+                .print(Math.round(time) + ",\"" + locationType + "\",\"" + infectingPersonType + "\"");
+        int ptSize = this.model.getPersonTypeIdMap().size();
+        for (int i = 0; i < ptSize; i++)
+        {
+            this.totInfLocPersonToPersonWriter.print("," + nrs[i + 1]);
+        }
+        this.totInfLocPersonToPersonWriter.println();
+        this.totInfLocPersonToPersonWriter.flush();
+    }
+
     /** {@inheritDoc} */
     @SuppressWarnings("unchecked")
     @Override
@@ -399,6 +607,30 @@ public class ResultWriter implements EventListenerInterface
         else if (event.getType().equals(PersonMonitor.DEAD_PERSON_EVENT))
         {
             writeDeadPersonLine((Person) event.getContent());
+        }
+        else if (event.getType().equals(PersonMonitor.DAY_INFECTIONS_PERSON_TYPE))
+        {
+            writeDayInfPersonTypeLine((int[]) event.getContent());
+        }
+        else if (event.getType().equals(PersonMonitor.TOT_INFECTIONS_PERSON_TYPE))
+        {
+            writeTotInfPersonTypeLine((int[]) event.getContent());
+        }
+        else if (event.getType().equals(PersonMonitor.DAY_INFECTIONS_PERSON_TO_PERSON_TYPE))
+        {
+            writeDayInfPersonToPersonTypeLine((int[]) event.getContent());
+        }
+        else if (event.getType().equals(PersonMonitor.TOT_INFECTIONS_PERSON_TO_PERSON_TYPE))
+        {
+            writeTotInfPersonToPersonTypeLine((int[]) event.getContent());
+        }
+        else if (event.getType().equals(PersonMonitor.DAY_INFECTIONS_LOC_PERSON_TO_PERSON_TYPE))
+        {
+            writeDayInfLocPersonToPersonTypeLine((int[]) event.getContent());
+        }
+        else if (event.getType().equals(PersonMonitor.TOT_INFECTIONS_LOC_PERSON_TO_PERSON_TYPE))
+        {
+            writeTotInfLocPersonToPersonTypeLine((int[]) event.getContent());
         }
     }
 
