@@ -33,6 +33,7 @@ import nl.tudelft.simulation.medlabs.location.LocationType;
 import nl.tudelft.simulation.medlabs.location.animation.defaults.HouseAnimation;
 import nl.tudelft.simulation.medlabs.person.Person;
 import nl.tudelft.simulation.medlabs.person.PersonMonitor;
+import nl.tudelft.simulation.medlabs.person.PersonType;
 import nl.tudelft.simulation.medlabs.policy.Policy;
 import nl.tudelft.simulation.medlabs.simulation.SimpleDEVSSimulatorInterface;
 
@@ -72,6 +73,12 @@ public abstract class AbstractMedlabsModel
     /** the family compositions in the model (array of person ids), indexed by home location. */
     protected TIntObjectMap<TIntSet> familyMembersByHomeLocation = new TIntObjectHashMap<>();
 
+    /** the map of person types by id. */
+    protected TIntObjectMap<PersonType> personTypeIdMap = new TIntObjectHashMap<>();
+
+    /** the map of person types by person class. */
+    Map<Class<? extends Person>, PersonType> personTypeClassMap = new LinkedHashMap<>();
+
     /** the simulator. */
     protected boolean interactive = true;
 
@@ -90,18 +97,8 @@ public abstract class AbstractMedlabsModel
     /** the list of week patterns. */
     protected List<WeekPattern> weekPatternList = new ArrayList<>();
 
-    // /** the graph for this network of gridstops and public transport stops. */
-    // protected DefaultDirectedWeightedGraph<Stop, PublicTransportEdge> directedGraph =
-    // new DefaultDirectedWeightedGraph<Stop, PublicTransportEdge>(PublicTransportEdge.class);
-
-    // /** the map of ActivityGroups. */
-    // protected TIntObjectMap<ActivityGroup> activityGroupMap = new TIntObjectHashMap<>();
-
     /** the location type of a house or residence. */
     public LocationType locationTypeHouse;
-
-    // /** the location type of the a grid stop in the public transport network. */
-    // protected LocationType locationTypeGridStop;
 
     /** the location of the infinitely large walk area. */
     protected Location locationWalk;
@@ -208,8 +205,8 @@ public abstract class AbstractMedlabsModel
             genericMap.add(new InputParameterInteger("PersonDumpIntervalDays", "Person dump interval in days",
                     "0 means no dumping of person data", 60, 0, 365, "%d", 6.0));
 
-            InputParameterMap policyMap = new InputParameterMap("policies", "Policies", "Policies", 2.0);
-            root.add(policyMap);
+            InputParameterMap inputPolicyMap = new InputParameterMap("policies", "Policies", "Policies", 2.0);
+            root.add(inputPolicyMap);
 
             extendInputParameterMap();
         }
@@ -263,6 +260,20 @@ public abstract class AbstractMedlabsModel
     public TIntObjectMap<TIntSet> getFamilyMembersByHomeLocation()
     {
         return this.familyMembersByHomeLocation;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public TIntObjectMap<PersonType> getPersonTypeIdMap()
+    {
+        return this.personTypeIdMap;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public Map<Class<? extends Person>, PersonType> getPersonTypeClassMap()
+    {
+        return this.personTypeClassMap;
     }
 
     /** {@inheritDoc} */
@@ -335,33 +346,12 @@ public abstract class AbstractMedlabsModel
         return this.weekPatternList;
     }
 
-    // /** {@inheritDoc} */
-    // @Override
-    // public DefaultDirectedWeightedGraph<Stop, PublicTransportEdge> getDirectedGraph()
-    // {
-    // return this.directedGraph;
-    // }
-
-    // /** {@inheritDoc} */
-    // @Override
-    // public TIntObjectMap<ActivityGroup> getActivityGroupMap()
-    // {
-    // return this.activityGroupMap;
-    // }
-
     /** {@inheritDoc} */
     @Override
     public LocationType getLocationTypeHouse()
     {
         return this.locationTypeHouse;
     }
-
-    // /** {@inheritDoc} */
-    // @Override
-    // public LocationType getLocationTypeGridStop()
-    // {
-    // return this.locationTypeGridStop;
-    // }
 
     /** {@inheritDoc} */
     @Override
@@ -391,6 +381,7 @@ public abstract class AbstractMedlabsModel
         this.personMonitor = personMonitor;
     }
 
+    /** {@inheritDoc} */
     @Override
     public PersonMonitor getPersonMonitor()
     {

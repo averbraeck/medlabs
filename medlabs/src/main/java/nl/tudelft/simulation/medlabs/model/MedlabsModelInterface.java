@@ -19,6 +19,7 @@ import nl.tudelft.simulation.medlabs.location.Location;
 import nl.tudelft.simulation.medlabs.location.LocationType;
 import nl.tudelft.simulation.medlabs.person.Person;
 import nl.tudelft.simulation.medlabs.person.PersonMonitor;
+import nl.tudelft.simulation.medlabs.person.PersonType;
 import nl.tudelft.simulation.medlabs.policy.Policy;
 import nl.tudelft.simulation.medlabs.properties.Properties;
 import nl.tudelft.simulation.medlabs.simulation.SimpleDEVSSimulatorInterface;
@@ -76,6 +77,12 @@ public interface MedlabsModelInterface extends SimpleModelInterface
 
     /** @return the persons in the model, based on their original id. */
     TIntObjectMap<Person> getPersonMap();
+
+    /** @return the person types by id. */
+    TIntObjectMap<PersonType> getPersonTypeIdMap();
+
+    /** @return the map of the person class name to the person type. */
+    Map<Class<? extends Person>, PersonType> getPersonTypeClassMap();
 
     /** @return the family compositions in the model (array of person ids), indexed by home location. */
     TIntObjectMap<TIntSet> getFamilyMembersByHomeLocation();
