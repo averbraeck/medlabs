@@ -7,6 +7,7 @@ import gnu.trove.map.hash.TIntDoubleHashMap;
 import nl.tudelft.simulation.medlabs.disease.DiseasePhase;
 import nl.tudelft.simulation.medlabs.model.MedlabsModelInterface;
 import nl.tudelft.simulation.medlabs.person.Person;
+import nl.tudelft.simulation.medlabs.person.PersonType;
 
 /**
  * LocationProbBased.java.
@@ -40,7 +41,7 @@ public class LocationProbBased extends Location
      * reference group in the city to take the infection of the previous day from. The groups use the simple classname in the
      * map (e.g., "Worker").
      */
-    private final Map<String, String> referenceGroup;
+    private final Map<PersonType, PersonType> referenceGroup;
 
     /**
      * Create a location.
@@ -54,7 +55,7 @@ public class LocationProbBased extends Location
      * @param infectionRateFactor double; the infection rate multiplication factor with the focal city's infectionRate for the
      *            mapped social group of persons (see the referenceGroup parameter)
      * @param infectionRate double; the absolute infection rate factor to use
-     * @param referenceGroup Map&lt;String, String&gt;; this maps the group in the location where the probability-based
+     * @param referenceGroup Map&lt;PersonType, PersonType&gt;; this maps the group in the location where the probability-based
      *            infection takes place to a reference group in the city to take the infection of the previous day from; the
      *            groups use the simple classname in the map (e.g., "Worker")
      * @param exposed DiseasePhase; the exact phase a person needs to enter into when being exposed in the location based on
@@ -62,7 +63,7 @@ public class LocationProbBased extends Location
      */
     public LocationProbBased(final MedlabsModelInterface model, final int locationId, final byte locationTypeId,
             final float lat, final float lon, final short numberOfSubLocations, final float surfaceM2,
-            final double infectionRateFactor, final double infectionRate, final Map<String, String> referenceGroup,
+            final double infectionRateFactor, final double infectionRate, final Map<PersonType, PersonType> referenceGroup,
             final DiseasePhase exposed)
     {
         super(model, locationId, locationTypeId, lat, lon, numberOfSubLocations, surfaceM2);
@@ -127,16 +128,23 @@ public class LocationProbBased extends Location
                 else if (this.infectionRateFactor != -1.0)
                 {
                     // multiply this with the probability of the social group getting infected
-                    String reference = this.referenceGroup.get(person.getClass().getSimpleName());
-                    if (reference == null)
+                    PersonType referencePT = this.referenceGroup.get(this.model.getPersonTypeClassMap().get(person.getClass()));
+                    if (referencePT == null)
                     {
                         System.err.println(String.format("Tried to map person %s to a reference group, but not present in %s",
                                 person, this.referenceGroup));
                     }
                     else
                     {
-                        // TODO: find yesterday's infection rate for the reference group in the model
-                        // double prob = this.model.getPersonMonitor().getYesterdayInfectedPerson(type);
+                        // Use yesterday's infection rate for the reference group in the model
+                        int infectedRef =
+                                this.model.getPersonMonitor().getYesterdayInfectionsPersonType().get(referencePT.getId());
+                        double prob = (1.0 * infectedRef) / referencePT.getNumberPersons();
+                        if (this.model.getU01().draw() < duration * prob / 24.0)
+                        {
+                            person.setExposureTime((float) now);
+                            this.model.getDiseaseProgression().changeDiseasePhase(person, this.exposed);
+                        }
                     }
                 }
             }
