@@ -38,7 +38,8 @@ public class Location implements ModelLocatable
     protected int locationId;
 
     /** The locationTypeId indicates the index number of the locationType. */
-    private final byte locationTypeId;
+    @SuppressWarnings("checkstyle:visibilitymodifier")
+    protected final byte locationTypeId;
 
     /** The model for looking up the simulator and other model objects. */
     @SuppressWarnings("checkstyle:visibilitymodifier")
@@ -51,16 +52,20 @@ public class Location implements ModelLocatable
     private float lon;
 
     /** The number of sub locations (e.g., rooms). */
-    private short numberOfSubLocations;
+    @SuppressWarnings("checkstyle:visibilitymodifier")
+    protected short numberOfSubLocations;
 
     /** The total surface in m2. */
-    private final float totalSurfaceM2;
+    @SuppressWarnings("checkstyle:visibilitymodifier")
+    protected final float totalSurfaceM2;
 
     /** Whether the location is closed or not (e.g., as the result of a policy). */
-    private boolean closed;
+    @SuppressWarnings("checkstyle:visibilitymodifier")
+    protected boolean closed;
 
     /** The ids of the persons in the location. */
-    private TIntSet persons = new TIntHashSet();
+    @SuppressWarnings("checkstyle:visibilitymodifier")
+    protected TIntSet persons = new TIntHashSet();
 
     /**
      * Create a location.
