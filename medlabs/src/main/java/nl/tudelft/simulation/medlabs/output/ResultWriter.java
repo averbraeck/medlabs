@@ -153,7 +153,7 @@ public class ResultWriter implements EventListenerInterface
             writeDayInfLocPersonToPersonTypeHeader();
             model.getPersonMonitor().addListener(this, PersonMonitor.DAY_INFECTIONS_LOC_PERSON_TO_PERSON_TYPE);
 
-            this.totInfPersonToPersonWriter = new PrintWriter(outputPath + "/totInfLocPersonTypeToPersonType.csv");
+            this.totInfLocPersonToPersonWriter = new PrintWriter(outputPath + "/totInfLocPersonTypeToPersonType.csv");
             writeTotInfLocPersonToPersonTypeHeader();
             model.getPersonMonitor().addListener(this, PersonMonitor.TOT_INFECTIONS_LOC_PERSON_TO_PERSON_TYPE);
         }
