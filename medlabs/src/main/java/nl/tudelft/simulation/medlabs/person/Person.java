@@ -68,7 +68,7 @@ public interface Person extends Locatable, Serializable, PropertiesInterface, Mo
         Location location = getCurrentLocation();
         return new Point3d(location.getLongitude(), location.getLatitude(), 1E-6);
     }
-    
+
     /** Constant for Bounds3d; one degree in meters is 111 km; we make the Bounds3d for clicking 10x10x10 m. */
     Bounds3d PERSON_BOUNDS = new Bounds3d(10.0 / 111000.0, 10.0 / 111000.0, 10.0 / 111000.0);
 
@@ -94,6 +94,17 @@ public interface Person extends Locatable, Serializable, PropertiesInterface, Mo
      * @return boolean; the gender
      */
     boolean getGenderFemale();
+
+    /**
+     * Set the exposure for a person.
+     * @param exposureTime float; the exposure time of the person in hours (simulation clock)
+     */
+    void setExposureTime(float exposureTime);
+
+    /**
+     * @return float; the exposure time of the person in hours (simulation clock)
+     */
+    float getExposureTime();
 
     /**
      * @return the diseasePhase
@@ -166,13 +177,4 @@ public interface Person extends Locatable, Serializable, PropertiesInterface, Mo
      */
     void setCurrentWeekPattern(WeekPattern currentWeekPattern);
 
-    /**
-     * @param exposureTime float; the exposure time of the person in hours (simulation clock)
-     */
-    void setExposureTime(float exposureTime);
-
-    /**
-     * @return float; the exposure time of the person in hours (simulation clock)
-     */
-    float getExposureTime();
 }
