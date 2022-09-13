@@ -132,7 +132,7 @@ public class LocationProbBased extends Location
                     if (referencePT == null)
                     {
                         System.err.println(String.format("Tried to map person %s to a reference group, but not present in %s",
-                                person, this.referenceGroup));
+                                person, this.referenceGroup.toString()));
                     }
                     else
                     {
