@@ -84,6 +84,12 @@ public class ResultWriter implements EventListenerInterface
     /** The file with the total number of infections per location type from a person type to a person type. */
     private PrintWriter totInfLocPersonToPersonWriter;
 
+    /** The file with the infections by rate. */
+    private PrintWriter infByRateWriter;
+
+    /** The file with the infections by rate factor. */
+    private PrintWriter infByRateFactorWriter;
+
     /**
      * Create a writer of results to file.
      * @param model the model
@@ -156,6 +162,14 @@ public class ResultWriter implements EventListenerInterface
             this.totInfLocPersonToPersonWriter = new PrintWriter(outputPath + "/totInfLocPersonTypeToPersonType.csv");
             writeTotInfLocPersonToPersonTypeHeader();
             model.getPersonMonitor().addListener(this, PersonMonitor.TOT_INFECTIONS_LOC_PERSON_TO_PERSON_TYPE);
+
+            this.infByRateWriter = new PrintWriter(outputPath + "/infectionsByRate.csv");
+            writeInfByRateHeader();
+            model.getPersonMonitor().addListener(this, PersonMonitor.INFECTION_BY_RATE);
+
+            this.infByRateFactorWriter = new PrintWriter(outputPath + "/infectionsByRateFactor.csv");
+            writeInfByRateFactorHeader();
+            model.getPersonMonitor().addListener(this, PersonMonitor.INFECTION_BY_RATE_FACTOR);
         }
         catch (IOException ioe)
         {
@@ -583,6 +597,85 @@ public class ResultWriter implements EventListenerInterface
         this.totInfLocPersonToPersonWriter.flush();
     }
 
+    /* *************************************** INFECTIONS BY RATE *************************************** */
+
+    private void writeInfByRateHeader()
+    {
+        this.infByRateWriter.println("\"Time(h)\",\"personId\",\"personType\",\"Age\",\"Gender\",\"homeId\",\"homeSubId\","
+                + "\"homeLat\",\"homeLon\",\"diseasePhase\",\"workId\",\"schoolId\",\"infLocation\",\"duration\",\"infRate\"");
+        this.infByRateWriter.flush();
+    }
+
+    private void writeInfByRateLine(final Object[] content)
+    {
+        // {exposedPerson, locationTypeId, duration, infectionRate}
+        Person person = (Person) content[0];
+        String infLocationType = this.model.getLocationTypeIndexMap().get((byte) (int) content[1]).getName();
+        double duration = (double) content[2];
+        double infectionRate = (double) content[3];
+        double time = this.model.getSimulator().getSimulatorTime();
+        this.infByRateWriter.print(time + "," + person.getId());
+        this.infByRateWriter.print(",\"" + person.getClass().getSimpleName() + "\"");
+        this.infByRateWriter.print("," + person.getAge());
+        this.infByRateWriter.print("," + (person.getGenderFemale() ? "\"F\"" : "\"M\""));
+        this.infByRateWriter.print("," + person.getHomeLocation().getId());
+        this.infByRateWriter.print("," + person.getHomeSubLocationIndex());
+        Location homeLocation = this.model.getLocationMap().get(person.getHomeLocation().getId());
+        this.infByRateWriter.print("," + homeLocation.getLatitude());
+        this.infByRateWriter.print("," + homeLocation.getLongitude());
+        this.infByRateWriter.print(",\"" + person.getDiseasePhase().getName() + "\"");
+        this.infByRateWriter.print("," + (person instanceof Worker ? ((Worker) person).getWorkLocation().getId() : -1));
+        this.infByRateWriter.print("," + (person instanceof Student ? ((Student) person).getSchoolLocation().getId() : -1));
+        this.infByRateWriter.print(",\"" + infLocationType + "\"");
+        this.infByRateWriter.print("," + duration);
+        this.infByRateWriter.print("," + infectionRate);
+        this.infByRateWriter.println();
+        this.infByRateWriter.flush();
+    }
+
+    private void writeInfByRateFactorHeader()
+    {
+        this.infByRateFactorWriter
+                .println("\"Time(h)\",\"personId\",\"personType\",\"Age\",\"Gender\",\"homeId\",\"homeSubId\","
+                        + "\"homeLat\",\"homeLon\",\"diseasePhase\",\"workId\",\"schoolId\","
+                        + "\"infLocation\",\"duration\",\"infRateFactor\",\"refPersonType\",\"nrInfectedRef\",\"nrTotalRef\"");
+        this.infByRateFactorWriter.flush();
+    }
+
+    private void writeInfByRateFactorLine(final Object[] content)
+    {
+        // {exposedPerson, locationTypeId, duration, infectionRateFactor, ref, nrInfectedRef, nrTotalRef}
+        Person person = (Person) content[0];
+        String infLocationType = this.model.getLocationTypeIndexMap().get((byte) (int) content[1]).getName();
+        double duration = (double) content[2];
+        double infectionRateFactor = (double) content[3];
+        String refPersonType = ((PersonType) content[4]).getName();
+        int nrInfectedRef = (int) content[5];
+        int nrTotalRef = (int) content[6];
+        double time = this.model.getSimulator().getSimulatorTime();
+        this.infByRateFactorWriter.print(time + "," + person.getId());
+        this.infByRateFactorWriter.print(",\"" + person.getClass().getSimpleName() + "\"");
+        this.infByRateFactorWriter.print("," + person.getAge());
+        this.infByRateFactorWriter.print("," + (person.getGenderFemale() ? "\"F\"" : "\"M\""));
+        this.infByRateFactorWriter.print("," + person.getHomeLocation().getId());
+        this.infByRateFactorWriter.print("," + person.getHomeSubLocationIndex());
+        Location homeLocation = this.model.getLocationMap().get(person.getHomeLocation().getId());
+        this.infByRateFactorWriter.print("," + homeLocation.getLatitude());
+        this.infByRateFactorWriter.print("," + homeLocation.getLongitude());
+        this.infByRateFactorWriter.print(",\"" + person.getDiseasePhase().getName() + "\"");
+        this.infByRateFactorWriter.print("," + (person instanceof Worker ? ((Worker) person).getWorkLocation().getId() : -1));
+        this.infByRateFactorWriter
+                .print("," + (person instanceof Student ? ((Student) person).getSchoolLocation().getId() : -1));
+        this.infByRateFactorWriter.print(",\"" + infLocationType + "\"");
+        this.infByRateFactorWriter.print("," + duration);
+        this.infByRateFactorWriter.print("," + infectionRateFactor);
+        this.infByRateFactorWriter.print(",\"" + refPersonType + "\"");
+        this.infByRateFactorWriter.print("," + nrInfectedRef);
+        this.infByRateFactorWriter.print("," + nrTotalRef);
+        this.infByRateFactorWriter.println();
+        this.infByRateFactorWriter.flush();
+    }
+
     /** {@inheritDoc} */
     @SuppressWarnings("unchecked")
     @Override
@@ -631,6 +724,14 @@ public class ResultWriter implements EventListenerInterface
         else if (event.getType().equals(PersonMonitor.TOT_INFECTIONS_LOC_PERSON_TO_PERSON_TYPE))
         {
             writeTotInfLocPersonToPersonTypeLine((int[]) event.getContent());
+        }
+        else if (event.getType().equals(PersonMonitor.INFECTION_BY_RATE))
+        {
+            writeInfByRateLine((Object[]) event.getContent());
+        }
+        else if (event.getType().equals(PersonMonitor.INFECTION_BY_RATE_FACTOR))
+        {
+            writeInfByRateFactorLine((Object[]) event.getContent());
         }
     }
 

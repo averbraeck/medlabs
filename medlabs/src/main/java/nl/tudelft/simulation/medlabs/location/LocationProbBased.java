@@ -116,16 +116,20 @@ public class LocationProbBased extends Location
             this.enterTimes.remove(person.getId());
             if (person.getDiseasePhase().isSusceptible())
             {
-                if (this.infectionRate != -1.0)
+                if (this.infectionRate > 0.0)
                 {
                     // infection rate is per 24 hours
                     if (this.model.getU01().draw() < duration * this.infectionRate / 24.0)
                     {
                         person.setExposureTime((float) now);
+                        // Take the person him/herself as the cause -- probability-based so probably same type of person
+                        this.model.getPersonMonitor().reportExposure(person, this.locationTypeId, person);
+                        this.model.getPersonMonitor().reportExposureByRate(person, this.locationTypeId, duration,
+                                this.infectionRate);
                         this.model.getDiseaseProgression().changeDiseasePhase(person, this.exposed);
                     }
                 }
-                else if (this.infectionRateFactor != -1.0)
+                else if (this.infectionRateFactor > 0.0)
                 {
                     // multiply this with the probability of the social group getting infected
                     PersonType referencePT = this.referenceGroup.get(this.model.getPersonTypeClassMap().get(person.getClass()));
@@ -143,6 +147,10 @@ public class LocationProbBased extends Location
                         if (this.model.getU01().draw() < duration * prob / 24.0)
                         {
                             person.setExposureTime((float) now);
+                            // Take the person him/herself as the cause -- probability-based so probably same type of person
+                            this.model.getPersonMonitor().reportExposure(person, this.locationTypeId, person);
+                            this.model.getPersonMonitor().reportExposureByRateFactor(person, this.locationTypeId, duration,
+                                    this.infectionRateFactor, referencePT, infectedRef, referencePT.getNumberPersons());
                             this.model.getDiseaseProgression().changeDiseasePhase(person, this.exposed);
                         }
                     }

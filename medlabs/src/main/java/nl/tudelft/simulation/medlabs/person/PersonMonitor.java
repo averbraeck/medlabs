@@ -123,6 +123,12 @@ public class PersonMonitor extends EventProducer
     public static final TimedEventType TOT_INFECTIONS_LOC_PERSON_TO_PERSON_TYPE =
             new TimedEventType("TOT_INFECTIONS_LOC_PERSON_TO_PERSON_TYPE");
 
+    /** event for infections by infection rate. */
+    public static final TimedEventType INFECTION_BY_RATE = new TimedEventType("INFECTION_BY_RATE");
+
+    /** event for infections by infection rate factor. */
+    public static final TimedEventType INFECTION_BY_RATE_FACTOR = new TimedEventType("INFECTION_BY_RATE_FACTOR");
+
     /**
      * Number of infections per person type today till the current moment -- reset to 0 at midnight.
      */
@@ -263,6 +269,40 @@ public class PersonMonitor extends EventProducer
         key = (locationTypeId << 20) + (ptInfecting.getId() << 10) + ptExposed.getId();
         this.dayInfectionsLocPersonPerson.put(key, 1 + this.dayInfectionsLocPersonPerson.get(key));
         this.totInfectionsLocPersonPerson.put(key, 1 + this.totInfectionsLocPersonPerson.get(key));
+    }
+
+    /**
+     * Extra method to report infection with a (constant or varying) 'rate', in addition to the reportExposure method.
+     * @param exposedPerson Person; the exposed person
+     * @param locationTypeId int; the location type where the exposure took place
+     * @param duration double; the duration in that location in hours
+     * @param infectionRate double; the provided rate for that location type
+     */
+    public void reportExposureByRate(final Person exposedPerson, final int locationTypeId, final double duration,
+            final double infectionRate)
+    {
+        double now = this.model.getSimulator().getSimulatorTime();
+        fireTimedEvent(new TimedEvent<Double>(INFECTION_BY_RATE, this,
+                new Object[] {exposedPerson, locationTypeId, duration, infectionRate}, now));
+    }
+
+    /**
+     * Extra method to report infection with a (constant or varying) 'rate', in addition to the reportExposure method.
+     * @param exposedPerson Person; the exposed person
+     * @param locationTypeId int; the location type where the exposure took place
+     * @param duration double; the duration in that location in hours
+     * @param infectionRateFactor double; the provided rate factor (correction factor) for that location type
+     * @param ref PersonType; the reference group
+     * @param nrInfectedRef int; the nr of persons that were infected yesterday in that reference group
+     * @param nrTotalRef int; the total number of persons in the reference group
+     */
+    public void reportExposureByRateFactor(final Person exposedPerson, final int locationTypeId, final double duration,
+            final double infectionRateFactor, final PersonType ref, final int nrInfectedRef, final int nrTotalRef)
+    {
+        double now = this.model.getSimulator().getSimulatorTime();
+        fireTimedEvent(new TimedEvent<Double>(INFECTION_BY_RATE_FACTOR, this,
+                new Object[] {exposedPerson, locationTypeId, duration, infectionRateFactor, ref, nrInfectedRef, nrTotalRef},
+                now));
     }
 
     /**
