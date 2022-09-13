@@ -170,7 +170,7 @@ public class ConstructSEIRModel
         for (Class<? extends Person> pc : new Class[] {Worker.class})
         {
             PersonType pt = new PersonType(this.model, nr, pc);
-            this.model.getPersonTypeIdMap().put(nr, pt);
+            this.model.getPersonTypeList().add(pt);
             this.model.getPersonTypeClassMap().put(pc, pt);
             nr++;
         }
