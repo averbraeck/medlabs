@@ -105,8 +105,6 @@ public class SEIRProgression extends DiseaseProgression
             person.getDiseasePhase().removePerson();
             person.setDiseasePhase(exposed);
             exposed.addPerson();
-            this.model.getPersonMonitor().reportInfectPerson(person);
-            this.model.getPersonMonitor().reportInfectionAtLocationType(person.getCurrentLocation().getLocationTypeId());
             double incubationPeriod = this.distIncubationPeriod.getDuration();
 
             model.getSimulator().scheduleEventRel(incubationPeriod, this, person, "changePhase",
