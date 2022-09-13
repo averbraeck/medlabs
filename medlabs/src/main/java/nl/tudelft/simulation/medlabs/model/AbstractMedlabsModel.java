@@ -74,7 +74,7 @@ public abstract class AbstractMedlabsModel
     protected TIntObjectMap<TIntSet> familyMembersByHomeLocation = new TIntObjectHashMap<>();
 
     /** the map of person types by id. */
-    protected TIntObjectMap<PersonType> personTypeIdMap = new TIntObjectHashMap<>();
+    protected List<PersonType> personTypeList = new ArrayList<>();
 
     /** the map of person types by person class. */
     Map<Class<? extends Person>, PersonType> personTypeClassMap = new LinkedHashMap<>();
@@ -264,9 +264,9 @@ public abstract class AbstractMedlabsModel
 
     /** {@inheritDoc} */
     @Override
-    public TIntObjectMap<PersonType> getPersonTypeIdMap()
+    public List<PersonType> getPersonTypeList()
     {
-        return this.personTypeIdMap;
+        return this.personTypeList;
     }
 
     /** {@inheritDoc} */

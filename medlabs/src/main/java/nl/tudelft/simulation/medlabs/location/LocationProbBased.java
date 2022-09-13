@@ -136,7 +136,7 @@ public class LocationProbBased extends Location
                     else
                     {
                         // TODO: find yesterday's infection rate for the reference group in the model
-                        
+                        // double prob = this.model.getPersonMonitor().getYesterdayInfectedPerson(type);
                     }
                 }
             }

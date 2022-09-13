@@ -272,12 +272,12 @@ public class PersonMonitor extends EventProducer
     {
         // fire events for the infection matrices
         double now = this.model.getSimulator().getSimulatorTime();
-        int ptSize = this.model.getPersonTypeIdMap().size();
+        int ptSize = this.model.getPersonTypeList().size();
         int[] dayNrs = new int[ptSize];
         int[] totNrs = new int[ptSize];
         for (int i = 0; i < ptSize; i++)
         {
-            int ptId = this.model.getPersonTypeIdMap().get(i).getId();
+            int ptId = this.model.getPersonTypeList().get(i).getId();
             dayNrs[i] = this.dayInfectionsPersonType.get(ptId);
             totNrs[i] = this.totInfectionsPersonType.get(ptId);
         }
@@ -286,14 +286,14 @@ public class PersonMonitor extends EventProducer
 
         for (int infectingIndex = 0; infectingIndex < ptSize; infectingIndex++)
         {
-            int ptInfectingId = this.model.getPersonTypeIdMap().get(infectingIndex).getId();
+            int ptInfectingId = this.model.getPersonTypeList().get(infectingIndex).getId();
             dayNrs = new int[ptSize + 1];
             totNrs = new int[ptSize + 1];
             dayNrs[0] = infectingIndex;
             totNrs[0] = infectingIndex;
             for (int exposedId = 0; exposedId < ptSize; exposedId++)
             {
-                int ptExposedId = this.model.getPersonTypeIdMap().get(exposedId).getId();
+                int ptExposedId = this.model.getPersonTypeList().get(exposedId).getId();
                 int key = ptInfectingId << 16 + ptExposedId;
                 dayNrs[infectingIndex + 1] = this.dayInfectionsPersonTypeToPersonType.get(key);
                 totNrs[infectingIndex + 1] = this.totInfectionsPersonTypeToPersonType.get(key);
@@ -307,7 +307,7 @@ public class PersonMonitor extends EventProducer
             int ltId = this.model.getLocationTypeIndexMap().get((byte) lt).getLocationTypeId();
             for (int infectingIndex = 0; infectingIndex < ptSize; infectingIndex++)
             {
-                int ptInfectingId = this.model.getPersonTypeIdMap().get(infectingIndex).getId();
+                int ptInfectingId = this.model.getPersonTypeList().get(infectingIndex).getId();
                 dayNrs = new int[ptSize + 2];
                 totNrs = new int[ptSize + 2];
                 dayNrs[0] = ltId;
@@ -316,7 +316,7 @@ public class PersonMonitor extends EventProducer
                 totNrs[1] = infectingIndex;
                 for (int exposedId = 0; exposedId < ptSize; exposedId++)
                 {
-                    int ptExposedId = this.model.getPersonTypeIdMap().get(exposedId).getId();
+                    int ptExposedId = this.model.getPersonTypeList().get(exposedId).getId();
                     int key = ptInfectingId << 16 + ptExposedId;
                     dayNrs[infectingIndex + 1] = this.dayInfectionsPersonTypeToPersonType.get(key);
                     totNrs[infectingIndex + 1] = this.totInfectionsPersonTypeToPersonType.get(key);

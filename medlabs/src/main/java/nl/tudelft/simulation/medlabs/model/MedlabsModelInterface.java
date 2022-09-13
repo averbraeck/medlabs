@@ -79,7 +79,7 @@ public interface MedlabsModelInterface extends SimpleModelInterface
     TIntObjectMap<Person> getPersonMap();
 
     /** @return the person types by id. */
-    TIntObjectMap<PersonType> getPersonTypeIdMap();
+    List<PersonType> getPersonTypeList();
 
     /** @return the map of the person class name to the person type. */
     Map<Class<? extends Person>, PersonType> getPersonTypeClassMap();

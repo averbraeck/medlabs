@@ -418,10 +418,10 @@ public class ResultWriter implements EventListenerInterface
     private void writeDayInfPersonTypeHeader()
     {
         this.dayInfPersonWriter.print("\"time\"");
-        int ptSize = this.model.getPersonTypeIdMap().size();
+        int ptSize = this.model.getPersonTypeList().size();
         for (int i = 0; i < ptSize; i++)
         {
-            PersonType pt = this.model.getPersonTypeIdMap().get(i);
+            PersonType pt = this.model.getPersonTypeList().get(i);
             this.dayInfPersonWriter.print(",\"" + pt.getName() + "\"");
         }
         this.dayInfPersonWriter.println();
@@ -431,10 +431,10 @@ public class ResultWriter implements EventListenerInterface
     private void writeTotInfPersonTypeHeader()
     {
         this.totInfPersonWriter.print("\"time\"");
-        int ptSize = this.model.getPersonTypeIdMap().size();
+        int ptSize = this.model.getPersonTypeList().size();
         for (int i = 0; i < ptSize; i++)
         {
-            PersonType pt = this.model.getPersonTypeIdMap().get(i);
+            PersonType pt = this.model.getPersonTypeList().get(i);
             this.totInfPersonWriter.print(",\"" + pt.getName() + "\"");
         }
         this.totInfPersonWriter.println();
@@ -445,7 +445,7 @@ public class ResultWriter implements EventListenerInterface
     {
         double time = this.model.getSimulator().getSimulatorTime();
         this.dayInfPersonWriter.print(Math.round(time));
-        int ptSize = this.model.getPersonTypeIdMap().size();
+        int ptSize = this.model.getPersonTypeList().size();
         for (int i = 0; i < ptSize; i++)
         {
             this.dayInfPersonWriter.print("," + nrs[i]);
@@ -458,7 +458,7 @@ public class ResultWriter implements EventListenerInterface
     {
         double time = this.model.getSimulator().getSimulatorTime();
         this.totInfPersonWriter.print(Math.round(time));
-        int ptSize = this.model.getPersonTypeIdMap().size();
+        int ptSize = this.model.getPersonTypeList().size();
         for (int i = 0; i < ptSize; i++)
         {
             this.totInfPersonWriter.print("," + nrs[i]);
@@ -472,10 +472,10 @@ public class ResultWriter implements EventListenerInterface
     private void writeDayInfPersonToPersonTypeHeader()
     {
         this.dayInfPersonToPersonWriter.print("\"time\",\"infecting_person_type\"");
-        int ptSize = this.model.getPersonTypeIdMap().size();
+        int ptSize = this.model.getPersonTypeList().size();
         for (int i = 0; i < ptSize; i++)
         {
-            PersonType pt = this.model.getPersonTypeIdMap().get(i);
+            PersonType pt = this.model.getPersonTypeList().get(i);
             this.dayInfPersonToPersonWriter.print(",\"" + pt.getName() + "\"");
         }
         this.dayInfPersonToPersonWriter.println();
@@ -485,10 +485,10 @@ public class ResultWriter implements EventListenerInterface
     private void writeTotInfPersonToPersonTypeHeader()
     {
         this.totInfPersonToPersonWriter.print("\"time\",\"infecting_person_type\"");
-        int ptSize = this.model.getPersonTypeIdMap().size();
+        int ptSize = this.model.getPersonTypeList().size();
         for (int i = 0; i < ptSize; i++)
         {
-            PersonType pt = this.model.getPersonTypeIdMap().get(i);
+            PersonType pt = this.model.getPersonTypeList().get(i);
             this.totInfPersonToPersonWriter.print(",\"" + pt.getName() + "\"");
         }
         this.totInfPersonToPersonWriter.println();
@@ -498,9 +498,9 @@ public class ResultWriter implements EventListenerInterface
     private void writeDayInfPersonToPersonTypeLine(final int[] nrs)
     {
         double time = this.model.getSimulator().getSimulatorTime();
-        String infectingPersonType = this.model.getPersonTypeIdMap().get(nrs[0]).getName();
+        String infectingPersonType = this.model.getPersonTypeList().get(nrs[0]).getName();
         this.dayInfPersonToPersonWriter.print(Math.round(time) + ",\"" + infectingPersonType + "\"");
-        int ptSize = this.model.getPersonTypeIdMap().size();
+        int ptSize = this.model.getPersonTypeList().size();
         for (int i = 0; i < ptSize; i++)
         {
             this.dayInfPersonToPersonWriter.print("," + nrs[i + 1]);
@@ -512,9 +512,9 @@ public class ResultWriter implements EventListenerInterface
     private void writeTotInfPersonToPersonTypeLine(final int[] nrs)
     {
         double time = this.model.getSimulator().getSimulatorTime();
-        String infectingPersonType = this.model.getPersonTypeIdMap().get(nrs[0]).getName();
+        String infectingPersonType = this.model.getPersonTypeList().get(nrs[0]).getName();
         this.totInfPersonToPersonWriter.print(Math.round(time) + ",\"" + infectingPersonType + "\"");
-        int ptSize = this.model.getPersonTypeIdMap().size();
+        int ptSize = this.model.getPersonTypeList().size();
         for (int i = 0; i < ptSize; i++)
         {
             this.totInfPersonToPersonWriter.print("," + nrs[i + 1]);
@@ -528,10 +528,10 @@ public class ResultWriter implements EventListenerInterface
     private void writeDayInfLocPersonToPersonTypeHeader()
     {
         this.dayInfLocPersonToPersonWriter.print("\"time\",\"location_type\",\"infecting_person_type\"");
-        int ptSize = this.model.getPersonTypeIdMap().size();
+        int ptSize = this.model.getPersonTypeList().size();
         for (int i = 0; i < ptSize; i++)
         {
-            PersonType pt = this.model.getPersonTypeIdMap().get(i);
+            PersonType pt = this.model.getPersonTypeList().get(i);
             this.dayInfLocPersonToPersonWriter.print(",\"" + pt.getName() + "\"");
         }
         this.dayInfLocPersonToPersonWriter.println();
@@ -541,10 +541,10 @@ public class ResultWriter implements EventListenerInterface
     private void writeTotInfLocPersonToPersonTypeHeader()
     {
         this.totInfLocPersonToPersonWriter.print("\"time\",\"location_type\",\"infecting_person_type\"");
-        int ptSize = this.model.getPersonTypeIdMap().size();
+        int ptSize = this.model.getPersonTypeList().size();
         for (int i = 0; i < ptSize; i++)
         {
-            PersonType pt = this.model.getPersonTypeIdMap().get(i);
+            PersonType pt = this.model.getPersonTypeList().get(i);
             this.totInfLocPersonToPersonWriter.print(",\"" + pt.getName() + "\"");
         }
         this.totInfLocPersonToPersonWriter.println();
@@ -555,10 +555,10 @@ public class ResultWriter implements EventListenerInterface
     {
         double time = this.model.getSimulator().getSimulatorTime();
         String locationType = this.model.getLocationTypeIndexMap().get((byte) nrs[0]).getName();
-        String infectingPersonType = this.model.getPersonTypeIdMap().get(nrs[1]).getName();
+        String infectingPersonType = this.model.getPersonTypeList().get(nrs[1]).getName();
         this.dayInfLocPersonToPersonWriter
                 .print(Math.round(time) + ",\"" + locationType + "\",\"" + infectingPersonType + "\"");
-        int ptSize = this.model.getPersonTypeIdMap().size();
+        int ptSize = this.model.getPersonTypeList().size();
         for (int i = 0; i < ptSize; i++)
         {
             this.dayInfLocPersonToPersonWriter.print("," + nrs[i + 1]);
@@ -571,10 +571,10 @@ public class ResultWriter implements EventListenerInterface
     {
         double time = this.model.getSimulator().getSimulatorTime();
         String locationType = this.model.getLocationTypeIndexMap().get((byte) nrs[0]).getName();
-        String infectingPersonType = this.model.getPersonTypeIdMap().get(nrs[1]).getName();
+        String infectingPersonType = this.model.getPersonTypeList().get(nrs[1]).getName();
         this.totInfLocPersonToPersonWriter
                 .print(Math.round(time) + ",\"" + locationType + "\",\"" + infectingPersonType + "\"");
-        int ptSize = this.model.getPersonTypeIdMap().size();
+        int ptSize = this.model.getPersonTypeList().size();
         for (int i = 0; i < ptSize; i++)
         {
             this.totInfLocPersonToPersonWriter.print("," + nrs[i + 1]);
