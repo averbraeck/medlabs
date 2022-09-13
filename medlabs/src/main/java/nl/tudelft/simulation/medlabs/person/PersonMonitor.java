@@ -291,12 +291,12 @@ public class PersonMonitor extends EventProducer
             totNrs = new int[ptSize + 1];
             dayNrs[0] = infectingIndex;
             totNrs[0] = infectingIndex;
-            for (int exposedId = 0; exposedId < ptSize; exposedId++)
+            for (int exposedIndex = 0; exposedIndex < ptSize; exposedIndex++)
             {
-                int ptExposedId = this.model.getPersonTypeList().get(exposedId).getId();
+                int ptExposedId = this.model.getPersonTypeList().get(exposedIndex).getId();
                 int key = ptInfectingId << 16 + ptExposedId;
-                dayNrs[infectingIndex + 1] = this.dayInfectionsPersonTypeToPersonType.get(key);
-                totNrs[infectingIndex + 1] = this.totInfectionsPersonTypeToPersonType.get(key);
+                dayNrs[exposedIndex + 1] = this.dayInfectionsPersonTypeToPersonType.get(key);
+                totNrs[exposedIndex + 1] = this.totInfectionsPersonTypeToPersonType.get(key);
             }
             fireTimedEvent(new TimedEvent<Double>(DAY_INFECTIONS_PERSON_TO_PERSON_TYPE, this, dayNrs, now));
             fireTimedEvent(new TimedEvent<Double>(TOT_INFECTIONS_PERSON_TO_PERSON_TYPE, this, totNrs, now));
@@ -314,12 +314,12 @@ public class PersonMonitor extends EventProducer
                 dayNrs[1] = infectingIndex;
                 totNrs[0] = lt;
                 totNrs[1] = infectingIndex;
-                for (int exposedId = 0; exposedId < ptSize; exposedId++)
+                for (int exposedIndex = 0; exposedIndex < ptSize; exposedIndex++)
                 {
-                    int ptExposedId = this.model.getPersonTypeList().get(exposedId).getId();
+                    int ptExposedId = this.model.getPersonTypeList().get(exposedIndex).getId();
                     int key = ltId << 20 + ptInfectingId << 10 + ptExposedId;
-                    dayNrs[infectingIndex + 1] = this.dayInfectionsPersonTypeToPersonType.get(key);
-                    totNrs[infectingIndex + 1] = this.totInfectionsPersonTypeToPersonType.get(key);
+                    dayNrs[exposedIndex + 2] = this.dayInfectionsPersonTypeToPersonType.get(key);
+                    totNrs[exposedIndex + 2] = this.totInfectionsPersonTypeToPersonType.get(key);
                 }
                 fireTimedEvent(new TimedEvent<Double>(DAY_INFECTIONS_LOC_PERSON_TO_PERSON_TYPE, this, dayNrs, now));
                 fireTimedEvent(new TimedEvent<Double>(TOT_INFECTIONS_LOC_PERSON_TO_PERSON_TYPE, this, totNrs, now));
