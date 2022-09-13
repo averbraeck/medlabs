@@ -184,7 +184,7 @@ public abstract class DiseaseTransmission extends AbstractModelNamed implements 
      * @param duration double; the time for which the calculation needs to take place, in hours
      * @return boolean; whether the calculation took place and the last calculation time can be updated
      */
-    public abstract boolean infectPeople(Location location, final TIntSet personsInSublocation, double duration);
+    public abstract boolean infectPeople(Location location, TIntSet personsInSublocation, double duration);
 
     /**
      * Make the key index for the cache.
