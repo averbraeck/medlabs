@@ -7,7 +7,6 @@ import nl.tudelft.simulation.medlabs.disease.DiseasePhase;
 import nl.tudelft.simulation.medlabs.location.Location;
 import nl.tudelft.simulation.medlabs.model.MedlabsModelInterface;
 import nl.tudelft.simulation.medlabs.person.AbstractPerson;
-import nl.tudelft.simulation.medlabs.person.Person;
 import nl.tudelft.simulation.medlabs.person.PersonType;
 import nl.tudelft.simulation.medlabs.simulation.TinySimEvent;
 
