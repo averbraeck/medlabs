@@ -2,10 +2,13 @@ package nl.tudelft.simulation.medlabs.person.index;
 
 import nl.tudelft.simulation.medlabs.activity.Activity;
 import nl.tudelft.simulation.medlabs.activity.pattern.WeekPattern;
+import nl.tudelft.simulation.medlabs.common.MedlabsRuntimeException;
 import nl.tudelft.simulation.medlabs.disease.DiseasePhase;
 import nl.tudelft.simulation.medlabs.location.Location;
 import nl.tudelft.simulation.medlabs.model.MedlabsModelInterface;
 import nl.tudelft.simulation.medlabs.person.AbstractPerson;
+import nl.tudelft.simulation.medlabs.person.Person;
+import nl.tudelft.simulation.medlabs.person.PersonType;
 import nl.tudelft.simulation.medlabs.simulation.TinySimEvent;
 
 /**
@@ -89,6 +92,14 @@ public class IdxPerson extends AbstractPerson
         this.model.getPersonMap().put(id, this);
         this.exposureTime = Float.NaN;
         this.diseasePhaseIndex = -1;
+
+        PersonType pt = this.model.getPersonTypeClassMap().get(getClass()); 
+        if (pt == null)
+        {
+            throw new MedlabsRuntimeException("PersonType " + getClass().getSimpleName() + " not registered in model");
+        }
+        pt.incNumberPersons();
+
         // DON'T FORGET TO CALL INIT AFTER THE CONSTRUCTION OF A PERSON!
     }
 
@@ -128,6 +139,8 @@ public class IdxPerson extends AbstractPerson
     {
         if (getDiseasePhase().isDead())
         {
+            // TODO: PersonType pt = this.model.getPersonTypeClassMap().get(getClass());
+            // TODO: pt.decNumberPersons();
             return;
         }
         WeekPattern currentWeekPattern = getCurrentWeekPattern();
@@ -221,9 +234,8 @@ public class IdxPerson extends AbstractPerson
     {
         this.diseasePhaseIndex = diseasePhase.getIndex();
         // see at midnight if the activity pattern needs to be changed
-        getModel().getSimulator().scheduleEventAbs(
-                24.0 * Math.ceil(getModel().getSimulator().getSimulatorTime() / 24.0), this, getModel(),
-                "checkChangeActivityPattern", new Object[] { this });
+        getModel().getSimulator().scheduleEventAbs(24.0 * Math.ceil(getModel().getSimulator().getSimulatorTime() / 24.0), this,
+                getModel(), "checkChangeActivityPattern", new Object[] {this});
     }
 
     /** {@inheritDoc} */
