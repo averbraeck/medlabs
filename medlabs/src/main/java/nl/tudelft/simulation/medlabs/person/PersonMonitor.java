@@ -139,26 +139,26 @@ public class PersonMonitor extends EventProducer
     private TIntIntMap totInfectionsPersonType = new TIntIntHashMap();
 
     /**
-     * Number of infections from person type to person type per day. The key of the map is (infectingPersonTypeId << 16 +
+     * Number of infections from person type to person type per day. The key of the map is ((infectingPersonTypeId << 16) +
      * infectedPersonTypeId).
      */
     private TIntIntMap dayInfectionsPersonTypeToPersonType = new TIntIntHashMap();
 
     /**
-     * Cumulative number of infections from person type to person type. The key of the map is (infectingPersonTypeId << 16 +
+     * Cumulative number of infections from person type to person type. The key of the map is ((infectingPersonTypeId << 16) +
      * infectedPersonTypeId)
      */
     private TIntIntMap totInfectionsPersonTypeToPersonType = new TIntIntHashMap();
 
     /**
      * Number of infections per location type from person type to person type per day. The key of the map is
-     * (infecingLocationTypeId << 20 + infectingPersonTypeId << 10 + infectedPersonTypeId)
+     * ((infectingLocationTypeId << 20) + (infectingPersonTypeId << 10) + infectedPersonTypeId)
      */
     private TIntIntMap dayInfectionsLocPersonPerson = new TIntIntHashMap();
 
     /**
      * Cumulative number of infections per location type from person type to person type. The key of the map is
-     * (infecingLocationTypeId << 20 + infectingPersonTypeId << 10 + infectedPersonTypeId)
+     * ((infectingLocationTypeId << 20) + (infectingPersonTypeId << 10) + infectedPersonTypeId)
      */
     private TIntIntMap totInfectionsLocPersonPerson = new TIntIntHashMap();
 
@@ -254,13 +254,13 @@ public class PersonMonitor extends EventProducer
         int key = ptExposed.getId();
         this.dayInfectionsPersonType.put(key, 1 + this.dayInfectionsPersonType.get(key));
         this.totInfectionsPersonType.put(key, 1 + this.totInfectionsPersonType.get(key));
-        // The key of the dayInfectionsPersonTypeToPersonType map is (infectingPersonTypeId << 16 + infectedPersonTypeId).
-        key = ptInfecting.getId() << 16 + ptExposed.getId();
+        // The key of the dayInfectionsPersonTypeToPersonType map is ((infectingPersonTypeId << 16) + infectedPersonTypeId).
+        key = (ptInfecting.getId() << 16) + ptExposed.getId();
         this.dayInfectionsPersonTypeToPersonType.put(key, 1 + this.dayInfectionsPersonTypeToPersonType.get(key));
         this.totInfectionsPersonTypeToPersonType.put(key, 1 + this.totInfectionsPersonTypeToPersonType.get(key));
-        // totInfectionsLocPersonPerson key = (infectingLocationTypeId << 20 + infectingPersonTypeId << 10 +
+        // totInfectionsLocPersonPerson key = ((infectingLocationTypeId << 20) + (infectingPersonTypeId << 10) +
         // infectedPersonTypeId)
-        key = locationTypeId << 20 + ptInfecting.getId() << 10 + ptExposed.getId();
+        key = (locationTypeId << 20) + (ptInfecting.getId() << 10) + ptExposed.getId();
         this.dayInfectionsLocPersonPerson.put(key, 1 + this.dayInfectionsLocPersonPerson.get(key));
         this.totInfectionsLocPersonPerson.put(key, 1 + this.totInfectionsLocPersonPerson.get(key));
     }
@@ -294,7 +294,7 @@ public class PersonMonitor extends EventProducer
             for (int exposedIndex = 0; exposedIndex < ptSize; exposedIndex++)
             {
                 int ptExposedId = this.model.getPersonTypeList().get(exposedIndex).getId();
-                int key = ptInfectingId << 16 + ptExposedId;
+                int key = (ptInfectingId << 16) + ptExposedId;
                 dayNrs[exposedIndex + 1] = this.dayInfectionsPersonTypeToPersonType.get(key);
                 totNrs[exposedIndex + 1] = this.totInfectionsPersonTypeToPersonType.get(key);
             }
@@ -317,7 +317,7 @@ public class PersonMonitor extends EventProducer
                 for (int exposedIndex = 0; exposedIndex < ptSize; exposedIndex++)
                 {
                     int ptExposedId = this.model.getPersonTypeList().get(exposedIndex).getId();
-                    int key = ltId << 20 + ptInfectingId << 10 + ptExposedId;
+                    int key = (ltId << 20) + (ptInfectingId << 10) + ptExposedId;
                     dayNrs[exposedIndex + 2] = this.dayInfectionsPersonTypeToPersonType.get(key);
                     totNrs[exposedIndex + 2] = this.totInfectionsPersonTypeToPersonType.get(key);
                 }
