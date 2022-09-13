@@ -93,8 +93,11 @@ public interface MedlabsModelInterface extends SimpleModelInterface
     /** @return the map of all location types by name. */
     Map<String, LocationType> getLocationTypeNameMap();
 
-    /** @return the List of all location types by index. */
+    /** @return the map of all location types by index. */
     Map<Byte, LocationType> getLocationTypeIndexMap();
+
+    /** @return the list of all location types for iteration. */
+    List<LocationType> getLocationTypeList();
 
     /** @return a map of all locations in the model, based on their original id. */
     TIntObjectMap<Location> getLocationMap();

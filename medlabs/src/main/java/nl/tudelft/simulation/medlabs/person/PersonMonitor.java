@@ -302,22 +302,22 @@ public class PersonMonitor extends EventProducer
             fireTimedEvent(new TimedEvent<Double>(TOT_INFECTIONS_PERSON_TO_PERSON_TYPE, this, totNrs, now));
         }
 
-        for (int lt = 0; lt < this.model.getLocationTypeIndexMap().size(); lt++)
+        for (int lt = 0; lt < this.model.getLocationTypeList().size(); lt++)
         {
-            int ltId = this.model.getLocationTypeIndexMap().get((byte) lt).getLocationTypeId();
+            int ltId = this.model.getLocationTypeList().get(lt).getLocationTypeId();
             for (int infectingIndex = 0; infectingIndex < ptSize; infectingIndex++)
             {
                 int ptInfectingId = this.model.getPersonTypeList().get(infectingIndex).getId();
                 dayNrs = new int[ptSize + 2];
                 totNrs = new int[ptSize + 2];
-                dayNrs[0] = ltId;
+                dayNrs[0] = lt;
                 dayNrs[1] = infectingIndex;
-                totNrs[0] = ltId;
+                totNrs[0] = lt;
                 totNrs[1] = infectingIndex;
                 for (int exposedId = 0; exposedId < ptSize; exposedId++)
                 {
                     int ptExposedId = this.model.getPersonTypeList().get(exposedId).getId();
-                    int key = ptInfectingId << 16 + ptExposedId;
+                    int key = ltId << 20 + ptInfectingId << 10 + ptExposedId;
                     dayNrs[infectingIndex + 1] = this.dayInfectionsPersonTypeToPersonType.get(key);
                     totNrs[infectingIndex + 1] = this.totInfectionsPersonTypeToPersonType.get(key);
                 }
@@ -473,6 +473,14 @@ public class PersonMonitor extends EventProducer
     {
         this.fireTimedEvent(
                 new TimedEvent<Double>(FAMILY_EVENT, this, (double) size, this.model.getSimulator().getSimulatorTime()));
+    }
+
+    /**
+     * @return yesterdayInfectionsPersonType
+     */
+    public TIntIntMap getYesterdayInfectionsPersonType()
+    {
+        return this.yesterdayInfectionsPersonType;
     }
 
     /** {@inheritDoc} */

@@ -85,8 +85,11 @@ public abstract class AbstractMedlabsModel
     /** the map of all location types by name. */
     protected Map<String, LocationType> locationTypeNameMap = new LinkedHashMap<>();
 
-    /** the List of all location types sorted by index. */
+    /** the map of all location types sorted by index. */
     protected Map<Byte, LocationType> locationTypeIdMap = new LinkedHashMap<>();
+    
+    /** the list of location types for iteration. */
+    protected List<LocationType> locationTypeList = new ArrayList<>(); 
 
     /** the map of all locations, by original id. */
     private TIntObjectMap<Location> locationMap = new TIntObjectHashMap<>();
@@ -323,6 +326,13 @@ public abstract class AbstractMedlabsModel
     public Map<Byte, LocationType> getLocationTypeIndexMap()
     {
         return this.locationTypeIdMap;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public List<LocationType> getLocationTypeList()
+    {
+        return this.locationTypeList;
     }
 
     /** {@inheritDoc} */

@@ -145,6 +145,7 @@ public class LocationType extends EventProducer
         this.correctionFactorArea = correctionFactorArea;
         model.getLocationTypeNameMap().put(name, this);
         model.getLocationTypeIndexMap().put(locationTypeId, this);
+        model.getLocationTypeList().add(this);
     }
 
     /** {@inheritDoc} */

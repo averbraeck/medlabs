@@ -554,7 +554,7 @@ public class ResultWriter implements EventListenerInterface
     private void writeDayInfLocPersonToPersonTypeLine(final int[] nrs)
     {
         double time = this.model.getSimulator().getSimulatorTime();
-        String locationType = this.model.getLocationTypeIndexMap().get((byte) nrs[0]).getName();
+        String locationType = this.model.getLocationTypeList().get(nrs[0]).getName();
         String infectingPersonType = this.model.getPersonTypeList().get(nrs[1]).getName();
         this.dayInfLocPersonToPersonWriter
                 .print(Math.round(time) + ",\"" + locationType + "\",\"" + infectingPersonType + "\"");
@@ -570,7 +570,7 @@ public class ResultWriter implements EventListenerInterface
     private void writeTotInfLocPersonToPersonTypeLine(final int[] nrs)
     {
         double time = this.model.getSimulator().getSimulatorTime();
-        String locationType = this.model.getLocationTypeIndexMap().get((byte) nrs[0]).getName();
+        String locationType = this.model.getLocationTypeList().get(nrs[0]).getName();
         String infectingPersonType = this.model.getPersonTypeList().get(nrs[1]).getName();
         this.totInfLocPersonToPersonWriter
                 .print(Math.round(time) + ",\"" + locationType + "\",\"" + infectingPersonType + "\"");
