@@ -86,6 +86,7 @@ public class ConstructSEIRModel
             DiseaseProgression seirProgression = new SEIRProgression(this.model);
             DiseaseTransmission seirTransmission = new SEIRTransmission(this.model);
             makeLocationTypes();
+            makePersonTypes();
             this.model.setDiseaseProgression(seirProgression);
             this.model.setDiseaseTransmission(seirTransmission);
             this.model.setDiseaseMonitor(new DiseaseMonitor(this.model, seirProgression, 0.5));
