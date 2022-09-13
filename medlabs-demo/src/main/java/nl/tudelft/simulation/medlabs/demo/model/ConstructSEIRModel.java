@@ -35,6 +35,7 @@ import nl.tudelft.simulation.medlabs.model.MedlabsModelInterface;
 import nl.tudelft.simulation.medlabs.output.ResultWriter;
 import nl.tudelft.simulation.medlabs.person.Person;
 import nl.tudelft.simulation.medlabs.person.PersonMonitor;
+import nl.tudelft.simulation.medlabs.person.PersonType;
 import nl.tudelft.simulation.medlabs.person.index.IdxPerson;
 
 /**
@@ -91,6 +92,7 @@ public class ConstructSEIRModel
             this.model.setPersonMonitor(new PersonMonitor(this.model));
             makeLocations();
             makeWeekpatternData();
+            makePersonTypes();
             makePersons();
             makeFamilies();
             infectPersons();
@@ -156,6 +158,22 @@ public class ConstructSEIRModel
         }
         new WeekDayPattern(this.model, "worker_work", dayPatterns);
         // patterns are stored automatically in the maps of the model }
+    }
+
+    /**
+     * make the PersonTypes and register in the Model.
+     */
+    @SuppressWarnings("unchecked")
+    private void makePersonTypes()
+    {
+        int nr = 1;
+        for (Class<? extends Person> pc : new Class[] {Worker.class})
+        {
+            PersonType pt = new PersonType(this.model, nr, pc);
+            this.model.getPersonTypeIdMap().put(nr, pt);
+            this.model.getPersonTypeClassMap().put(pc, pt);
+            nr++;
+        }
     }
 
     private void makePersons() throws Exception
