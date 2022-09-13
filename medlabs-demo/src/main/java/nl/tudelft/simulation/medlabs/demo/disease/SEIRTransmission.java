@@ -153,17 +153,26 @@ public class SEIRTransmission extends DiseaseTransmission
 
             // find the infectious persons in the sublocation (and make a set of others)
             double sumTij = 0.0;
+            double maxTij = 0.0;
+            Person mostInfectiousPerson = null;
             for (TIntIterator it = personsInSublocation.iterator(); it.hasNext();)
             {
                 Person person = personMap.get(it.next());
                 if (person.getDiseasePhase().isIll())
                 {
                     double te = now - person.getExposureTime();
-                    if (te > this.t_e_min && te < this.t_e_mode)
-                        sumTij += (te - this.t_e_min) / (this.t_e_mode - this.t_e_min);
-                    else if (te >= this.t_e_mode && te < this.t_e_max)
-                        sumTij += (this.t_e_max - te) / (this.t_e_max - this.t_e_mode);
+                    double contribution = 0.0;
+                    if (te >= this.t_e_min && te < this.t_e_mode)
+                        contribution += (te - this.t_e_min) / (this.t_e_mode - this.t_e_min);
+                    else if (te >= this.t_e_mode && te <= this.t_e_max)
+                        contribution += (this.t_e_max - te) / (this.t_e_max - this.t_e_mode);
                     // else the person is infected, but not yet or not anymore contagious
+                    sumTij += contribution;
+                    if (contribution > maxTij)
+                    {
+                        maxTij = contribution;
+                        mostInfectiousPerson = person;
+                    }
                 }
             }
             if (sumTij == 0.0)
@@ -181,6 +190,7 @@ public class SEIRTransmission extends DiseaseTransmission
                     if (this.model.getU01().draw() < pInfection)
                     {
                         person.setExposureTime((float) now);
+                        this.model.getPersonMonitor().reportExposure(person, lt.getLocationTypeId(), mostInfectiousPerson);
                         this.model.getDiseaseProgression().changeDiseasePhase(person, SEIRProgression.exposed);
                     }
                 }
@@ -200,17 +210,26 @@ public class SEIRTransmission extends DiseaseTransmission
 
             // find the infectious persons in the TOTAL location
             double sumTij = 0.0;
+            double maxTij = 0.0;
+            Person mostInfectiousPerson = null;
             for (TIntIterator it = location.getAllPersonIds().iterator(); it.hasNext();)
             {
                 Person person = personMap.get(it.next());
                 if (person.getDiseasePhase().isIll())
                 {
                     double te = now - person.getExposureTime();
-                    if (te > this.t_e_min && te < this.t_e_mode)
-                        sumTij += te / (this.t_e_mode - this.t_e_min);
-                    else if (te >= this.t_e_mode && te < this.t_e_max)
-                        sumTij += 1.0 - te / (this.t_e_max - this.t_e_mode);
+                    double contribution = 0.0;
+                    if (te >= this.t_e_min && te < this.t_e_mode)
+                        contribution += te / (this.t_e_mode - this.t_e_min);
+                    else if (te >= this.t_e_mode && te <= this.t_e_max)
+                        contribution += 1.0 - te / (this.t_e_max - this.t_e_mode);
                     // else the person is infected, but not contagious
+                    sumTij += contribution;
+                    if (contribution > maxTij)
+                    {
+                        maxTij = contribution;
+                        mostInfectiousPerson = person;
+                    }
                 }
             }
             if (sumTij == 0.0)
@@ -229,6 +248,7 @@ public class SEIRTransmission extends DiseaseTransmission
                     if (this.model.getU01().draw() < pInfection)
                     {
                         person.setExposureTime((float) now);
+                        this.model.getPersonMonitor().reportExposure(person, lt.getLocationTypeId(), mostInfectiousPerson);
                         this.model.getDiseaseProgression().changeDiseasePhase(person, SEIRProgression.exposed);
                     }
                 }
