@@ -575,7 +575,7 @@ public class ResultWriter implements EventListenerInterface
         int ptSize = this.model.getPersonTypeList().size();
         for (int i = 0; i < ptSize; i++)
         {
-            this.dayInfLocPersonToPersonWriter.print("," + nrs[i + 1]);
+            this.dayInfLocPersonToPersonWriter.print("," + nrs[i + 2]);
         }
         this.dayInfLocPersonToPersonWriter.println();
         this.dayInfLocPersonToPersonWriter.flush();
@@ -591,7 +591,7 @@ public class ResultWriter implements EventListenerInterface
         int ptSize = this.model.getPersonTypeList().size();
         for (int i = 0; i < ptSize; i++)
         {
-            this.totInfLocPersonToPersonWriter.print("," + nrs[i + 1]);
+            this.totInfLocPersonToPersonWriter.print("," + nrs[i + 2]);
         }
         this.totInfLocPersonToPersonWriter.println();
         this.totInfLocPersonToPersonWriter.flush();
