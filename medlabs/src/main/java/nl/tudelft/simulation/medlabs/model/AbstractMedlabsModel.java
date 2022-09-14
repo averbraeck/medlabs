@@ -30,7 +30,6 @@ import nl.tudelft.simulation.medlabs.disease.DiseaseProgression;
 import nl.tudelft.simulation.medlabs.disease.DiseaseTransmission;
 import nl.tudelft.simulation.medlabs.location.Location;
 import nl.tudelft.simulation.medlabs.location.LocationType;
-import nl.tudelft.simulation.medlabs.location.animation.defaults.HouseAnimation;
 import nl.tudelft.simulation.medlabs.person.Person;
 import nl.tudelft.simulation.medlabs.person.PersonMonitor;
 import nl.tudelft.simulation.medlabs.person.PersonType;
@@ -87,9 +86,9 @@ public abstract class AbstractMedlabsModel
 
     /** the map of all location types sorted by index. */
     protected Map<Byte, LocationType> locationTypeIdMap = new LinkedHashMap<>();
-    
+
     /** the list of location types for iteration. */
-    protected List<LocationType> locationTypeList = new ArrayList<>(); 
+    protected List<LocationType> locationTypeList = new ArrayList<>();
 
     /** the map of all locations, by original id. */
     private TIntObjectMap<Location> locationMap = new TIntObjectHashMap<>();
@@ -99,9 +98,6 @@ public abstract class AbstractMedlabsModel
 
     /** the list of week patterns. */
     protected List<WeekPattern> weekPatternList = new ArrayList<>();
-
-    /** the location type of a house or residence. */
-    public LocationType locationTypeHouse;
 
     /** the location of the infinitely large walk area. */
     protected Location locationWalk;
@@ -143,10 +139,6 @@ public abstract class AbstractMedlabsModel
         super(simulator);
         this.propertyFilename = propertyFilename;
         makeInputParameterMap();
-
-        // this.locationTypeGridStop = new LocationType(this, "gridstop", GridStop.class, null);
-        this.locationTypeHouse =
-                new LocationType(this, (byte) 0, "house", Location.class, HouseAnimation.class, true, true, 1.0);
         LocationType walkLT = new LocationType(this, (byte) -1, "walk", Location.class, null, false, false, 0.0);
         this.locationWalk = new Location(this, -1, walkLT.getLocationTypeId(), 0.0f, 0.0f, (short) 1, 1E6f);
         LocationType bikeLT = new LocationType(this, (byte) -2, "bike", Location.class, null, false, false, 0.0);
@@ -354,13 +346,6 @@ public abstract class AbstractMedlabsModel
     public List<WeekPattern> getWeekPatternList()
     {
         return this.weekPatternList;
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public LocationType getLocationTypeHouse()
-    {
-        return this.locationTypeHouse;
     }
 
     /** {@inheritDoc} */
