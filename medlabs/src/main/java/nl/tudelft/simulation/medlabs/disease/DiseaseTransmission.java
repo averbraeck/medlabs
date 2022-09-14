@@ -194,7 +194,7 @@ public abstract class DiseaseTransmission extends AbstractModelNamed implements 
      */
     protected long makeCacheKey(final Location location, final short subLocationIndex)
     {
-        return ((long) location.getId()) << 32 + subLocationIndex;
+        return (((long) location.getId()) << 32) + subLocationIndex;
     }
 
     /**

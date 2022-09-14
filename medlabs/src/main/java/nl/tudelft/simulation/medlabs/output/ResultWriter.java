@@ -376,8 +376,10 @@ public class ResultWriter implements EventListenerInterface
         this.infectedPersonWriter.flush();
     }
 
-    private void writeInfectedPersonLine(final Person person)
+    private void writeInfectedPersonLine(final Object[] content)
     {
+        Person person = (Person) content[0]; 
+        Location infectLocation = (Location) content[1];
         double time = this.model.getSimulator().getSimulatorTime();
         this.infectedPersonWriter.print(time + "," + person.getId());
         this.infectedPersonWriter.print(",\"" + person.getClass().getSimpleName() + "\"");
@@ -392,7 +394,6 @@ public class ResultWriter implements EventListenerInterface
         this.infectedPersonWriter.print("," + (person instanceof Worker ? ((Worker) person).getWorkLocation().getId() : -1));
         this.infectedPersonWriter
                 .print("," + (person instanceof Student ? ((Student) person).getSchoolLocation().getId() : -1));
-        Location infectLocation = person.getCurrentLocation();
         this.infectedPersonWriter.print(",\"" + infectLocation.getLocationType().getName() + "\"");
         this.infectedPersonWriter.print("," + infectLocation.getId());
         this.infectedPersonWriter.print("," + infectLocation.getLatitude());
@@ -695,7 +696,7 @@ public class ResultWriter implements EventListenerInterface
         }
         else if (event.getType().equals(PersonMonitor.INFECTED_PERSON_EVENT))
         {
-            writeInfectedPersonLine((Person) event.getContent());
+            writeInfectedPersonLine((Object[]) event.getContent());
         }
         else if (event.getType().equals(PersonMonitor.DEAD_PERSON_EVENT))
         {

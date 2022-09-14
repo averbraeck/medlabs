@@ -14,6 +14,7 @@ import org.djutils.metadata.ObjectDescriptor;
 
 import gnu.trove.map.TIntIntMap;
 import gnu.trove.map.hash.TIntIntHashMap;
+import nl.tudelft.simulation.medlabs.location.Location;
 import nl.tudelft.simulation.medlabs.location.LocationType;
 import nl.tudelft.simulation.medlabs.model.MedlabsModelInterface;
 
@@ -93,9 +94,7 @@ public class PersonMonitor extends EventProducer
             new MetaData("family size", "family size", new ObjectDescriptor("family size", "family size", Double.class)));
 
     /** event for infected person. */
-    public static final TimedEventType INFECTED_PERSON_EVENT =
-            new TimedEventType("INFECTED_PERSON_EVENT", new MetaData("infected person", "infected person",
-                    new ObjectDescriptor("infected person", "infected person", Person.class)));
+    public static final TimedEventType INFECTED_PERSON_EVENT = new TimedEventType("INFECTED_PERSON_EVENT");
 
     /** event for person who died. */
     public static final TimedEventType DEAD_PERSON_EVENT = new TimedEventType("DEAD_PERSON_EVENT",
@@ -158,13 +157,13 @@ public class PersonMonitor extends EventProducer
 
     /**
      * Number of infections per location type from person type to person type per day. The key of the map is
-     * ((infectingLocationTypeId << 20) + (infectingPersonTypeId << 10) + infectedPersonTypeId)
+     * (((infectingLocationTypeId + 128 << 20)) + (infectingPersonTypeId << 10) + infectedPersonTypeId)
      */
     private TIntIntMap dayInfectionsLocPersonPerson = new TIntIntHashMap();
 
     /**
      * Cumulative number of infections per location type from person type to person type. The key of the map is
-     * ((infectingLocationTypeId << 20) + (infectingPersonTypeId << 10) + infectedPersonTypeId)
+     * (((infectingLocationTypeId + 128)<< 20) + (infectingPersonTypeId << 10) + infectedPersonTypeId)
      */
     private TIntIntMap totInfectionsLocPersonPerson = new TIntIntHashMap();
 
@@ -223,14 +222,15 @@ public class PersonMonitor extends EventProducer
     /**
      * Report the age of the person being infected.
      * @param person the person
+     * @param infectLocation the location where the infection took place
      */
-    private void reportInfectPerson(final Person person)
+    private void reportInfectPerson(final Person person, final Location infectLocation)
     {
         int ageBracket = (int) Math.floor(person.getAge() / 10.0);
         this.infectionsPerAgeBracketPerDay[ageBracket]++;
         this.infectionsPerAgeBracketPerHour[ageBracket]++;
-        fireTimedEvent(
-                new TimedEvent<Double>(INFECTED_PERSON_EVENT, this, person, this.model.getSimulator().getSimulatorTime()));
+        fireTimedEvent(new TimedEvent<Double>(INFECTED_PERSON_EVENT, this, new Object[] {person, infectLocation},
+                this.model.getSimulator().getSimulatorTime()));
     }
 
     /**
@@ -247,13 +247,13 @@ public class PersonMonitor extends EventProducer
     /**
      * Report exposure of a person to disease, where the exposed person does get infected.
      * @param exposedPerson Person; the exposed person
-     * @param locationTypeId int; the location type where the exposure took place
+     * @param infectLocation Location; the location where the exposure took place
      * @param infectingPerson Person; the most likely infecting person
      */
-    public void reportExposure(final Person exposedPerson, final int locationTypeId, final Person infectingPerson)
+    public void reportExposure(final Person exposedPerson, final Location infectLocation, final Person infectingPerson)
     {
-        reportInfectPerson(exposedPerson);
-        reportInfectionAtLocationType(locationTypeId);
+        reportInfectPerson(exposedPerson, infectLocation);
+        reportInfectionAtLocationType(infectLocation.getLocationTypeId());
 
         PersonType ptExposed = this.model.getPersonTypeClassMap().get(exposedPerson.getClass());
         PersonType ptInfecting = this.model.getPersonTypeClassMap().get(infectingPerson.getClass());
@@ -264,9 +264,9 @@ public class PersonMonitor extends EventProducer
         key = (ptInfecting.getId() << 16) + ptExposed.getId();
         this.dayInfectionsPersonTypeToPersonType.put(key, 1 + this.dayInfectionsPersonTypeToPersonType.get(key));
         this.totInfectionsPersonTypeToPersonType.put(key, 1 + this.totInfectionsPersonTypeToPersonType.get(key));
-        // totInfectionsLocPersonPerson key = ((infectingLocationTypeId << 20) + (infectingPersonTypeId << 10) +
+        // totInfectionsLocPersonPerson key = (((infectingLocationTypeId + 128) << 20) + (infectingPersonTypeId << 10) +
         // infectedPersonTypeId)
-        key = (locationTypeId << 20) + (ptInfecting.getId() << 10) + ptExposed.getId();
+        key = (((int) infectLocation.getLocationTypeId() + 128) << 20) + (ptInfecting.getId() << 10) + ptExposed.getId();
         this.dayInfectionsLocPersonPerson.put(key, 1 + this.dayInfectionsLocPersonPerson.get(key));
         this.totInfectionsLocPersonPerson.put(key, 1 + this.totInfectionsLocPersonPerson.get(key));
     }
@@ -357,7 +357,7 @@ public class PersonMonitor extends EventProducer
                 for (int exposedIndex = 0; exposedIndex < ptSize; exposedIndex++)
                 {
                     int ptExposedId = this.model.getPersonTypeList().get(exposedIndex).getId();
-                    int key = (ltId << 20) + (ptInfectingId << 10) + ptExposedId;
+                    int key = (((int) ltId + 128) << 20) + (ptInfectingId << 10) + ptExposedId;
                     dayNrs[exposedIndex + 2] = this.dayInfectionsLocPersonPerson.get(key);
                     totNrs[exposedIndex + 2] = this.totInfectionsLocPersonPerson.get(key);
                 }

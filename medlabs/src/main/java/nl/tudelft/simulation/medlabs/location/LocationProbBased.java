@@ -123,7 +123,7 @@ public class LocationProbBased extends Location
                     {
                         person.setExposureTime((float) now);
                         // Take the person him/herself as the cause -- probability-based so probably same type of person
-                        this.model.getPersonMonitor().reportExposure(person, this.locationTypeId, person);
+                        this.model.getPersonMonitor().reportExposure(person, this, person);
                         this.model.getPersonMonitor().reportExposureByRate(person, this.locationTypeId, duration,
                                 this.infectionRate);
                         this.model.getDiseaseProgression().changeDiseasePhase(person, this.exposed);
@@ -148,7 +148,7 @@ public class LocationProbBased extends Location
                         {
                             person.setExposureTime((float) now);
                             // Take the person him/herself as the cause -- probability-based so probably same type of person
-                            this.model.getPersonMonitor().reportExposure(person, this.locationTypeId, person);
+                            this.model.getPersonMonitor().reportExposure(person, this, person);
                             this.model.getPersonMonitor().reportExposureByRateFactor(person, this.locationTypeId, duration,
                                     this.infectionRateFactor, referencePT, infectedRef, referencePT.getNumberPersons());
                             this.model.getDiseaseProgression().changeDiseasePhase(person, this.exposed);
