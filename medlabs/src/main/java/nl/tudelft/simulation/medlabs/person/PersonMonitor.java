@@ -358,8 +358,8 @@ public class PersonMonitor extends EventProducer
                 {
                     int ptExposedId = this.model.getPersonTypeList().get(exposedIndex).getId();
                     int key = (ltId << 20) + (ptInfectingId << 10) + ptExposedId;
-                    dayNrs[exposedIndex + 2] = this.dayInfectionsPersonTypeToPersonType.get(key);
-                    totNrs[exposedIndex + 2] = this.totInfectionsPersonTypeToPersonType.get(key);
+                    dayNrs[exposedIndex + 2] = this.dayInfectionsLocPersonPerson.get(key);
+                    totNrs[exposedIndex + 2] = this.totInfectionsLocPersonPerson.get(key);
                 }
                 fireTimedEvent(new TimedEvent<Double>(DAY_INFECTIONS_LOC_PERSON_TO_PERSON_TYPE, this, dayNrs, now));
                 fireTimedEvent(new TimedEvent<Double>(TOT_INFECTIONS_LOC_PERSON_TO_PERSON_TYPE, this, totNrs, now));
