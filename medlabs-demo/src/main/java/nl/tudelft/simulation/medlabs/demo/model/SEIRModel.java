@@ -13,6 +13,8 @@ import nl.tudelft.simulation.dsol.model.inputparameters.InputParameterInteger;
 import nl.tudelft.simulation.dsol.model.inputparameters.InputParameterMap;
 import nl.tudelft.simulation.medlabs.demo.person.Worker;
 import nl.tudelft.simulation.medlabs.location.Location;
+import nl.tudelft.simulation.medlabs.location.LocationType;
+import nl.tudelft.simulation.medlabs.location.animation.defaults.HouseAnimation;
 import nl.tudelft.simulation.medlabs.model.AbstractMedlabsModel;
 import nl.tudelft.simulation.medlabs.person.Person;
 import nl.tudelft.simulation.medlabs.person.index.IdxPerson;
@@ -47,6 +49,9 @@ public class SEIRModel extends AbstractMedlabsModel
 
     /** the cached extent. */
     private Bounds2d extent = null;
+    
+    /** The location type for a house where persons are generated. */
+    private final LocationType locationTypeHouse;
 
     /**
      * Construct the model.
@@ -56,6 +61,8 @@ public class SEIRModel extends AbstractMedlabsModel
     public SEIRModel(final SimpleDEVSSimulatorInterface simulator, final String propertyFilename)
     {
         super(simulator, propertyFilename);
+        this.locationTypeHouse =
+                new LocationType(this, (byte) 0, "house", Location.class, HouseAnimation.class, true, true, 1.0);
     }
 
     /** {@inheritDoc} */
@@ -162,6 +169,13 @@ public class SEIRModel extends AbstractMedlabsModel
         root.add(seirTransmissionMap);
     }
 
+    /** {@inheritDoc} */
+    @Override
+    public LocationType getLocationTypeHouse()
+    {
+        return this.locationTypeHouse;
+    }
+    
     /**
      * @return the basePath
      */
