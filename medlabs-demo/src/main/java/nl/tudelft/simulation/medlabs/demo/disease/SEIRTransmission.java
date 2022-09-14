@@ -190,7 +190,7 @@ public class SEIRTransmission extends DiseaseTransmission
                     if (this.model.getU01().draw() < pInfection)
                     {
                         person.setExposureTime((float) now);
-                        this.model.getPersonMonitor().reportExposure(person, lt.getLocationTypeId(), mostInfectiousPerson);
+                        this.model.getPersonMonitor().reportExposure(person, location, mostInfectiousPerson);
                         this.model.getDiseaseProgression().changeDiseasePhase(person, SEIRProgression.exposed);
                     }
                 }
@@ -248,7 +248,7 @@ public class SEIRTransmission extends DiseaseTransmission
                     if (this.model.getU01().draw() < pInfection)
                     {
                         person.setExposureTime((float) now);
-                        this.model.getPersonMonitor().reportExposure(person, lt.getLocationTypeId(), mostInfectiousPerson);
+                        this.model.getPersonMonitor().reportExposure(person, location, mostInfectiousPerson);
                         this.model.getDiseaseProgression().changeDiseasePhase(person, SEIRProgression.exposed);
                     }
                 }
