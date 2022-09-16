@@ -78,7 +78,7 @@ public class Coordinate
         float d =  (float) Math.sqrt(dx * dx + dy * dy) * 111319.24f;
         if (d > 50000)
         {
-            System.out.println(d);
+            System.out.println("WARN: travel distance above 50 km: " + d + " m");
         }
         return d;
     }
