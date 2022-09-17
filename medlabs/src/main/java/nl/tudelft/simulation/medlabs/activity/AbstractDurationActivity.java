@@ -46,6 +46,8 @@ public abstract class AbstractDurationActivity extends Activity
 
         if (Double.isNaN(activityDuration) || activityDuration <= 0)
         {
+            // should we remove the person from the old location?
+            oldLocation.removePerson(person);
             person.endActivity(); // current activity is a void activity
             return;
         }
