@@ -82,16 +82,16 @@ public class PersonMonitor extends EventProducer
     private int[] deathsPerAgeBracketPerDay = new int[11];
 
     /** statistics update event for death. */
-    public static final TimedEventType DEATH_EVENT = new TimedEventType("DEATH_EVENT", new MetaData("death in age bracket",
-            "death in age bracket", new ObjectDescriptor("death in age bracket", "death in age bracket", Double.class)));
+    public static final TimedEventType DEATH_EVENT = new TimedEventType("DEATH_EVENT", new MetaData("deaths per age",
+            "deaths per age", new ObjectDescriptor("deaths per age", "deaths per age", Integer.class)));
 
     /** statistics update event for age distribution (at model start). */
     public static final TimedEventType AGE_EVENT =
-            new TimedEventType("AGE_EVENT", new MetaData("age", "age", new ObjectDescriptor("age", "age", Double.class)));
+            new TimedEventType("AGE_EVENT", new MetaData("age", "age", new ObjectDescriptor("age", "age", Integer.class)));
 
     /** statistics update event for family composition (at model start). */
     public static final TimedEventType FAMILY_EVENT = new TimedEventType("FAMILY_EVENT",
-            new MetaData("family size", "family size", new ObjectDescriptor("family size", "family size", Double.class)));
+            new MetaData("family size", "family size", new ObjectDescriptor("family size", "family size", Integer.class)));
 
     /** event for infected person. */
     public static final TimedEventType INFECTED_PERSON_EVENT = new TimedEventType("INFECTED_PERSON_EVENT");
@@ -425,7 +425,7 @@ public class PersonMonitor extends EventProducer
     {
         int ageBracket = (int) Math.floor(person.getAge() / 10.0);
         this.deathsPerAgeBracketPerDay[ageBracket]++;
-        fireTimedEvent(new TimedEvent<Double>(DEATH_EVENT, this, (double) person.getAge(),
+        fireTimedEvent(new TimedEvent<Double>(DEATH_EVENT, this, person.getAge(),
                 this.model.getSimulator().getSimulatorTime()));
         fireTimedEvent(new TimedEvent<Double>(DEAD_PERSON_EVENT, this, person, this.model.getSimulator().getSimulatorTime()));
     }
@@ -502,7 +502,7 @@ public class PersonMonitor extends EventProducer
     public void reportAge(final int age)
     {
         this.fireTimedEvent(
-                new TimedEvent<Double>(AGE_EVENT, this, (double) age, this.model.getSimulator().getSimulatorTime()));
+                new TimedEvent<Double>(AGE_EVENT, this, age, this.model.getSimulator().getSimulatorTime()));
     }
 
     /**
@@ -512,7 +512,7 @@ public class PersonMonitor extends EventProducer
     public void reportFamilySize(final int size)
     {
         this.fireTimedEvent(
-                new TimedEvent<Double>(FAMILY_EVENT, this, (double) size, this.model.getSimulator().getSimulatorTime()));
+                new TimedEvent<Double>(FAMILY_EVENT, this, size, this.model.getSimulator().getSimulatorTime()));
     }
 
     /**
