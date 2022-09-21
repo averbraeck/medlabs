@@ -5,7 +5,6 @@ import java.io.Serializable;
 import javax.naming.NamingException;
 
 import nl.tudelft.simulation.dsol.SimRuntimeException;
-import nl.tudelft.simulation.dsol.simtime.SimTimeDouble;
 import nl.tudelft.simulation.dsol.simulators.DEVSSimulator;
 
 /**
@@ -22,7 +21,7 @@ import nl.tudelft.simulation.dsol.simulators.DEVSSimulator;
  * </p>
  * @author <a href="https://www.tudelft.nl/averbraeck">Alexander Verbraeck</a>
  */
-public class SimpleDEVSSimulator extends DEVSSimulator<Double, Double, SimTimeDouble> implements SimpleDEVSSimulatorInterface
+public class SimpleDEVSSimulator extends DEVSSimulator<Double> implements SimpleDEVSSimulatorInterface
 {
     /** */
     private static final long serialVersionUID = 20200918L;
