@@ -3,7 +3,6 @@ package nl.tudelft.simulation.medlabs.simulation;
 import javax.naming.NamingException;
 
 import nl.tudelft.simulation.dsol.SimRuntimeException;
-import nl.tudelft.simulation.dsol.simtime.SimTimeDouble;
 import nl.tudelft.simulation.dsol.simulators.DEVSSimulatorInterface;
 
 /**
@@ -20,7 +19,7 @@ import nl.tudelft.simulation.dsol.simulators.DEVSSimulatorInterface;
  * </p>
  * @author <a href="https://www.tudelft.nl/averbraeck">Alexander Verbraeck</a>
  */
-public interface SimpleDEVSSimulatorInterface extends DEVSSimulatorInterface<Double, Double, SimTimeDouble>
+public interface SimpleDEVSSimulatorInterface extends DEVSSimulatorInterface<Double>
 {
     /**
      * Return the weekday in the current simulation; 0 is Monday, 6 = Sunday.
