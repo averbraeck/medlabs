@@ -22,15 +22,15 @@
     <maven.compiler.target>${jdk.version}</maven.compiler.target>
     <maven.compiler.release>${jdk.version}</maven.compiler.release>
     <osm.version>0.48.3</osm.version>
-    <dsol.version>3.08.01</dsol.version>
-    <fastcsv.version>2.1.0</fastcsv.version>
+    <dsol.version>4.0.1</dsol.version>
+    <fastcsv.version>2.2.0</fastcsv.version>
     <junit.version>4.13.2</junit.version>
-    <jodatime.version>2.10.13</jodatime.version>
-    <poi.version>5.1.0</poi.version>
-    <mysql.version>8.0.27</mysql.version>
+    <jodatime.version>2.11.1</jodatime.version>
+    <poi.version>5.2.3</poi.version>
+    <mysql.version>8.0.30</mysql.version>
     <jgrapht-version>1.5.1</jgrapht-version>
     <trove.version>3.0.3</trove.version>
-    <jfree.version>1.0.16</jfree.version>
+    <jfree.version>1.5.3</jfree.version>
     <xstream.version>1.4.18</xstream.version>
   </properties>
 
@@ -46,19 +46,19 @@
   <dependencyManagement>
     <dependencies>
       <dependency>
-        <groupId>dsol</groupId>
+        <groupId>nl.tudelft.simulation</groupId>
         <artifactId>dsol-swing</artifactId>
         <version>${dsol.version}</version>
       </dependency>
 
       <dependency>
-        <groupId>dsol</groupId>
+        <groupId>nl.tudelft.simulation</groupId>
         <artifactId>dsol-introspection</artifactId>
         <version>${dsol.version}</version>
       </dependency>
 
       <dependency>
-        <groupId>dsol</groupId>
+        <groupId>nl.tudelft.simulation</groupId>
         <artifactId>dsol-animation-gis</artifactId>
         <version>${dsol.version}</version>
       </dependency>
@@ -161,19 +161,6 @@
 
     </dependencies>
   </dependencyManagement>
-
-  <repositories>
-    <repository>
-      <name>DSOL Public Repository</name>
-      <id>dsol</id>
-      <url>https://simulation.tudelft.nl/maven</url>
-    </repository>
-    <repository>
-      <name>osmosis Public Repository</name>
-      <id>osmosis</id>
-      <url>https://repo1.maven.org/maven2/org/openstreetmap</url>
-    </repository>
-  </repositories>
 
   <build>
     <sourceDirectory>src/main/java</sourceDirectory>
