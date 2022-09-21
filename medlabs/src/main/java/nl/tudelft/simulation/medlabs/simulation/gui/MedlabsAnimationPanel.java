@@ -51,7 +51,7 @@ public class MedlabsAnimationPanel extends AnimationPanel
      * @throws RemoteException on network error for one of the listeners
      * @throws DSOLException when the simulator is not implementing the AnimatorInterface
      */
-    public MedlabsAnimationPanel(final Bounds2d homeExtent, final SimulatorInterface<?, ?, ?> simulator)
+    public MedlabsAnimationPanel(final Bounds2d homeExtent, final SimulatorInterface<?> simulator)
             throws RemoteException, DSOLException
     {
         super(homeExtent, simulator);

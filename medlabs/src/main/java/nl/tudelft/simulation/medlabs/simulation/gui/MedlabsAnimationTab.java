@@ -53,7 +53,7 @@ public class MedlabsAnimationTab extends DSOLAnimationGisTab
      * @throws RemoteException when notification of the animation panel fails
      * @throws DSOLException when simulator does not implement the AnimatorInterface
      */
-    public MedlabsAnimationTab(final Bounds2d homeExtent, final SimulatorInterface<?, ?, ?> simulator)
+    public MedlabsAnimationTab(final Bounds2d homeExtent, final SimulatorInterface<?> simulator)
             throws RemoteException, DSOLException
     {
         super(simulator, new MedlabsAnimationPanel(homeExtent, simulator));
