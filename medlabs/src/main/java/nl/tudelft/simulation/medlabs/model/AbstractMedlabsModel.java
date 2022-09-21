@@ -19,7 +19,6 @@ import nl.tudelft.simulation.dsol.model.inputparameters.InputParameterInteger;
 import nl.tudelft.simulation.dsol.model.inputparameters.InputParameterLong;
 import nl.tudelft.simulation.dsol.model.inputparameters.InputParameterMap;
 import nl.tudelft.simulation.dsol.model.inputparameters.InputParameterString;
-import nl.tudelft.simulation.dsol.simtime.SimTimeDouble;
 import nl.tudelft.simulation.jstats.distributions.DistUniform;
 import nl.tudelft.simulation.jstats.streams.MersenneTwister;
 import nl.tudelft.simulation.jstats.streams.StreamInterface;
@@ -51,8 +50,8 @@ import nl.tudelft.simulation.medlabs.simulation.SimpleDEVSSimulatorInterface;
  * @author <a href="https://www.tudelft.nl/averbraeck">Alexander Verbraeck</a>
  */
 @SuppressWarnings("checkstyle:visibilitymodifier")
-public abstract class AbstractMedlabsModel
-        extends AbstractDSOLModel<Double, Double, SimTimeDouble, SimpleDEVSSimulatorInterface> implements MedlabsModelInterface
+public abstract class AbstractMedlabsModel extends AbstractDSOLModel<Double, SimpleDEVSSimulatorInterface>
+        implements MedlabsModelInterface
 {
     /** */
     private static final long serialVersionUID = 1L;
