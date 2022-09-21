@@ -17,7 +17,7 @@ import nl.tudelft.simulation.dsol.experiment.SingleReplication;
  * </p>
  * @author <a href="https://www.tudelft.nl/averbraeck">Alexander Verbraeck</a>
  */
-public class SimpleReplication extends SingleReplication.TimeDouble
+public class SimpleReplication extends SingleReplication<Double>
 {
     /** */
     private static final long serialVersionUID = 20140815L;
