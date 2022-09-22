@@ -143,7 +143,7 @@ public class LocationProbBased extends Location
                         // Use yesterday's infection rate for the reference group in the model
                         int infectedRef =
                                 this.model.getPersonMonitor().getYesterdayInfectionsPersonType().get(referencePT.getId());
-                        double prob = (1.0 * infectedRef) / referencePT.getNumberPersons();
+                        double prob = (this.infectionRateFactor * infectedRef) / referencePT.getNumberPersons();
                         if (this.model.getU01().draw() < duration * prob / 24.0)
                         {
                             person.setExposureTime((float) now);
