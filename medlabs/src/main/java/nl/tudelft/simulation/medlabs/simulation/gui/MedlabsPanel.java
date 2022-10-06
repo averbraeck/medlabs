@@ -12,7 +12,6 @@ import org.pmw.tinylog.Level;
 import gnu.trove.iterator.TIntObjectIterator;
 import gnu.trove.map.TIntObjectMap;
 import gnu.trove.set.TIntSet;
-import nl.tudelft.simulation.dsol.swing.charts.xy.XYChart;
 import nl.tudelft.simulation.dsol.swing.gui.DSOLPanel;
 import nl.tudelft.simulation.dsol.swing.gui.TablePanel;
 import nl.tudelft.simulation.dsol.swing.gui.control.AbstractControlPanel;
@@ -55,8 +54,7 @@ public class MedlabsPanel extends DSOLPanel
      * @param model the model
      * @throws RemoteException on network error
      */
-    public MedlabsPanel(final AbstractControlPanel<?, ?, ?, ?> controlPanel, final MedlabsModelInterface model)
-            throws RemoteException
+    public MedlabsPanel(final AbstractControlPanel<?, ?> controlPanel, final MedlabsModelInterface model) throws RemoteException
     {
         super(controlPanel);
         this.model = model;

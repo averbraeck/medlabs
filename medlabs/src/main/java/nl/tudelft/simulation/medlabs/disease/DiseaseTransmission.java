@@ -5,8 +5,10 @@ import java.io.Serializable;
 import gnu.trove.iterator.TIntIterator;
 import gnu.trove.map.TIntObjectMap;
 import gnu.trove.map.TLongFloatMap;
+import gnu.trove.map.TLongIntMap;
 import gnu.trove.map.TLongObjectMap;
 import gnu.trove.map.hash.TLongFloatHashMap;
+import gnu.trove.map.hash.TLongIntHashMap;
 import gnu.trove.map.hash.TLongObjectHashMap;
 import gnu.trove.set.TIntSet;
 import gnu.trove.set.hash.TIntHashSet;
@@ -46,6 +48,9 @@ public abstract class DiseaseTransmission extends AbstractModelNamed implements 
     /** Cache for the sublocations where infectious persons are present to speed up the infection calculations. */
     private TLongObjectMap<TIntSet> personsInSublocationCache = new TLongObjectHashMap<>();
 
+    /** Cache for the number of people per sublocation. */
+    private TLongIntMap nrPersonsInSublocationMap = new TLongIntHashMap();
+
     /**
      * Cache with the last time when disease transmission has been calculated for a sublocation. Stored here instead of an array
      * at each location, which is not needed for those sublocations where no infected people are present.
@@ -77,10 +82,14 @@ public abstract class DiseaseTransmission extends AbstractModelNamed implements 
      */
     public void calculateTransmissionEnter(final Location location, final short subLocationIndex, final Person person)
     {
+        long key = makeCacheKey(location, subLocationIndex);
+        if (location.getLocationTypeId() >= 0)
+        {
+            this.nrPersonsInSublocationMap.put(key, this.nrPersonsInSublocationMap.get(key) + 1);
+        }
         if (!location.getLocationType().isInfectInSublocation() || location.getLocationTypeId() < 0)
             return;
         
-        long key = makeCacheKey(location, subLocationIndex);
         if (!isSublocationInfected(key))
         {
             // check if the newly entered person is infectious
@@ -127,10 +136,14 @@ public abstract class DiseaseTransmission extends AbstractModelNamed implements 
      */
     public void calculateTransmissionLeave(final Location location, final short subLocationIndex, final Person person)
     {
+        long key = makeCacheKey(location, subLocationIndex);
+        if (location.getLocationTypeId() >= 0)
+        {
+            this.nrPersonsInSublocationMap.put(key, this.nrPersonsInSublocationMap.get(key) - 1);
+        }
         if (!location.getLocationType().isInfectInSublocation() || location.getLocationTypeId() < 0)
             return;
         
-        long key = makeCacheKey(location, subLocationIndex);
         if (!isSublocationInfected(key))
         {
             return;
@@ -231,6 +244,12 @@ public abstract class DiseaseTransmission extends AbstractModelNamed implements 
     protected float getLastCalculationTime(final long key)
     {
         return this.lastCalculationCache.get(key);
+    }
+    
+    public int getNrPersonsInSublocation(final Location location, final short subLocationIndex)
+    {
+        long key = makeCacheKey(location, subLocationIndex);
+        return this.nrPersonsInSublocationMap.get(key);
     }
 
     /** {@inheritDoc} */

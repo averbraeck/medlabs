@@ -5,10 +5,9 @@ import java.io.Serializable;
 import javax.naming.NamingException;
 
 import nl.tudelft.simulation.dsol.SimRuntimeException;
-import nl.tudelft.simulation.dsol.simtime.SimTimeDouble;
 import nl.tudelft.simulation.dsol.simulators.DEVSRealTimeAnimator;
 
-public class SimpleAnimator extends DEVSRealTimeAnimator<Double, Double, SimTimeDouble>
+public class SimpleAnimator extends DEVSRealTimeAnimator<Double>
         implements SimpleDEVSSimulatorInterface, SimpleAnimatorInterface
 {
     /**  */

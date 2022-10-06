@@ -10,7 +10,6 @@ import org.djutils.reflection.ClassUtil;
 import nl.tudelft.simulation.dsol.SimRuntimeException;
 import nl.tudelft.simulation.dsol.formalisms.eventscheduling.AbstractSimEvent;
 import nl.tudelft.simulation.dsol.formalisms.eventscheduling.SimEventInterface;
-import nl.tudelft.simulation.dsol.simtime.SimTimeDouble;
 
 /**
  * TinySimEvent is a low-memory footprint implementation of the SimEvent. For now, it delegates to the regular SimEvent, but it
@@ -26,7 +25,7 @@ import nl.tudelft.simulation.dsol.simtime.SimTimeDouble;
  * </p>
  * @author <a href="https://www.tudelft.nl/averbraeck">Alexander Verbraeck</a>
  */
-public class TinySimEvent extends AbstractSimEvent<SimTimeDouble>
+public class TinySimEvent extends AbstractSimEvent<Double>
 {
     /** */
     private static final long serialVersionUID = 20200918L;
@@ -69,7 +68,7 @@ public class TinySimEvent extends AbstractSimEvent<SimTimeDouble>
     public TinySimEvent(final double executionTime, final short priority, final Object source, final Object target,
             final String methodName, final Object[] args)
     {
-        super(new SimTimeDouble(executionTime), priority);
+        super(executionTime, priority);
         this.target = target;
         this.args = args;
         this.method = resolveMethod(methodName);

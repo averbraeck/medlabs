@@ -1,6 +1,5 @@
 package nl.tudelft.simulation.medlabs.simulation.gui;
 
-import nl.tudelft.simulation.dsol.simtime.SimTimeDouble;
 import nl.tudelft.simulation.dsol.swing.gui.control.ClockPanel;
 import nl.tudelft.simulation.medlabs.simulation.SimpleDEVSSimulatorInterface;
 
@@ -17,7 +16,7 @@ import nl.tudelft.simulation.medlabs.simulation.SimpleDEVSSimulatorInterface;
  * </p>
  * @author <a href="https://www.tudelft.nl/averbraeck">Alexander Verbraeck</a>
  */
-public class MedlabsClockPanel extends ClockPanel<Double, Double, SimTimeDouble>
+public class MedlabsClockPanel extends ClockPanel<Double>
 {
     /** */
     private static final long serialVersionUID = 20201227L;
