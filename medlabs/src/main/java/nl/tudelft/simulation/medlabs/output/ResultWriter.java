@@ -9,6 +9,7 @@ import java.util.Map;
 import org.djutils.event.EventInterface;
 import org.djutils.event.EventListenerInterface;
 
+import nl.tudelft.simulation.medlabs.activity.ActivityMonitor;
 import nl.tudelft.simulation.medlabs.common.MedlabsRuntimeException;
 import nl.tudelft.simulation.medlabs.disease.DiseasePhase;
 import nl.tudelft.simulation.medlabs.disease.DiseaseProgression;
@@ -90,6 +91,12 @@ public class ResultWriter implements EventListenerInterface
     /** The file with the infections by rate factor. */
     private PrintWriter infByRateFactorWriter;
 
+    /** The file with the activity hours per day. */
+    private PrintWriter dayActivityWriter;
+
+    /** The file with the total activity hours. */
+    private PrintWriter totActivityWriter;
+
     /**
      * Create a writer of results to file.
      * @param model the model
@@ -170,6 +177,14 @@ public class ResultWriter implements EventListenerInterface
             this.infByRateFactorWriter = new PrintWriter(outputPath + "/infectionsByRateFactor.csv");
             writeInfByRateFactorHeader();
             model.getPersonMonitor().addListener(this, PersonMonitor.INFECTION_BY_RATE_FACTOR);
+
+            this.dayActivityWriter = new PrintWriter(outputPath + "/dayActivityTimes.csv");
+            writeDayActivityHeader();
+            model.getActivityMonitor().addListener(this, ActivityMonitor.ACTIVITY_DAY_STATISTICS_EVENT);
+
+            this.totActivityWriter = new PrintWriter(outputPath + "/totActivityTimes.csv");
+            writeTotActivityHeader();
+            model.getActivityMonitor().addListener(this, ActivityMonitor.ACTIVITY_TOT_STATISTICS_EVENT);
         }
         catch (IOException ioe)
         {
@@ -677,6 +692,28 @@ public class ResultWriter implements EventListenerInterface
         this.infByRateFactorWriter.flush();
     }
 
+    /* *************************************** ACTIVITY HOURS *************************************** */
+
+    private void writeDayActivityHeader()
+    {
+        
+    }
+
+    private void writeDayActivityLine(final Object[] content)
+    {
+        
+    }
+
+    private void writeTotActivityHeader()
+    {
+        
+    }
+
+    private void writeTotActivityLine(final Object[] content)
+    {
+        
+    }
+
     /** {@inheritDoc} */
     @SuppressWarnings("unchecked")
     @Override
@@ -733,6 +770,14 @@ public class ResultWriter implements EventListenerInterface
         else if (event.getType().equals(PersonMonitor.INFECTION_BY_RATE_FACTOR))
         {
             writeInfByRateFactorLine((Object[]) event.getContent());
+        }
+        else if (event.getType().equals(ActivityMonitor.ACTIVITY_DAY_STATISTICS_EVENT))
+        {
+            writeDayActivityLine((Object[]) event.getContent());
+        }
+        else if (event.getType().equals(ActivityMonitor.ACTIVITY_TOT_STATISTICS_EVENT))
+        {
+            writeTotActivityLine((Object[]) event.getContent());
         }
     }
 
