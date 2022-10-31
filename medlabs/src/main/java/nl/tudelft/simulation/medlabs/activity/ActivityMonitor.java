@@ -50,6 +50,12 @@ public class ActivityMonitor extends EventProducer
     /** The total array of hours per location type per person type. Totals are at index 0. */
     private final List<TIntDoubleMap> totHoursPerLocPerPerson = new ArrayList<>();
 
+    /** shortcut to total daymap. */
+    TIntDoubleMap dayMap0;
+
+    /** shortcut to total totmap. */
+    TIntDoubleMap totMap0;
+
     /** statistics event for daily hours per location type per person type. */
     public static final TimedEventType ACTIVITY_DAY_STATISTICS_EVENT = new TimedEventType("ACTIVITY_DAY_STATISTICS_EVENT",
             new MetaData("acthours/loctype/persontype", "daily activity hours per location type per person type",
@@ -80,6 +86,8 @@ public class ActivityMonitor extends EventProducer
         this.dayHoursPerLocPerPerson.get(0).put(0, 0.0);
         this.totHoursPerLocPerPerson.add(new TIntDoubleHashMap());
         this.totHoursPerLocPerPerson.get(0).put(0, 0.0);
+        this.dayMap0 = this.dayHoursPerLocPerPerson.get(0);
+        this.totMap0 = this.totHoursPerLocPerPerson.get(0);
         // make sure the event is scheduled AFTER the midnight reset for the activities to capture a full day
         this.model.getSimulator().scheduleEventRel(24.001, this, this, "reportActivityStatistics", null);
     }
@@ -148,6 +156,12 @@ public class ActivityMonitor extends EventProducer
         TIntDoubleMap totMap = this.totHoursPerLocPerPerson.get(locTypeNr);
         dayMap.put(personTypeNr, dayMap.get(personTypeNr) + hours);
         totMap.put(personTypeNr, totMap.get(personTypeNr) + hours);
+        dayMap.put(0, dayMap.get(0) + hours); // total per location
+        totMap.put(0, totMap.get(0) + hours); // cumulative total per location
+        this.dayMap0.put(0, this.dayMap0.get(0) + hours); // total per day
+        this.totMap0.put(0, this.totMap0.get(0) + hours); // cumulative total per day
+        this.dayMap0.put(personTypeNr, this.dayMap0.get(personTypeNr) + hours);
+        this.totMap0.put(personTypeNr, this.totMap0.get(personTypeNr) + hours);
     }
 
     /** {@inheritDoc} */
