@@ -42,6 +42,10 @@ public class IdxPerson extends AbstractPerson
     @SuppressWarnings("checkstyle:visibilitymodifier")
     protected short activityIndex = 0;
 
+    /** The start time of an activity to calculate its duration. */
+    @SuppressWarnings("checkstyle:visibilitymodifier")
+    protected float activityStartTime = 0.0f;
+
     /** id of home location where the person lives. */
     @SuppressWarnings("checkstyle:visibilitymodifier")
     protected int homeLocationId;
@@ -92,7 +96,7 @@ public class IdxPerson extends AbstractPerson
         this.exposureTime = Float.NaN;
         this.diseasePhaseIndex = -1;
 
-        PersonType pt = this.model.getPersonTypeClassMap().get(getClass()); 
+        PersonType pt = this.model.getPersonTypeClassMap().get(getClass());
         if (pt == null)
         {
             throw new MedlabsRuntimeException("PersonType " + getClass().getSimpleName() + " not registered in model");
@@ -125,6 +129,7 @@ public class IdxPerson extends AbstractPerson
         try
         {
             getCurrentActivity().startActivity(this);
+            this.activityStartTime = this.model.getSimulator().getSimulatorTime().floatValue();
         }
         catch (Exception exception)
         {
@@ -142,6 +147,11 @@ public class IdxPerson extends AbstractPerson
             // TODO: pt.decNumberPersons();
             return;
         }
+        float now = this.model.getSimulator().getSimulatorTime().floatValue();
+        double activityHours = now - this.activityStartTime;
+        this.activityStartTime = now;
+        this.model.getActivityMonitor().addActivityTime(getCurrentLocation().getLocationType().getName(),
+                getClass().getSimpleName(), activityHours);
         WeekPattern currentWeekPattern = getCurrentWeekPattern();
         this.activityIndex = (short) currentWeekPattern.getNextActivityIndex(this, this.activityIndex);
         // NOTE: the startActivity() method SHOULD be the last statement of endActivity()
