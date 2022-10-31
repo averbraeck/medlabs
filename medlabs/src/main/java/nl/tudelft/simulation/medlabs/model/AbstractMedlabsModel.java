@@ -22,6 +22,7 @@ import nl.tudelft.simulation.dsol.model.inputparameters.InputParameterString;
 import nl.tudelft.simulation.jstats.distributions.DistUniform;
 import nl.tudelft.simulation.jstats.streams.MersenneTwister;
 import nl.tudelft.simulation.jstats.streams.StreamInterface;
+import nl.tudelft.simulation.medlabs.activity.ActivityMonitor;
 import nl.tudelft.simulation.medlabs.activity.pattern.WeekPattern;
 import nl.tudelft.simulation.medlabs.common.ReproducibleRandomGenerator;
 import nl.tudelft.simulation.medlabs.disease.DiseaseMonitor;
@@ -121,6 +122,9 @@ public abstract class AbstractMedlabsModel extends AbstractDSOLModel<Double, Sim
 
     /** the disease monitor to report changes for statistics. */
     private DiseaseMonitor diseaseMonitor;
+
+    /** the activity monitor to report changes for statistics. */
+    private ActivityMonitor activityMonitor;
 
     /** the policies. */
     private Map<String, Policy> policyMap = new HashMap<>();
@@ -380,6 +384,20 @@ public abstract class AbstractMedlabsModel extends AbstractDSOLModel<Double, Sim
     public PersonMonitor getPersonMonitor()
     {
         return this.personMonitor;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public void setActivityMonitor(final ActivityMonitor activityMonitor)
+    {
+        this.activityMonitor = activityMonitor;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public ActivityMonitor getActivityMonitor()
+    {
+        return this.activityMonitor;
     }
 
     /** {@inheritDoc} */

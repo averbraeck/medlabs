@@ -9,6 +9,7 @@ import nl.tudelft.simulation.dsol.model.inputparameters.InputParameterException;
 import nl.tudelft.simulation.dsol.model.inputparameters.InputParameterMap;
 import nl.tudelft.simulation.jstats.distributions.DistUniform;
 import nl.tudelft.simulation.jstats.streams.StreamInterface;
+import nl.tudelft.simulation.medlabs.activity.ActivityMonitor;
 import nl.tudelft.simulation.medlabs.activity.pattern.WeekPattern;
 import nl.tudelft.simulation.medlabs.common.MedlabsRuntimeException;
 import nl.tudelft.simulation.medlabs.common.ReproducibleRandomGenerator;
@@ -123,13 +124,22 @@ public interface MedlabsModelInterface extends SimpleModelInterface
     // TIntObjectMap<ActivityGroup> getActivityGroupMap();
 
     /**
-     * Se the person monitor to report changes for statistics.
+     * Set the person monitor to report changes for statistics.
+     * @param activityMonitor ActivityMonitor; the activity monitor to report changes for statistics
+     */
+    void setActivityMonitor(ActivityMonitor activityMonitor);
+
+    /** @return the person monitor to report changes for statistics */
+    PersonMonitor getPersonMonitor();
+
+    /**
+     * Set the activity monitor to report changes for statistics.
      * @param personMonitor PersonMonitor; the person monitor to report changes for statistics
      */
     void setPersonMonitor(PersonMonitor personMonitor);
 
-    /** @return the person monitor to report changes for statistics */
-    PersonMonitor getPersonMonitor();
+    /** @return the activity monitor to report changes for statistics */
+    ActivityMonitor getActivityMonitor();
 
     /**
      * Return the day of the week where 0 is Monday and 6 is Sunday.
