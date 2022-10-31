@@ -243,8 +243,8 @@ public class IdxPerson extends AbstractPerson
     {
         this.diseasePhaseIndex = diseasePhase.getIndex();
         // see at midnight if the activity pattern needs to be changed
-        getModel().getSimulator().scheduleEventAbs(24.0 * Math.ceil(getModel().getSimulator().getSimulatorTime() / 24.0), this,
-                getModel(), "checkChangeActivityPattern", new Object[] {this});
+//        getModel().getSimulator().scheduleEventAbs(24.0 * Math.ceil(getModel().getSimulator().getSimulatorTime() / 24.0), this,
+//                getModel(), "checkChangeActivityPattern", new Object[] {this});
     }
 
     /** {@inheritDoc} */
