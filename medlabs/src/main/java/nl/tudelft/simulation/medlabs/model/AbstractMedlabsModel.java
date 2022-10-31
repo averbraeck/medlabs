@@ -148,6 +148,9 @@ public abstract class AbstractMedlabsModel extends AbstractDSOLModel<Double, Sim
         this.locationBike = new Location(this, -2, bikeLT.getLocationTypeId(), 0.0f, 0.0f, (short) 1, 1E6f);
         LocationType carLT = new LocationType(this, (byte) -3, "car", Location.class, null, false, false, 0.0);
         this.locationCar = new Location(this, -3, carLT.getLocationTypeId(), 0.0f, 0.0f, (short) 1, 1E6f);
+        
+        // create the activity monitor. TODO: maybe move to actual model?
+        this.activityMonitor = new ActivityMonitor(this);
     }
 
     /** {@inheritDoc} */
@@ -168,9 +171,6 @@ public abstract class AbstractMedlabsModel extends AbstractDSOLModel<Double, Sim
                 it.advance();
                 it.value().init();
             }
-            
-            // create the activity monitor. TODO: maybe move to actual model?
-            this.activityMonitor = new ActivityMonitor(this);
 
             // schedule the week pattern changes just before midnight every day
             getSimulator().scheduleEventRel(23.999, this, this, "checkChangeWeekPattern", null);
