@@ -148,9 +148,6 @@ public abstract class AbstractMedlabsModel extends AbstractDSOLModel<Double, Sim
         this.locationBike = new Location(this, -2, bikeLT.getLocationTypeId(), 0.0f, 0.0f, (short) 1, 1E6f);
         LocationType carLT = new LocationType(this, (byte) -3, "car", Location.class, null, false, false, 0.0);
         this.locationCar = new Location(this, -3, carLT.getLocationTypeId(), 0.0f, 0.0f, (short) 1, 1E6f);
-        
-        // create the activity monitor. TODO: maybe move to actual model?
-        this.activityMonitor = new ActivityMonitor(this);
     }
 
     /** {@inheritDoc} */
@@ -162,6 +159,9 @@ public abstract class AbstractMedlabsModel extends AbstractDSOLModel<Double, Sim
             this.randomStream = new MersenneTwister(getParameterValueLong("generic.Seed") + 1L);
             this.reproducibleJava2Random = new ReproducibleRandomGenerator(getParameterValueLong("generic.Seed") + 2L);
             this.u01 = new DistUniform(this.randomStream, 0.0, 1.0);
+            
+            // create the activity monitor. TODO: maybe move to actual model?
+            this.activityMonitor = new ActivityMonitor(this);
 
             constructModelFromSource();
 
