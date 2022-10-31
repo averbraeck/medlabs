@@ -168,6 +168,9 @@ public abstract class AbstractMedlabsModel extends AbstractDSOLModel<Double, Sim
                 it.advance();
                 it.value().init();
             }
+            
+            // create the activity monitor. TODO: maybe move to actual model?
+            this.activityMonitor = new ActivityMonitor(this);
 
             // schedule the week pattern changes just before midnight every day
             getSimulator().scheduleEventRel(23.999, this, this, "checkChangeWeekPattern", null);
