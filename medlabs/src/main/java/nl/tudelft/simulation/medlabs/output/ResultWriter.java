@@ -4,11 +4,13 @@ import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.rmi.RemoteException;
+import java.util.List;
 import java.util.Map;
 
 import org.djutils.event.EventInterface;
 import org.djutils.event.EventListenerInterface;
 
+import gnu.trove.map.TIntDoubleMap;
 import nl.tudelft.simulation.medlabs.activity.ActivityMonitor;
 import nl.tudelft.simulation.medlabs.common.MedlabsRuntimeException;
 import nl.tudelft.simulation.medlabs.disease.DiseasePhase;
@@ -393,7 +395,7 @@ public class ResultWriter implements EventListenerInterface
 
     private void writeInfectedPersonLine(final Object[] content)
     {
-        Person person = (Person) content[0]; 
+        Person person = (Person) content[0];
         Location infectLocation = (Location) content[1];
         double time = this.model.getSimulator().getSimulatorTime();
         this.infectedPersonWriter.print(time + "," + person.getId());
@@ -696,22 +698,62 @@ public class ResultWriter implements EventListenerInterface
 
     private void writeDayActivityHeader()
     {
-        
+        this.dayActivityWriter.println("\"Time(h)\",\"activityType\",\"personType\",\"hours\"");
+        this.dayActivityWriter.flush();
     }
 
+    @SuppressWarnings("unchecked")
     private void writeDayActivityLine(final Object[] content)
     {
-        
+        // content = {dayHoursPerLocPerPerson, locationTypeToNrMap, personTypeToNrMap}
+        List<TIntDoubleMap> dayHoursPerLocPerPerson = (List<TIntDoubleMap>) content[0];
+        Map<String, Integer> locationTypeToNrMap = (Map<String, Integer>) content[1];
+        Map<String, Integer> personTypeToNrMap = (Map<String, Integer>) content[2];
+        double time = this.model.getSimulator().getSimulatorTime();
+        for (Map.Entry<String, Integer> locEntry : locationTypeToNrMap.entrySet())
+        {
+            String loc = locEntry.getKey();
+            int locnr = locEntry.getValue();
+            for (Map.Entry<String, Integer> ptEntry : personTypeToNrMap.entrySet())
+            {
+                String pt = ptEntry.getKey();
+                int ptnr = ptEntry.getValue();
+                Double hrsD = dayHoursPerLocPerPerson.get(locnr).get(ptnr);
+                double hrs = hrsD == null ? 0.0 : hrsD;
+                this.dayActivityWriter.println(time + ",\"" + loc + "\",\"" + pt + "\"," + hrs);
+            }
+        }
+        this.dayActivityWriter.flush();
     }
 
     private void writeTotActivityHeader()
     {
-        
+        this.totActivityWriter.println("\"Time(h)\",\"activityType\",\"personType\",\"hours\"");
+        this.totActivityWriter.flush();
     }
 
+    @SuppressWarnings("unchecked")
     private void writeTotActivityLine(final Object[] content)
     {
-        
+        // content = {totHoursPerLocPerPerson, locationTypeToNrMap, personTypeToNrMap}
+        List<TIntDoubleMap> totHoursPerLocPerPerson = (List<TIntDoubleMap>) content[0];
+        Map<String, Integer> locationTypeToNrMap = (Map<String, Integer>) content[1];
+        Map<String, Integer> personTypeToNrMap = (Map<String, Integer>) content[2];
+        double time = this.model.getSimulator().getSimulatorTime();
+        for (Map.Entry<String, Integer> locEntry : locationTypeToNrMap.entrySet())
+        {
+            String loc = locEntry.getKey();
+            int locnr = locEntry.getValue();
+            for (Map.Entry<String, Integer> ptEntry : personTypeToNrMap.entrySet())
+            {
+                String pt = ptEntry.getKey();
+                int ptnr = ptEntry.getValue();
+                Double hrsD = totHoursPerLocPerPerson.get(locnr).get(ptnr);
+                double hrs = hrsD == null ? 0.0 : hrsD;
+                this.totActivityWriter.println(time + ",\"" + loc + "\",\"" + pt + "\"," + hrs);
+            }
+        }
+        this.totActivityWriter.flush();
     }
 
     /** {@inheritDoc} */
