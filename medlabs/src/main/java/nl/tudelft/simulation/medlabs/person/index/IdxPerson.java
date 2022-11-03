@@ -143,6 +143,7 @@ public class IdxPerson extends AbstractPerson
     {
         if (getDiseasePhase().isDead())
         {
+            getCurrentLocation().removePerson(this);
             // TODO: PersonType pt = this.model.getPersonTypeClassMap().get(getClass());
             // TODO: pt.decNumberPersons();
             return;
@@ -242,9 +243,6 @@ public class IdxPerson extends AbstractPerson
     public void setDiseasePhase(final DiseasePhase diseasePhase)
     {
         this.diseasePhaseIndex = diseasePhase.getIndex();
-        // see at midnight if the activity pattern needs to be changed
-//        getModel().getSimulator().scheduleEventAbs(24.0 * Math.ceil(getModel().getSimulator().getSimulatorTime() / 24.0), this,
-//                getModel(), "checkChangeActivityPattern", new Object[] {this});
     }
 
     /** {@inheritDoc} */
@@ -294,6 +292,8 @@ public class IdxPerson extends AbstractPerson
     public void setCurrentWeekPattern(final WeekPattern currentWeekPattern)
     {
         // TODO: set the activity to -1 to avoid problems with retrieving the previous activity
+        // This does not work... 
+    	// getCurrentLocation().removePerson(this);
         this.currentWeekPatternIndex = (short) currentWeekPattern.getId();
     }
 
