@@ -1,5 +1,7 @@
 package nl.tudelft.simulation.medlabs.activity.locator;
 
+import nl.tudelft.simulation.jstats.streams.Java2Random;
+import nl.tudelft.simulation.jstats.streams.StreamInterface;
 import nl.tudelft.simulation.medlabs.location.Location;
 import nl.tudelft.simulation.medlabs.location.LocationType;
 import nl.tudelft.simulation.medlabs.person.Person;
@@ -21,20 +23,50 @@ import nl.tudelft.simulation.medlabs.person.index.IdxStudent;
  */
 public class SchoolLocator implements LocatorInterface
 {
+    /** local reproducible stream. */
+    private StreamInterface stream = null;
+
+    /** Experiment seed. */
+    private long seed = 1L;
+
     /** {@inheritDoc} */
     @Override
     public Location getLocation(final Person person)
     {
         Location schoolLocation = ((IdxStudent) person).getSchoolLocation();
-        LocationType wlt = schoolLocation.getLocationType();
-        if (wlt.getFractionActivities() < 1.0 || wlt.getFractionOpen() < 1.0)
+        LocationType slt = schoolLocation.getLocationType();
+        if (slt.getFractionActivities() < 1.0 || slt.getFractionOpen() < 1.0)
         {
-            // person might be forced to do school activities somewhere else
-            LocationType alt = wlt.getAlternativeLocationType();
+            // person might be forced to study somewhere else, e.g., at home
+            if (slt.getFractionOpen() > 0.0)
+            {
+                if (this.stream == null)
+                {
+                    this.seed = person.getModel().getDefaultStream().getOriginalSeed() + "SchoolLocator".hashCode();
+                    this.stream = new Java2Random(this.seed);
+                }
+                this.stream.setSeed(this.seed + schoolLocation.getId()); // reproducible by worklocation id
+                if (this.stream.nextDouble() < slt.getFractionOpen())
+                {
+                    if (slt.getFractionActivities() > 0.0)
+                    {
+                        this.stream.setSeed(this.seed + person.getId()); // reproducible by person id
+                        if (this.stream.nextDouble() < slt.getFractionActivities())
+                        {
+                            return schoolLocation; // can still go to the school location
+                        }
+                    }
+                }
+            }
+
+            LocationType alt = slt.getAlternativeLocationType();
             if (person.getModel().getLocationTypeHouse().getLocationTypeId() == alt.getLocationTypeId())
                 return person.getHomeLocation();
             return new NearestLocator(new CurrentLocator(), alt).getLocation(person);
         }
-        return schoolLocation;    }
+
+        // location is 100% open!
+        return schoolLocation;
+    }
 
 }

@@ -1,5 +1,7 @@
 package nl.tudelft.simulation.medlabs.activity.locator;
 
+import nl.tudelft.simulation.jstats.streams.Java2Random;
+import nl.tudelft.simulation.jstats.streams.StreamInterface;
 import nl.tudelft.simulation.medlabs.location.Location;
 import nl.tudelft.simulation.medlabs.location.LocationType;
 import nl.tudelft.simulation.medlabs.person.Person;
@@ -21,6 +23,12 @@ import nl.tudelft.simulation.medlabs.person.index.IdxWorker;
  */
 public class WorkLocator implements LocatorInterface
 {
+    /** Local reproducible stream. */
+    private StreamInterface stream = null;
+
+    /** Experiment seed. */
+    private long seed = 1L;
+
     /** {@inheritDoc} */
     @Override
     public Location getLocation(final Person person)
@@ -29,12 +37,35 @@ public class WorkLocator implements LocatorInterface
         LocationType wlt = workLocation.getLocationType();
         if (wlt.getFractionActivities() < 1.0 || wlt.getFractionOpen() < 1.0)
         {
-            // person might be forced to work somewhere else
+            // person might be forced to work somewhere else, e.g., at home
+            if (wlt.getFractionOpen() > 0.0)
+            {
+                if (this.stream == null)
+                {
+                    this.seed = person.getModel().getDefaultStream().getOriginalSeed() + "WorkLocator".hashCode();
+                    this.stream = new Java2Random(this.seed);
+                }
+                this.stream.setSeed(this.seed + workLocation.getId()); // reproducible by worklocation id
+                if (this.stream.nextDouble() < wlt.getFractionOpen())
+                {
+                    if (wlt.getFractionActivities() > 0.0)
+                    {
+                        this.stream.setSeed(this.seed + person.getId()); // reproducible by person id
+                        if (this.stream.nextDouble() < wlt.getFractionActivities())
+                        {
+                            return workLocation; // can still work at the work location
+                        }
+                    }
+                }
+            }
+
             LocationType alt = wlt.getAlternativeLocationType();
             if (person.getModel().getLocationTypeHouse().getLocationTypeId() == alt.getLocationTypeId())
                 return person.getHomeLocation();
             return new NearestLocator(new CurrentLocator(), alt).getLocation(person);
         }
+
+        // location is 100% open!
         return workLocation;
     }
 

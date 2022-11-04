@@ -2,6 +2,8 @@ package nl.tudelft.simulation.medlabs.activity.locator;
 
 import org.djunits.Throw;
 
+import nl.tudelft.simulation.jstats.streams.Java2Random;
+import nl.tudelft.simulation.jstats.streams.StreamInterface;
 import nl.tudelft.simulation.medlabs.location.Location;
 import nl.tudelft.simulation.medlabs.location.LocationType;
 import nl.tudelft.simulation.medlabs.model.MedlabsModelInterface;
@@ -36,6 +38,12 @@ public class RandomLocator implements LocatorInterface
     /** whether the draw should be reproducible for the person or not. */
     private final boolean reproducible;
 
+    /** local reproducible stream. */
+    private StreamInterface stream = null;
+
+    /** Experiment seed. */
+    private long seed = 1L;
+
     /**
      * Construct a locator that draws a random Location of a certain type within a search radius.
      * @param startLocator LocationInterface&lt;T&gt; the starting position to which the other location needs to be found
@@ -52,6 +60,8 @@ public class RandomLocator implements LocatorInterface
         this.activityLocationType = activityLocationType;
         this.maxDistanceM = maxDistanceM;
         this.reproducible = reproducible;
+        this.seed = this.activityLocationType.getModel().getDefaultStream().getOriginalSeed() + "RandomLocator".hashCode();
+        this.stream = new Java2Random(this.seed);
     }
 
     /** {@inheritDoc} */
@@ -61,30 +71,50 @@ public class RandomLocator implements LocatorInterface
         MedlabsModelInterface model = person.getModel();
         Location startLocation = this.startLocator.getLocation(person);
 
-        if (this.activityLocationType.getFractionActivities() < 1.0 || this.activityLocationType.getFractionOpen() < 1.0)
-        {
-            LocationType alt = this.activityLocationType.getAlternativeLocationType();
-            if (person.getModel().getLocationTypeHouse().getLocationTypeId() == alt.getLocationTypeId())
-                return person.getHomeLocation();
-            return new NearestLocator(new CurrentLocator(), alt).getLocation(person);
-        }
-        
         Location[] locations = this.activityLocationType.getLocationArrayMaxDistanceM(startLocation, this.maxDistanceM);
+        Location loc = null;
         if (locations.length == 0)
         {
-            return this.activityLocationType.getNearestLocation(startLocation);
+            loc = this.activityLocationType.getNearestLocation(startLocation);
         }
         else
         {
-            // return locations[MedlabsModel.randomUniform(locations.length)];
             int index = this.reproducible ? model.getReproducibleJava2Random().nextInt(0, locations.length, (person.hashCode()))
                     : model.getRandomStream().nextInt(0, locations.length);
             if (index >= locations.length)
             {
                 index = locations.length - 1;
             }
-            return locations[index];
+            loc = locations[index];
         }
+
+        if (this.activityLocationType.getFractionActivities() < 1.0 || this.activityLocationType.getFractionOpen() < 1.0)
+        {
+            // person might be forced to go somewhere else or to stay at home
+            if (this.activityLocationType.getFractionOpen() > 0.0)
+            {
+                this.stream.setSeed(this.seed + loc.getId()); // reproducible by location id
+                if (this.stream.nextDouble() < this.activityLocationType.getFractionOpen())
+                {
+                    if (this.activityLocationType.getFractionActivities() > 0.0)
+                    {
+                        this.stream.setSeed(this.seed + person.getId()); // reproducible by person id
+                        if (this.stream.nextDouble() < this.activityLocationType.getFractionActivities())
+                        {
+                            return loc; // can still go to the chosen location
+                        }
+                    }
+                }
+            }
+            
+            LocationType alt = this.activityLocationType.getAlternativeLocationType();
+            if (person.getModel().getLocationTypeHouse().getLocationTypeId() == alt.getLocationTypeId())
+                return person.getHomeLocation();
+            return new NearestLocator(new CurrentLocator(), alt).getLocation(person);
+        }
+        
+        // location is open
+        return loc;
     }
 
 }

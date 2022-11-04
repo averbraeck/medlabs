@@ -5,6 +5,8 @@ import java.util.SortedMap;
 
 import org.djunits.Throw;
 
+import nl.tudelft.simulation.jstats.streams.Java2Random;
+import nl.tudelft.simulation.jstats.streams.StreamInterface;
 import nl.tudelft.simulation.medlabs.common.MedlabsRuntimeException;
 import nl.tudelft.simulation.medlabs.location.Location;
 import nl.tudelft.simulation.medlabs.location.LocationType;
@@ -39,6 +41,12 @@ public class RandomLocatorChoice implements LocatorInterface
     /** whether the draw should be reproducible for the person or not. */
     private final boolean reproducible;
 
+    /** local reproducible stream. */
+    private StreamInterface stream = null;
+
+    /** Experiment seed. */
+    private long seed = 1L;
+
     /**
      * Construct a locator that draws a LocationType with a probability and returns a random location of that type within a
      * certain radius.
@@ -59,6 +67,9 @@ public class RandomLocatorChoice implements LocatorInterface
         this.activityLocationTypeMap = activityLocationTypeMap;
         this.maxDistanceM = maxDistanceM;
         this.reproducible = reproducible;
+        this.seed = this.activityLocationTypeMap.values().iterator().next().getModel().getDefaultStream().getOriginalSeed()
+                + "RandomLocator".hashCode();
+        this.stream = new Java2Random(this.seed);
     }
 
     /** {@inheritDoc} */
@@ -79,18 +90,11 @@ public class RandomLocatorChoice implements LocatorInterface
                     return person.getHomeLocation();
                 }
 
-                if (lt.getFractionActivities() < 1.0 || lt.getFractionOpen() < 1.0)
-                {
-                    LocationType alt = lt.getAlternativeLocationType();
-                    if (person.getModel().getLocationTypeHouse().getLocationTypeId() == alt.getLocationTypeId())
-                        return person.getHomeLocation();
-                    return new NearestLocator(new CurrentLocator(), alt).getLocation(person);
-                }
-                
                 Location[] locations = lt.getLocationArrayMaxDistanceM(startLocation, this.maxDistanceM);
+                Location loc = null;
                 if (locations.length == 0)
                 {
-                    return lt.getNearestLocation(startLocation);
+                    loc =  lt.getNearestLocation(startLocation);
                 }
                 else
                 {
@@ -102,9 +106,36 @@ public class RandomLocatorChoice implements LocatorInterface
                     {
                         index = locations.length - 1;
                     }
-                    return locations[index];
+                    loc =  locations[index];
+                }
+                
+                if (lt.getFractionActivities() < 1.0 || lt.getFractionOpen() < 1.0)
+                {
+                    // person might be forced to go somewhere else or to stay at home
+                    if (lt.getFractionOpen() > 0.0)
+                    {
+                        this.stream.setSeed(this.seed + loc.getId()); // reproducible by location id
+                        if (this.stream.nextDouble() < lt.getFractionOpen())
+                        {
+                            if (lt.getFractionActivities() > 0.0)
+                            {
+                                this.stream.setSeed(this.seed + person.getId()); // reproducible by person id
+                                if (this.stream.nextDouble() < lt.getFractionActivities())
+                                {
+                                    return loc; // can still go to the chosen location
+                                }
+                            }
+                        }
+                    }
+                    
+                    LocationType alt = lt.getAlternativeLocationType();
+                    if (person.getModel().getLocationTypeHouse().getLocationTypeId() == alt.getLocationTypeId())
+                        return person.getHomeLocation();
+                    return new NearestLocator(new CurrentLocator(), alt).getLocation(person);
                 }
 
+                // location is open
+                return loc;
             }
         }
         throw new MedlabsRuntimeException("RandomLocatorChoice.getLocation -- did not find a LocationType");

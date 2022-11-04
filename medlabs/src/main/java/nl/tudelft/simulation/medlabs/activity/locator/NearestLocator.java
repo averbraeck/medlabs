@@ -2,6 +2,8 @@ package nl.tudelft.simulation.medlabs.activity.locator;
 
 import org.djunits.Throw;
 
+import nl.tudelft.simulation.jstats.streams.Java2Random;
+import nl.tudelft.simulation.jstats.streams.StreamInterface;
 import nl.tudelft.simulation.medlabs.location.Location;
 import nl.tudelft.simulation.medlabs.location.LocationType;
 import nl.tudelft.simulation.medlabs.person.Person;
@@ -27,6 +29,12 @@ public class NearestLocator implements LocatorInterface
 
     /** the type of location to return, e.g. "playground" */
     private final LocationType activityLocationType;
+    
+    /** local reproducible stream. */
+    private StreamInterface stream = null;
+
+    /** Experiment seed. */
+    private long seed = 1L;
 
     /**
      * @param startLocator LocationInterface&lt;T&gt; the stating position to which the other location needs to be found
@@ -38,6 +46,8 @@ public class NearestLocator implements LocatorInterface
         Throw.whenNull(activityLocationType, "activityLocationType cannot be null");
         this.startLocator = startLocator;
         this.activityLocationType = activityLocationType;
+        this.seed = this.activityLocationType.getModel().getDefaultStream().getOriginalSeed() + "NearestLocator".hashCode();
+        this.stream = new Java2Random(this.seed);
     }
 
     /** {@inheritDoc} */
@@ -50,15 +60,33 @@ public class NearestLocator implements LocatorInterface
             return person.getHomeLocation();
         }
         
+        Location nearestLocation = this.activityLocationType.getNearestLocation(startLocation);
         if (this.activityLocationType.getFractionActivities() < 1.0 || this.activityLocationType.getFractionOpen() < 1.0)
         {
+            // person might be forced to go somewhere else or to stay at home
+            if (this.activityLocationType.getFractionOpen() > 0.0)
+            {
+                this.stream.setSeed(this.seed + nearestLocation.getId()); // reproducible by nearest location id
+                if (this.stream.nextDouble() < this.activityLocationType.getFractionOpen())
+                {
+                    if (this.activityLocationType.getFractionActivities() > 0.0)
+                    {
+                        this.stream.setSeed(this.seed + person.getId()); // reproducible by person id
+                        if (this.stream.nextDouble() < this.activityLocationType.getFractionActivities())
+                        {
+                            return nearestLocation; // can still go to the nearest location
+                        }
+                    }
+                }
+            }
+            
             LocationType alt = this.activityLocationType.getAlternativeLocationType();
             if (person.getModel().getLocationTypeHouse().getLocationTypeId() == alt.getLocationTypeId())
                 return person.getHomeLocation();
             return new NearestLocator(new CurrentLocator(), alt).getLocation(person);
         }
 
-        return this.activityLocationType.getNearestLocation(startLocation);
+        return nearestLocation;
     }
 
 }
