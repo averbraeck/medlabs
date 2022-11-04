@@ -537,6 +537,14 @@ public class LocationType extends EventProducer
     }
 
     /**
+     * @return model
+     */
+    public MedlabsModelInterface getModel()
+    {
+        return this.model;
+    }
+
+    /**
      * @return the infectInSublocation
      */
     public boolean isInfectInSublocation()
