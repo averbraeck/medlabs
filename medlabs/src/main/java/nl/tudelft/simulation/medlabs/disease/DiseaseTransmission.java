@@ -230,6 +230,14 @@ public abstract class DiseaseTransmission extends AbstractModelNamed implements 
     {
         return this.personsInSublocationCache.containsKey(key);
     }
+    
+    /**
+     * Set a parameter for the transmission model.
+     * @param parameterName String; parameter name
+     * @param value double; new value 
+     */
+    public abstract void setParameter(String parameterName, double value);
+    
 
     protected void updateLastCalculationTime(final long key)
     {
