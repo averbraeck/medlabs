@@ -257,4 +257,11 @@ public class SEIRTransmission extends DiseaseTransmission
         return true;
     }
 
+    /** {@inheritDoc} */
+    @Override
+    public void setParameter(final String parameterName, final double value)
+    {
+        // nothing to do
+    }
+
 }
