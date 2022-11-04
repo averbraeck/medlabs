@@ -66,6 +66,18 @@ public class LocationType extends EventProducer
      */
     private double correctionFactorArea = 1.0;
 
+    /** the fraction of locations in this location type that stays open. */
+    private double fractionOpen;
+
+    /** the fraction of activities that will still take place (in open locations). */
+    private double fractionActivities;
+
+    /** the alternative location to spend time. */
+    private LocationType alternativeLocationType;
+
+    /** the name under which the replacement activities need to be reported. */
+    private String reportAsLocationName;
+
     /** resolution for grid in m. */
     private static double GRID_FACTOR = 500.0;
 
@@ -146,6 +158,10 @@ public class LocationType extends EventProducer
         model.getLocationTypeNameMap().put(name, this);
         model.getLocationTypeIndexMap().put(locationTypeId, this);
         model.getLocationTypeList().add(this);
+        this.fractionOpen = 1.0;
+        this.fractionActivities = 1.0;
+        this.alternativeLocationType = this;
+        this.reportAsLocationName = name;
     }
 
     /** {@inheritDoc} */
@@ -237,7 +253,6 @@ public class LocationType extends EventProducer
 
         long startLocationKey = keyCacheLatLon(location);
         this.nearestCache.put(startLocationKey, location.getId());
-
     }
 
     /**
@@ -422,6 +437,58 @@ public class LocationType extends EventProducer
     {
         this.fireTimedEvent(
                 new TimedEvent<Double>(DURATION_EVENT, this, duration, this.model.getSimulator().getSimulatorTime()));
+    }
+
+    /**
+     * Implement an open / closure policy. In order to (re)open a location type, call this method with <br>
+     * <code>
+     *    locationType.setClosurePolicy(1.0, 1.0, locationType, locationType.getName());
+     * </code>
+     * @param fractionOpen double; the fraction of locations in this location type that stays open
+     * @param fractionActivities double; the fraction of activities that will still take place (in open locations)
+     * @param alternativeLocationType LocationType; the alternative location to spend time
+     * @param reportAsLocationName String; the name under which the replacement activities need to be reported
+     */
+    @SuppressWarnings("checkstyle:hiddenfield")
+    public void setClosurePolicy(final double fractionOpen, final double fractionActivities,
+            final LocationType alternativeLocationType, final String reportAsLocationName)
+    {
+        this.fractionOpen = fractionOpen;
+        this.fractionActivities = fractionActivities;
+        this.alternativeLocationType = alternativeLocationType;
+        this.reportAsLocationName = reportAsLocationName;
+    }
+
+    /**
+     * @return fractionOpen
+     */
+    public double getFractionOpen()
+    {
+        return this.fractionOpen;
+    }
+
+    /**
+     * @return fractionActivities
+     */
+    public double getFractionActivities()
+    {
+        return this.fractionActivities;
+    }
+
+    /**
+     * @return alternativeLocationType
+     */
+    public LocationType getAlternativeLocationType()
+    {
+        return this.alternativeLocationType;
+    }
+
+    /**
+     * @return reportAsLocationName
+     */
+    public String getReportAsLocationName()
+    {
+        return this.reportAsLocationName;
     }
 
     /**
