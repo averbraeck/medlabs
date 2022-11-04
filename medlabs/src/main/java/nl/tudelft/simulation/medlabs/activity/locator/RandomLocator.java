@@ -60,6 +60,15 @@ public class RandomLocator implements LocatorInterface
     {
         MedlabsModelInterface model = person.getModel();
         Location startLocation = this.startLocator.getLocation(person);
+
+        if (this.activityLocationType.getFractionActivities() < 1.0 || this.activityLocationType.getFractionOpen() < 1.0)
+        {
+            LocationType alt = this.activityLocationType.getAlternativeLocationType();
+            if (person.getModel().getLocationTypeHouse().getLocationTypeId() == alt.getLocationTypeId())
+                return person.getHomeLocation();
+            return new NearestLocator(new CurrentLocator(), alt).getLocation(person);
+        }
+        
         Location[] locations = this.activityLocationType.getLocationArrayMaxDistanceM(startLocation, this.maxDistanceM);
         if (locations.length == 0)
         {

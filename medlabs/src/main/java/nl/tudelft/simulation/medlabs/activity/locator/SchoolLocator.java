@@ -1,6 +1,7 @@
 package nl.tudelft.simulation.medlabs.activity.locator;
 
 import nl.tudelft.simulation.medlabs.location.Location;
+import nl.tudelft.simulation.medlabs.location.LocationType;
 import nl.tudelft.simulation.medlabs.person.Person;
 import nl.tudelft.simulation.medlabs.person.index.IdxStudent;
 
@@ -24,7 +25,16 @@ public class SchoolLocator implements LocatorInterface
     @Override
     public Location getLocation(final Person person)
     {
-        return ((IdxStudent) person).getSchoolLocation();
-    }
+        Location schoolLocation = ((IdxStudent) person).getSchoolLocation();
+        LocationType wlt = schoolLocation.getLocationType();
+        if (wlt.getFractionActivities() < 1.0 || wlt.getFractionOpen() < 1.0)
+        {
+            // person might be forced to do school activities somewhere else
+            LocationType alt = wlt.getAlternativeLocationType();
+            if (person.getModel().getLocationTypeHouse().getLocationTypeId() == alt.getLocationTypeId())
+                return person.getHomeLocation();
+            return new NearestLocator(new CurrentLocator(), alt).getLocation(person);
+        }
+        return schoolLocation;    }
 
 }

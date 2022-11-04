@@ -58,7 +58,7 @@ public class NearestLocatorChoice implements LocatorInterface
     public Location getLocation(final Person person)
     {
         Location startLocation = this.startLocator.getLocation(person);
-        double prob = reproducible ? person.getModel().getReproducibleJava2Random().nextDouble(person.hashCode())
+        double prob = this.reproducible ? person.getModel().getReproducibleJava2Random().nextDouble(person.hashCode())
                 : person.getModel().getU01().draw();
         for (Map.Entry<Double, LocationType> entry : this.activityLocationTypeMap.entrySet())
         {
@@ -68,7 +68,18 @@ public class NearestLocatorChoice implements LocatorInterface
                 {
                     return person.getHomeLocation();
                 }
-                return entry.getValue().getNearestLocation(startLocation);
+                Location loc = entry.getValue().getNearestLocation(startLocation);
+                LocationType lt = loc.getLocationType();
+                
+                if (lt.getFractionActivities() < 1.0 || lt.getFractionOpen() < 1.0)
+                {
+                    LocationType alt = lt.getAlternativeLocationType();
+                    if (person.getModel().getLocationTypeHouse().getLocationTypeId() == alt.getLocationTypeId())
+                        return person.getHomeLocation();
+                    return new NearestLocator(new CurrentLocator(), alt).getLocation(person);
+                }
+                
+                return loc;
             }
         }
         throw new MedlabsRuntimeException("NearestLocatorChoice.getLocation -- did not find a LocationType");

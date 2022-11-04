@@ -49,6 +49,15 @@ public class NearestLocator implements LocatorInterface
         {
             return person.getHomeLocation();
         }
+        
+        if (this.activityLocationType.getFractionActivities() < 1.0 || this.activityLocationType.getFractionOpen() < 1.0)
+        {
+            LocationType alt = this.activityLocationType.getAlternativeLocationType();
+            if (person.getModel().getLocationTypeHouse().getLocationTypeId() == alt.getLocationTypeId())
+                return person.getHomeLocation();
+            return new NearestLocator(new CurrentLocator(), alt).getLocation(person);
+        }
+
         return this.activityLocationType.getNearestLocation(startLocation);
     }
 

@@ -67,21 +67,30 @@ public class RandomLocatorChoice implements LocatorInterface
     {
         MedlabsModelInterface model = person.getModel();
         Location startLocation = this.startLocator.getLocation(person);
-        double prob = reproducible ? person.getModel().getReproducibleJava2Random().nextDouble(person.hashCode() + 1)
+        double prob = this.reproducible ? person.getModel().getReproducibleJava2Random().nextDouble(person.hashCode() + 1)
                 : person.getModel().getU01().draw();
         for (Map.Entry<Double, LocationType> entry : this.activityLocationTypeMap.entrySet())
         {
             if (prob < entry.getKey())
             {
-                if (entry.getValue().getLocationTypeId() == person.getModel().getLocationTypeHouse().getLocationTypeId())
+                LocationType lt = entry.getValue();
+                if (lt.getLocationTypeId() == person.getModel().getLocationTypeHouse().getLocationTypeId())
                 {
                     return person.getHomeLocation();
                 }
 
-                Location[] locations = entry.getValue().getLocationArrayMaxDistanceM(startLocation, this.maxDistanceM);
+                if (lt.getFractionActivities() < 1.0 || lt.getFractionOpen() < 1.0)
+                {
+                    LocationType alt = lt.getAlternativeLocationType();
+                    if (person.getModel().getLocationTypeHouse().getLocationTypeId() == alt.getLocationTypeId())
+                        return person.getHomeLocation();
+                    return new NearestLocator(new CurrentLocator(), alt).getLocation(person);
+                }
+                
+                Location[] locations = lt.getLocationArrayMaxDistanceM(startLocation, this.maxDistanceM);
                 if (locations.length == 0)
                 {
-                    return entry.getValue().getNearestLocation(startLocation);
+                    return lt.getNearestLocation(startLocation);
                 }
                 else
                 {
