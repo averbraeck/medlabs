@@ -24,7 +24,7 @@
     <osm.version>0.48.3</osm.version>
     <dsol.version>4.0.1</dsol.version>
     <fastcsv.version>2.2.0</fastcsv.version>
-    <junit.version>4.13.2</junit.version>
+    <junit.version>5.10.0</junit.version>
     <jodatime.version>2.11.1</jodatime.version>
     <poi.version>5.2.3</poi.version>
     <mysql.version>8.0.30</mysql.version>
@@ -36,8 +36,8 @@
 
   <dependencies>
     <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
+      <groupId>org.junit.jupiter</groupId>
+      <artifactId>junit-jupiter-engine</artifactId>
       <version>${junit.version}</version>
       <scope>test</scope>
     </dependency>

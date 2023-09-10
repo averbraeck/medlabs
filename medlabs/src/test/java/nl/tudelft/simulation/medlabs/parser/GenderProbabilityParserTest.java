@@ -1,9 +1,9 @@
 package nl.tudelft.simulation.medlabs.parser;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.djutils.exceptions.Try;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import nl.tudelft.simulation.medlabs.common.MedlabsException;
 
