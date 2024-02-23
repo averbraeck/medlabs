@@ -12,7 +12,7 @@ import nl.tudelft.simulation.medlabs.simulation.TimeUnit;
  * The UntilFixedTimeActivity describes an activity that has a duration until a time of day. E.g., when the until-time is 17:00
  * and the current time at the start of the activity is 15:30, the activity will take 90 minutes.
  * <p>
- * Copyright (c) 2014-2022 Delft University of Technology, Jaffalaan 5, 2628 BX Delft, the Netherlands. All rights reserved. The
+ * Copyright (c) 2014-2024 Delft University of Technology, Jaffalaan 5, 2628 BX Delft, the Netherlands. All rights reserved. The
  * MEDLABS project (Modeling Epidemic Disease with Large-scale Agent-Based Simulation) is aimed at providing policy analysis
  * tools to predict and help contain the spread of epidemics. It makes use of the DSOL simulation engine and the agent-based
  * modeling formalism. See for project information <a href="http://www.simulation.tudelft.nl/"> www.simulation.tudelft.nl</a>.

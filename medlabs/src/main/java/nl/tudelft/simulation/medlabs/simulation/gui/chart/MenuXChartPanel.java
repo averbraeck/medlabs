@@ -42,7 +42,7 @@ import org.knowm.xchart.internal.chartpart.Chart;
  * MenuXChartPanel is an extension of the XChartPanel from org.knowm.xchart where the pop-up menu has been made more accessible,
  * amongst others to maximize the view of a chart.
  * <p>
- * Copyright (c) 2022-2022 Delft University of Technology, Jaffalaan 5, 2628 BX Delft, the Netherlands. All rights reserved.
+ * Copyright (c) 2022-2024 Delft University of Technology, Jaffalaan 5, 2628 BX Delft, the Netherlands. All rights reserved.
  * </p>
  * @author <a href="https://www.tudelft.nl/averbraeck">Alexander Verbraeck</a>
  * @param <T> the type of chart

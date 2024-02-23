@@ -30,7 +30,7 @@ import nl.tudelft.simulation.medlabs.common.MedlabsException;
  * The DistributionParser utility class can parse a string with a specified distribution, such as Triangular(1, 2, 3) or
  * Uniform(5, 10).
  * <p>
- * Copyright (c) 2020-2022 Delft University of Technology, Jaffalaan 5, 2628 BX Delft, the Netherlands. All rights reserved. The
+ * Copyright (c) 2020-2024 Delft University of Technology, Jaffalaan 5, 2628 BX Delft, the Netherlands. All rights reserved. The
  * MEDLABS project (Modeling Epidemic Disease with Large-scale Agent-Based Simulation) is aimed at providing policy analysis
  * tools to predict and help contain the spread of epidemics. It makes use of the DSOL simulation engine and the agent-based
  * modeling formalism. See for project information <a href="http://www.simulation.tudelft.nl/"> www.simulation.tudelft.nl</a>.

@@ -10,7 +10,7 @@ import nl.tudelft.simulation.medlabs.simulation.TimeUnit;
  * Travel activity for biking. The activity takes place in a large area where probability for transmission is zero. The "bike"
  * location in which the activity takes place can be used to study the number of people who are outside biking.
  * <p>
- * Copyright (c) 2014-2022 Delft University of Technology, Jaffalaan 5, 2628 BX Delft, the Netherlands. All rights reserved. The
+ * Copyright (c) 2014-2024 Delft University of Technology, Jaffalaan 5, 2628 BX Delft, the Netherlands. All rights reserved. The
  * MEDLABS project (Modeling Epidemic Disease with Large-scale Agent-Based Simulation) is aimed at providing policy analysis
  * tools to predict and help contain the spread of epidemics. It makes use of the DSOL simulation engine and the agent-based
  * modeling formalism. See for project information <a href="http://www.simulation.tudelft.nl/"> www.simulation.tudelft.nl</a>.

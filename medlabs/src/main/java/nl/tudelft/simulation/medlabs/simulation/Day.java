@@ -6,7 +6,7 @@ package nl.tudelft.simulation.medlabs.simulation;
  * days as flexible arguments. It can also be used to start the week e.g. on a Sunday. In line with the Global class, this class
  * is static, which means that if two simulations run in one JVM, the need to have the same week composition.
  * <p>
- * Copyright (c) 2020-2022 Delft University of Technology, Jaffalaan 5, 2628 BX Delft, the Netherlands. All rights reserved. The
+ * Copyright (c) 2020-2024 Delft University of Technology, Jaffalaan 5, 2628 BX Delft, the Netherlands. All rights reserved. The
  * MEDLABS project (Modeling Epidemic Disease with Large-scale Agent-Based Simulation) is aimed at providing policy analysis
  * tools to predict and help contain the spread of epidemics. It makes use of the DSOL simulation engine and the agent-based
  * modeling formalism. See for project information <a href="http://www.simulation.tudelft.nl/"> www.simulation.tudelft.nl</a>.

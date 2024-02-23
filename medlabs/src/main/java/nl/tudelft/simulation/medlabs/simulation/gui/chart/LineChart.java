@@ -18,7 +18,7 @@ import gnu.trove.list.array.TDoubleArrayList;
  * LineChart draws a single X-Y plot in a panel. Currently we use XCharts for the display, but it could easily be changed for
  * another charting package.
  * <p>
- * Copyright (c) 2022-2022 Delft University of Technology, Jaffalaan 5, 2628 BX Delft, the Netherlands. All rights reserved.
+ * Copyright (c) 2022-2024 Delft University of Technology, Jaffalaan 5, 2628 BX Delft, the Netherlands. All rights reserved.
  * </p>
  * @author <a href="https://www.tudelft.nl/averbraeck">Alexander Verbraeck</a>
  */

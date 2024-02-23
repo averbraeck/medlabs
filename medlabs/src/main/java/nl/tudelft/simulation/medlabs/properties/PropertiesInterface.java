@@ -6,7 +6,7 @@ package nl.tudelft.simulation.medlabs.properties;
  * this makes calculations easier. When you expect a boolean value; just do <code>value != 0f</code>; when you expect an integer
  * value, take <code>Math.round(value)</code>.
  * <p>
- * Copyright (c) 2022-2022 Delft University of Technology, Jaffalaan 5, 2628 BX Delft, the Netherlands. All rights reserved. The
+ * Copyright (c) 2022-2024 Delft University of Technology, Jaffalaan 5, 2628 BX Delft, the Netherlands. All rights reserved. The
  * MEDLABS project (Modeling Epidemic Disease with Large-scale Agent-Based Simulation) is aimed at providing policy analysis
  * tools to predict and help contain the spread of epidemics. It makes use of the DSOL simulation engine and the agent-based
  * modeling formalism. See for project information <a href="http://www.simulation.tudelft.nl/"> www.simulation.tudelft.nl</a>.

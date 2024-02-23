@@ -17,7 +17,7 @@ import nl.tudelft.simulation.medlabs.person.Person;
  * The RandomLocatorChoise locator draws a type of location to return with a probability, and then returns a random location of
  * that type within a certain distance, e.g., a restaurant within a 2 kilometer radius.
  * <p>
- * Copyright (c) 2014-2022 Delft University of Technology, Jaffalaan 5, 2628 BX Delft, the Netherlands. All rights reserved. The
+ * Copyright (c) 2014-2024 Delft University of Technology, Jaffalaan 5, 2628 BX Delft, the Netherlands. All rights reserved. The
  * MEDLABS project (Modeling Epidemic Disease with Large-scale Agent-Based Simulation) is aimed at providing policy analysis
  * tools to predict and help contain the spread of epidemics. It makes use of the DSOL simulation engine and the agent-based
  * modeling formalism. See for project information <a href="http://www.simulation.tudelft.nl/"> www.simulation.tudelft.nl</a>.

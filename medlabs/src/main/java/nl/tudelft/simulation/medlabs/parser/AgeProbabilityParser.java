@@ -12,7 +12,7 @@ import nl.tudelft.simulation.medlabs.common.MedlabsException;
  *   age{0-19: 0.021, 20-29: 0.016, 30-39: 0.05, 40-49: 0.11, 50-59: 0.21, 60-69: 0.44, 70-79: 0.60, 80-100: 0.32}
  * </pre>
  * <p>
- * Copyright (c) 2020-2022 Delft University of Technology, Jaffalaan 5, 2628 BX Delft, the Netherlands. All rights reserved. The
+ * Copyright (c) 2020-2024 Delft University of Technology, Jaffalaan 5, 2628 BX Delft, the Netherlands. All rights reserved. The
  * MEDLABS project (Modeling Epidemic Disease with Large-scale Agent-Based Simulation) is aimed at providing policy analysis
  * tools to predict and help contain the spread of epidemics. It makes use of the DSOL simulation engine and the agent-based
  * modeling formalism. See for project information <a href="http://www.simulation.tudelft.nl/"> www.simulation.tudelft.nl</a>.

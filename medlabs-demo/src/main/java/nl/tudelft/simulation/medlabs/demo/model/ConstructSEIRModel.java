@@ -41,7 +41,7 @@ import nl.tudelft.simulation.medlabs.person.index.IdxPerson;
 /**
  * ConstructSEIRModel.java.
  * <p>
- * Copyright (c) 2020-2022 Delft University of Technology, Jaffalaan 5, 2628 BX Delft, the Netherlands. All rights reserved. The
+ * Copyright (c) 2020-2024 Delft University of Technology, Jaffalaan 5, 2628 BX Delft, the Netherlands. All rights reserved. The
  * code is a demo for the MEDLABS project. The simulation tools are aimed at providing policy analysis tools to predict and help
  * contain the spread of epidemics. They make use of the DSOL simulation engine and the agent-based modeling formalism. This
  * software is licensed under the BSD license. See license.txt in the main project.

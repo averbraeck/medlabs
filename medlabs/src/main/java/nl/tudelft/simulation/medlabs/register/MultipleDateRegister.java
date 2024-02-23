@@ -12,7 +12,7 @@ import nl.tudelft.simulation.medlabs.person.Person;
  * The MultipleDateRegister class persistently contains the subsequent dates that a person has been registered. All dates are
  * kept, so it is not an error to register a person multiple times. An example is a series of vaccinations.
  * <p>
- * Copyright (c) 2022-2022 Delft University of Technology, Jaffalaan 5, 2628 BX Delft, the Netherlands. All rights reserved. The
+ * Copyright (c) 2022-2024 Delft University of Technology, Jaffalaan 5, 2628 BX Delft, the Netherlands. All rights reserved. The
  * MEDLABS project (Modeling Epidemic Disease with Large-scale Agent-Based Simulation) is aimed at providing policy analysis
  * tools to predict and help contain the spread of epidemics. It makes use of the DSOL simulation engine and the agent-based
  * modeling formalism. See for project information <a href="http://www.simulation.tudelft.nl/"> www.simulation.tudelft.nl</a>.
