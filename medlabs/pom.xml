@@ -1,44 +1,53 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <modelVersion>4.0.0</modelVersion>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
 
-  <parent>
-    <groupId>nl.tudelft.simulation</groupId>
-    <artifactId>medlabs-parent</artifactId>
-    <version>2.1.1</version>
-  </parent>
+	<artifactId>medlabs</artifactId>
 
-  <artifactId>medlabs</artifactId>
+	<name>MEDLABS</name>
+	<description>Modeling Epidemic Disease with Large-scale Agent-Based Simulation</description>
 
-  <name>MEDLABS</name>
-  <description>Modeling Epidemic Disease with Large-scale Agent-Based Simulation</description>
+	<parent>
+		<groupId>nl.tudelft.simulation</groupId>
+		<artifactId>medlabs-parent</artifactId>
+		<version>2.1.1</version>
+		<relativePath>../medlabs-parent</relativePath>
+	</parent>
 
-  <dependencies>
-    <dependency>
-      <groupId>nl.tudelft.simulation</groupId>
-      <artifactId>dsol-swing</artifactId>
-    </dependency>
+	<dependencies>
+		<dependency>
+			<groupId>nl.tudelft.simulation</groupId>
+			<artifactId>dsol-swing</artifactId>
+		</dependency>
 
-    <dependency>
-      <groupId>org.apache.poi</groupId>
-      <artifactId>poi</artifactId>
-    </dependency>
+		<dependency>
+			<groupId>org.apache.poi</groupId>
+			<artifactId>poi</artifactId>
+		</dependency>
 
-    <dependency>
-      <groupId>org.apache.poi</groupId>
-      <artifactId>poi-ooxml</artifactId>
-    </dependency>
+		<dependency>
+			<groupId>org.apache.poi</groupId>
+			<artifactId>poi-ooxml</artifactId>
+		</dependency>
 
-    <dependency>
-      <groupId>net.sf.trove4j</groupId>
-      <artifactId>trove4j</artifactId>
-    </dependency>
+		<dependency>
+			<groupId>net.sf.trove4j</groupId>
+			<artifactId>trove4j</artifactId>
+		</dependency>
 
-    <dependency>
-      <groupId>org.knowm.xchart</groupId>
-      <artifactId>xchart</artifactId>
-      <version>3.8.1</version>
-    </dependency>
+		<dependency>
+			<groupId>org.knowm.xchart</groupId>
+			<artifactId>xchart</artifactId>
+			<version>3.8.1</version>
+		</dependency>
 
-  </dependencies>
+		<dependency>
+			<groupId>org.junit.jupiter</groupId>
+			<artifactId>junit-jupiter-engine</artifactId>
+			<scope>test</scope>
+		</dependency>
+
+	</dependencies>
 
 </project>

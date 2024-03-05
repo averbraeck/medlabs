@@ -7,62 +7,63 @@ import nl.tudelft.simulation.medlabs.person.Person;
 import nl.tudelft.simulation.medlabs.simulation.TimeUnit;
 
 /**
- * Travel activity for driving a car as a single person. As there is only one person in the car, the probability for
- * transmission is assumed to be zero. The "car" location in which the activity takes place can be used to study the number of
- * people who are driving.
+ * Travel activity for driving a car as a single person. As there is only one
+ * person in the car, the probability for transmission is assumed to be zero.
+ * The "car" location in which the activity takes place can be used to study the
+ * number of people who are driving.
  * <p>
- * Copyright (c) 2014-2024 Delft University of Technology, Jaffalaan 5, 2628 BX Delft, the Netherlands. All rights reserved. The
- * MEDLABS project (Modeling Epidemic Disease with Large-scale Agent-Based Simulation) is aimed at providing policy analysis
- * tools to predict and help contain the spread of epidemics. It makes use of the DSOL simulation engine and the agent-based
- * modeling formalism. See for project information <a href="http://www.simulation.tudelft.nl/"> www.simulation.tudelft.nl</a>.
- * The original MEDLABS Java library was developed as part of the PhD research of Mingxin Zhang at TU Delft and is described in
- * the PhD thesis "Large-Scale Agent-Based Social Simulation" (2016). This software is licensed under the BSD license. See
- * license.txt in the main project.
+ * Copyright (c) 2014-2024 Delft University of Technology, Jaffalaan 5, 2628 BX
+ * Delft, the Netherlands. All rights reserved. The MEDLABS project (Modeling
+ * Epidemic Disease with Large-scale Agent-Based Simulation) is aimed at
+ * providing policy analysis tools to predict and help contain the spread of
+ * epidemics. It makes use of the DSOL simulation engine and the agent-based
+ * modeling formalism. See for project information
+ * <a href="http://www.simulation.tudelft.nl/"> www.simulation.tudelft.nl</a>.
+ * The original MEDLABS Java library was developed as part of the PhD research
+ * of Mingxin Zhang at TU Delft and is described in the PhD thesis "Large-Scale
+ * Agent-Based Social Simulation" (2016). This software is licensed under the
+ * BSD license. See license.txt in the main project.
  * </p>
+ * 
  * @author Mingxin Zhang
  * @author <a href="https://www.tudelft.nl/averbraeck">Alexander Verbraeck</a>
  */
-public class TravelActivityCar extends TravelActivity
-{
-    /** */
-    private static final long serialVersionUID = 20140505L;
+public class TravelActivityCar extends TravelActivity {
+	/** */
+	private static final long serialVersionUID = 20140505L;
 
-    /**
-     * Create an Activity type for single person travel by car.
-     * @param model MedlabsModelInterface; pointer to the model for retrieving simulator and other relevant information
-     * @param name String; the name of the activity
-     * @param travelLocator
-     * @param startLocator
-     * @param endLocator
-     */
-    public TravelActivityCar(final MedlabsModelInterface model, final String name, final LocatorInterface travelLocator,
-            final LocatorInterface startLocator, final LocatorInterface endLocator)
-    {
-        super(model, name, travelLocator, startLocator, endLocator);
-    }
+	/**
+	 * Create an Activity type for single person travel by car.
+	 * 
+	 * @param model         MedlabsModelInterface; pointer to the model for
+	 *                      retrieving simulator and other relevant information
+	 * @param name          String; the name of the activity
+	 * @param travelLocator
+	 * @param startLocator
+	 * @param endLocator
+	 */
+	public TravelActivityCar(final MedlabsModelInterface model, final String name, final LocatorInterface travelLocator,
+			final LocatorInterface startLocator, final LocatorInterface endLocator) {
+		super(model, name, travelLocator, startLocator, endLocator);
+	}
 
-    /** {@inheritDoc} */
-    @Override
-    public double getDuration(final Person person)
-    {
-        return Double.NaN;
-    }
-    
-    /** {@inheritDoc} */
-    @Override
-    protected double getDuration(final Person person, final Location startLocation, final Location endLocation)
-    {
-        // assume a speed of 40 km/h based on straight distance = 11.1 m/s
-        double distanceM = startLocation.distanceM(endLocation);
-        double maxDuration = 5400.0; // don't drive longer than 1.5 hours.
-        if (distanceM / 11.1 < maxDuration)
-        {
-            return TimeUnit.convert(distanceM / 11.1, TimeUnit.SECOND);
-        }
-        else
-        {
-            return TimeUnit.convert(maxDuration, TimeUnit.SECOND);
-        }
-    }
+	/** {@inheritDoc} */
+	@Override
+	public double getDuration(final Person person) {
+		return Double.NaN;
+	}
+
+	/** {@inheritDoc} */
+	@Override
+	protected double getDuration(final Person person, final Location startLocation, final Location endLocation) {
+		// assume a speed of 40 km/h based on straight distance = 11.1 m/s
+		double distanceM = startLocation.distanceM(endLocation);
+		double maxDuration = 5400.0; // don't drive longer than 1.5 hours.
+		if (distanceM / 11.1 < maxDuration) {
+			return TimeUnit.convert(distanceM / 11.1, TimeUnit.SECOND);
+		} else {
+			return TimeUnit.convert(maxDuration, TimeUnit.SECOND);
+		}
+	}
 
 }
