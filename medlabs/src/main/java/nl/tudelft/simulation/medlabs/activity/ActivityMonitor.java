@@ -185,9 +185,10 @@ public class ActivityMonitor implements EventProducer {
 		return "ActivityMonitor";
 	}
 
+	EventListenerMap eventListenerMap = new EventListenerMap();
+
 	@Override
 	public EventListenerMap getEventListenerMap() throws RemoteException {
-		// TODO Auto-generated method stub
-		return null;
+		return eventListenerMap;
 	}
 }

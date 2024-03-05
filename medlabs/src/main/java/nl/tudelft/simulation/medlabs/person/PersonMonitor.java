@@ -546,8 +546,10 @@ public class PersonMonitor implements EventProducer {
 		return "PersonMonitor";
 	}
 
+	EventListenerMap eventListenerMap = new EventListenerMap();
+
 	@Override
 	public EventListenerMap getEventListenerMap() throws RemoteException {
-		return null;
+		return eventListenerMap;
 	}
 }

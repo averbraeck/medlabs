@@ -597,8 +597,10 @@ public class LocationType implements EventProducer {
 		return true;
 	}
 
+	EventListenerMap eventListenerMap = new EventListenerMap();
+
 	@Override
 	public EventListenerMap getEventListenerMap() throws RemoteException {
-		return null;
+		return eventListenerMap;
 	}
 }

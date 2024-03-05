@@ -151,9 +151,10 @@ public abstract class AbstractHistogram<T> extends DynamicChart<CategoryChart> {
 		}
 	}
 
+	EventListenerMap eventListenerMap = new EventListenerMap();
+
 	@Override
 	public EventListenerMap getEventListenerMap() throws RemoteException {
-		return null;
+		return eventListenerMap;
 	}
-
 }

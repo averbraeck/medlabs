@@ -95,9 +95,10 @@ public class DiseaseMonitor implements EventProducer {
 		return "diseaseMonitor";
 	}
 
+	EventListenerMap eventListenerMap = new EventListenerMap();
+
 	@Override
 	public EventListenerMap getEventListenerMap() throws RemoteException {
-		return null;
+		return eventListenerMap;
 	}
-
 }
