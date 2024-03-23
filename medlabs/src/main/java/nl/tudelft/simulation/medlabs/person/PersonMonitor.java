@@ -1,13 +1,12 @@
 package nl.tudelft.simulation.medlabs.person;
 
-import java.io.Serializable;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import org.djutils.event.EventProducer;
+import org.djutils.event.EventType;
+import org.djutils.event.LocalEventProducer;
 import org.djutils.event.TimedEvent;
-import org.djutils.event.TimedEventType;
 import org.djutils.logger.CategoryLogger;
 import org.djutils.metadata.MetaData;
 import org.djutils.metadata.ObjectDescriptor;
@@ -32,20 +31,20 @@ import nl.tudelft.simulation.medlabs.model.MedlabsModelInterface;
  * @author Mingxin Zhang
  * @author <a href="https://www.tudelft.nl/averbraeck">Alexander Verbraeck</a>
  */
-public class PersonMonitor extends EventProducer
+public class PersonMonitor extends LocalEventProducer
 {
     /** */
     private static final long serialVersionUID = 1L;
 
     /** statistics update event for infection. */
     @SuppressWarnings({"checkstyle:visibilitymodifier", "checkstyle:membername"})
-    public TimedEventType[] INFECT_AGE_PER_DAY_EVENT = new TimedEventType[11];
+    public EventType[] INFECT_AGE_PER_DAY_EVENT = new EventType[11];
 
     /** statistics update event for infection. */
     private int[] infectionsPerAgeBracketPerDay = new int[11];
 
     /** statistics update event for infection. */
-    public static final TimedEventType INFECT_AGE_PER_HOUR_EVENT = new TimedEventType("INFECT_AGE_PER_HOUR_EVENT", new MetaData(
+    public static final EventType INFECT_AGE_PER_HOUR_EVENT = new EventType("INFECT_AGE_PER_HOUR_EVENT", new MetaData(
             "infect_nr/h/age", "number of persons infected per age bracket per hour",
             new ObjectDescriptor("infect_nr/h/age", "number of persons infected per age bracket per hour", int[].class)));
 
@@ -54,18 +53,18 @@ public class PersonMonitor extends EventProducer
 
     /** statistics update event for infection. */
     @SuppressWarnings({"checkstyle:visibilitymodifier", "checkstyle:membername"})
-    public Map<LocationType, TimedEventType> INFECT_LOCATIONTYPE_PER_DAY_EVENT = new LinkedHashMap<>();
+    public Map<LocationType, EventType> INFECT_LOCATIONTYPE_PER_DAY_EVENT = new LinkedHashMap<>();
 
     /** statistics update event for infection. */
     private Map<LocationType, Integer> infectionsPerLocationTypePerDay = new LinkedHashMap<>();
 
     /** statistics update event for infection. */
     @SuppressWarnings({"checkstyle:visibilitymodifier", "checkstyle:membername"})
-    public Map<LocationType, TimedEventType> INFECT_LOCATIONTYPE_PER_HOUR_EVENT = new LinkedHashMap<>();
+    public Map<LocationType, EventType> INFECT_LOCATIONTYPE_PER_HOUR_EVENT = new LinkedHashMap<>();
 
     /** statistics update event for infection. */
-    public static final TimedEventType INFECT_ALL_LOCATIONTYPES_PER_HOUR_EVENT =
-            new TimedEventType("INFECT_ALL_LOCATIONTYPES_PER_HOUR_EVENT",
+    public static final EventType INFECT_ALL_LOCATIONTYPES_PER_HOUR_EVENT =
+            new EventType("INFECT_ALL_LOCATIONTYPES_PER_HOUR_EVENT",
                     new MetaData("infect_nr/h/loctype", "number of persons infected per location type per hour",
                             new ObjectDescriptor("infect_nr/h/loctype", "number of persons infected per location type per hour",
                                     Map.class)));
@@ -74,7 +73,7 @@ public class PersonMonitor extends EventProducer
     private Map<LocationType, Integer> infectionsPerLocationTypePerHour = new LinkedHashMap<>();
 
     /** statistics update event for death. */
-    public static final TimedEventType DEATHS_AGE_PER_DAY_EVENT = new TimedEventType("DEATHS_AGE_PER_DAY_EVENT",
+    public static final EventType DEATHS_AGE_PER_DAY_EVENT = new EventType("DEATHS_AGE_PER_DAY_EVENT",
             new MetaData("deaths/d/age", "number of deaths per age bracket per day",
                     new ObjectDescriptor("deaths/d/age", "number of deaths per age bracket per day", int[].class)));;
 
@@ -82,51 +81,51 @@ public class PersonMonitor extends EventProducer
     private int[] deathsPerAgeBracketPerDay = new int[11];
 
     /** statistics update event for death. */
-    public static final TimedEventType DEATH_EVENT = new TimedEventType("DEATH_EVENT", new MetaData("deaths per age",
+    public static final EventType DEATH_EVENT = new EventType("DEATH_EVENT", new MetaData("deaths per age",
             "deaths per age", new ObjectDescriptor("deaths per age", "deaths per age", Integer.class)));
 
     /** statistics update event for age distribution (at model start). */
-    public static final TimedEventType AGE_EVENT =
-            new TimedEventType("AGE_EVENT", new MetaData("age", "age", new ObjectDescriptor("age", "age", Integer.class)));
+    public static final EventType AGE_EVENT =
+            new EventType("AGE_EVENT", new MetaData("age", "age", new ObjectDescriptor("age", "age", Integer.class)));
 
     /** statistics update event for family composition (at model start). */
-    public static final TimedEventType FAMILY_EVENT = new TimedEventType("FAMILY_EVENT",
+    public static final EventType FAMILY_EVENT = new EventType("FAMILY_EVENT",
             new MetaData("family size", "family size", new ObjectDescriptor("family size", "family size", Integer.class)));
 
     /** event for infected person. */
-    public static final TimedEventType INFECTED_PERSON_EVENT = new TimedEventType("INFECTED_PERSON_EVENT");
+    public static final EventType INFECTED_PERSON_EVENT = new EventType("INFECTED_PERSON_EVENT");
 
     /** event for person who died. */
-    public static final TimedEventType DEAD_PERSON_EVENT = new TimedEventType("DEAD_PERSON_EVENT",
+    public static final EventType DEAD_PERSON_EVENT = new EventType("DEAD_PERSON_EVENT",
             new MetaData("dead person", "dead person", new ObjectDescriptor("dead person", "dead person", Person.class)));
 
     /** event for infections per person type per day. */
-    public static final TimedEventType DAY_INFECTIONS_PERSON_TYPE = new TimedEventType("DAY_INFECTIONS_PERSON_TYPE");
+    public static final EventType DAY_INFECTIONS_PERSON_TYPE = new EventType("DAY_INFECTIONS_PERSON_TYPE");
 
     /** event for cumulative infections per person type per day. */
-    public static final TimedEventType TOT_INFECTIONS_PERSON_TYPE = new TimedEventType("TOT_INFECTIONS_PERSON_TYPE");
+    public static final EventType TOT_INFECTIONS_PERSON_TYPE = new EventType("TOT_INFECTIONS_PERSON_TYPE");
 
     /** event for infections from person type to person type per day. */
-    public static final TimedEventType DAY_INFECTIONS_PERSON_TO_PERSON_TYPE =
-            new TimedEventType("DAY_INFECTIONS_PERSON_TO_PERSON_TYPE");
+    public static final EventType DAY_INFECTIONS_PERSON_TO_PERSON_TYPE =
+            new EventType("DAY_INFECTIONS_PERSON_TO_PERSON_TYPE");
 
     /** event for cumulative infections from person type to person type. */
-    public static final TimedEventType TOT_INFECTIONS_PERSON_TO_PERSON_TYPE =
-            new TimedEventType("TOT_INFECTIONS_PERSON_TO_PERSON_TYPE");
+    public static final EventType TOT_INFECTIONS_PERSON_TO_PERSON_TYPE =
+            new EventType("TOT_INFECTIONS_PERSON_TO_PERSON_TYPE");
 
     /** event for infections per location type from person type to person type per day. */
-    public static final TimedEventType DAY_INFECTIONS_LOC_PERSON_TO_PERSON_TYPE =
-            new TimedEventType("DAY_INFECTIONS_LOC_PERSON_TO_PERSON_TYPE");
+    public static final EventType DAY_INFECTIONS_LOC_PERSON_TO_PERSON_TYPE =
+            new EventType("DAY_INFECTIONS_LOC_PERSON_TO_PERSON_TYPE");
 
     /** event for cumulative infections per location type from person type to person type. */
-    public static final TimedEventType TOT_INFECTIONS_LOC_PERSON_TO_PERSON_TYPE =
-            new TimedEventType("TOT_INFECTIONS_LOC_PERSON_TO_PERSON_TYPE");
+    public static final EventType TOT_INFECTIONS_LOC_PERSON_TO_PERSON_TYPE =
+            new EventType("TOT_INFECTIONS_LOC_PERSON_TO_PERSON_TYPE");
 
     /** event for infections by infection rate. */
-    public static final TimedEventType INFECTION_BY_RATE = new TimedEventType("INFECTION_BY_RATE");
+    public static final EventType INFECTION_BY_RATE = new EventType("INFECTION_BY_RATE");
 
     /** event for infections by infection rate factor. */
-    public static final TimedEventType INFECTION_BY_RATE_FACTOR = new TimedEventType("INFECTION_BY_RATE_FACTOR");
+    public static final EventType INFECTION_BY_RATE_FACTOR = new EventType("INFECTION_BY_RATE_FACTOR");
 
     /**
      * Number of infections per person type today till the current moment -- reset to 0 at midnight.
@@ -182,7 +181,7 @@ public class PersonMonitor extends EventProducer
         {
             String bracket = (10 * ageBracket) + "-" + (10 * (ageBracket + 1) - 1);
             this.INFECT_AGE_PER_DAY_EVENT[ageBracket] =
-                    new TimedEventType("INFECT_AGE_PER_DAY_EVENT_" + bracket,
+                    new EventType("INFECT_AGE_PER_DAY_EVENT_" + bracket,
                             new MetaData("infect_nr/d/age", "number of persons infected per age bracket per day",
                                     new ObjectDescriptor("infect_nr/d/age",
                                             "number of persons infected per age bracket per day", Integer.class)));
@@ -191,13 +190,13 @@ public class PersonMonitor extends EventProducer
         for (LocationType lt : this.model.getLocationTypeIndexMap().values())
         {
             this.INFECT_LOCATIONTYPE_PER_HOUR_EVENT.put(lt,
-                    new TimedEventType("INFECT_LOCATIONTYPE_PER_HOUR_EVENT_" + lt.getName(),
+                    new EventType("INFECT_LOCATIONTYPE_PER_HOUR_EVENT_" + lt.getName(),
                             new MetaData("infect_nr/h/loctype", "number of persons infected per location type per hour",
                                     new ObjectDescriptor("infect_nr/h/loctype",
                                             "number of persons infected per location type per hour", Integer.class))));
             this.infectionsPerLocationTypePerHour.put(lt, 0);
             this.INFECT_LOCATIONTYPE_PER_DAY_EVENT.put(lt,
-                    new TimedEventType("INFECT_LOCATIONTYPE_PER_DAY_EVENT_" + lt.getName(),
+                    new EventType("INFECT_LOCATIONTYPE_PER_DAY_EVENT_" + lt.getName(),
                             new MetaData("infect_nr/d/loctype", "number of persons infected per location type per hour",
                                     new ObjectDescriptor("infect_nr/d/loctype",
                                             "number of persons infected per location type per hour", Integer.class))));
@@ -206,12 +205,12 @@ public class PersonMonitor extends EventProducer
 
         try
         {
-            this.model.getSimulator().scheduleEventRel(1.0, this, this, "fireInfectAgePerHour", null);
-            this.model.getSimulator().scheduleEventRel(1.0, this, this, "fireInfectAgePerDay", null);
-            this.model.getSimulator().scheduleEventRel(1.0, this, this, "fireDeathsAgePerDay", null);
-            this.model.getSimulator().scheduleEventRel(1.0, this, this, "fireInfectLocationTypePerHour", null);
-            this.model.getSimulator().scheduleEventRel(1.0, this, this, "fireInfectLocationTypePerDay", null);
-            this.model.getSimulator().scheduleEventRel(23.9999, this, this, "midnightUpdates", null);
+            this.model.getSimulator().scheduleEventRel(1.0, this, "fireInfectAgePerHour", null);
+            this.model.getSimulator().scheduleEventRel(1.0, this, "fireInfectAgePerDay", null);
+            this.model.getSimulator().scheduleEventRel(1.0, this, "fireDeathsAgePerDay", null);
+            this.model.getSimulator().scheduleEventRel(1.0, this, "fireInfectLocationTypePerHour", null);
+            this.model.getSimulator().scheduleEventRel(1.0, this, "fireInfectLocationTypePerDay", null);
+            this.model.getSimulator().scheduleEventRel(23.9999, this, "midnightUpdates", null);
         }
         catch (Exception e)
         {
@@ -229,7 +228,7 @@ public class PersonMonitor extends EventProducer
         int ageBracket = (int) Math.floor(person.getAge() / 10.0);
         this.infectionsPerAgeBracketPerDay[ageBracket]++;
         this.infectionsPerAgeBracketPerHour[ageBracket]++;
-        fireTimedEvent(new TimedEvent<Double>(INFECTED_PERSON_EVENT, this, new Object[] {person, infectLocation},
+        fireTimedEvent(new TimedEvent<Double>(INFECTED_PERSON_EVENT, new Object[] {person, infectLocation},
                 this.model.getSimulator().getSimulatorTime()));
     }
 
@@ -282,7 +281,7 @@ public class PersonMonitor extends EventProducer
             final double infectionRate)
     {
         double now = this.model.getSimulator().getSimulatorTime();
-        fireTimedEvent(new TimedEvent<Double>(INFECTION_BY_RATE, this,
+        fireTimedEvent(new TimedEvent<Double>(INFECTION_BY_RATE, 
                 new Object[] {exposedPerson, locationTypeId, duration, infectionRate}, now));
     }
 
@@ -300,7 +299,7 @@ public class PersonMonitor extends EventProducer
             final double infectionRateFactor, final PersonType ref, final int nrInfectedRef, final int nrTotalRef)
     {
         double now = this.model.getSimulator().getSimulatorTime();
-        fireTimedEvent(new TimedEvent<Double>(INFECTION_BY_RATE_FACTOR, this,
+        fireTimedEvent(new TimedEvent<Double>(INFECTION_BY_RATE_FACTOR, 
                 new Object[] {exposedPerson, locationTypeId, duration, infectionRateFactor, ref, nrInfectedRef, nrTotalRef},
                 now));
     }
@@ -321,8 +320,8 @@ public class PersonMonitor extends EventProducer
             dayNrs[i] = this.dayInfectionsPersonType.get(ptId);
             totNrs[i] = this.totInfectionsPersonType.get(ptId);
         }
-        fireTimedEvent(new TimedEvent<Double>(DAY_INFECTIONS_PERSON_TYPE, this, dayNrs, now));
-        fireTimedEvent(new TimedEvent<Double>(TOT_INFECTIONS_PERSON_TYPE, this, totNrs, now));
+        fireTimedEvent(new TimedEvent<Double>(DAY_INFECTIONS_PERSON_TYPE, dayNrs, now));
+        fireTimedEvent(new TimedEvent<Double>(TOT_INFECTIONS_PERSON_TYPE, totNrs, now));
 
         for (int infectingIndex = 0; infectingIndex < ptSize; infectingIndex++)
         {
@@ -338,8 +337,8 @@ public class PersonMonitor extends EventProducer
                 dayNrs[exposedIndex + 1] = this.dayInfectionsPersonTypeToPersonType.get(key);
                 totNrs[exposedIndex + 1] = this.totInfectionsPersonTypeToPersonType.get(key);
             }
-            fireTimedEvent(new TimedEvent<Double>(DAY_INFECTIONS_PERSON_TO_PERSON_TYPE, this, dayNrs, now));
-            fireTimedEvent(new TimedEvent<Double>(TOT_INFECTIONS_PERSON_TO_PERSON_TYPE, this, totNrs, now));
+            fireTimedEvent(new TimedEvent<Double>(DAY_INFECTIONS_PERSON_TO_PERSON_TYPE, dayNrs, now));
+            fireTimedEvent(new TimedEvent<Double>(TOT_INFECTIONS_PERSON_TO_PERSON_TYPE, totNrs, now));
         }
 
         for (int lt = 0; lt < this.model.getLocationTypeList().size(); lt++)
@@ -361,15 +360,15 @@ public class PersonMonitor extends EventProducer
                     dayNrs[exposedIndex + 2] = this.dayInfectionsLocPersonPerson.get(key);
                     totNrs[exposedIndex + 2] = this.totInfectionsLocPersonPerson.get(key);
                 }
-                fireTimedEvent(new TimedEvent<Double>(DAY_INFECTIONS_LOC_PERSON_TO_PERSON_TYPE, this, dayNrs, now));
-                fireTimedEvent(new TimedEvent<Double>(TOT_INFECTIONS_LOC_PERSON_TO_PERSON_TYPE, this, totNrs, now));
+                fireTimedEvent(new TimedEvent<Double>(DAY_INFECTIONS_LOC_PERSON_TO_PERSON_TYPE, dayNrs, now));
+                fireTimedEvent(new TimedEvent<Double>(TOT_INFECTIONS_LOC_PERSON_TO_PERSON_TYPE, totNrs, now));
             }
         }
 
         // fill yesterday data for probability-based infections and clear day data
         this.yesterdayInfectionsPersonType.clear();
         this.yesterdayInfectionsPersonType.putAll(this.dayInfectionsPersonType);
-        this.model.getSimulator().scheduleEventRel(24.0, this, this, "midnightUpdates", null);
+        this.model.getSimulator().scheduleEventRel(24.0, this, "midnightUpdates", null);
         this.dayInfectionsPersonType.clear();
         this.dayInfectionsPersonTypeToPersonType.clear();
         this.dayInfectionsLocPersonPerson.clear();
@@ -382,13 +381,13 @@ public class PersonMonitor extends EventProducer
     {
         try
         {
-            fireTimedEvent(new TimedEvent<Double>(INFECT_AGE_PER_HOUR_EVENT, this, this.infectionsPerAgeBracketPerHour,
+            fireTimedEvent(new TimedEvent<Double>(INFECT_AGE_PER_HOUR_EVENT, this.infectionsPerAgeBracketPerHour,
                     this.model.getSimulator().getSimulatorTime()));
             for (int ageBracket = 0; ageBracket < 11; ageBracket++)
             {
                 this.infectionsPerAgeBracketPerHour[ageBracket] = 0;
             }
-            this.model.getSimulator().scheduleEventRel(1.0, this, this, "fireInfectAgePerHour", null);
+            this.model.getSimulator().scheduleEventRel(1.0, this, "fireInfectAgePerHour", null);
         }
         catch (Exception e)
         {
@@ -405,11 +404,11 @@ public class PersonMonitor extends EventProducer
         {
             for (int ageBracket = 0; ageBracket < 11; ageBracket++)
             {
-                fireTimedEvent(new TimedEvent<Double>(this.INFECT_AGE_PER_DAY_EVENT[ageBracket], this,
+                fireTimedEvent(new TimedEvent<Double>(this.INFECT_AGE_PER_DAY_EVENT[ageBracket], 
                         this.infectionsPerAgeBracketPerDay[ageBracket], this.model.getSimulator().getSimulatorTime()));
                 this.infectionsPerAgeBracketPerDay[ageBracket] = 0;
             }
-            this.model.getSimulator().scheduleEventRel(24.0, this, this, "fireInfectAgePerDay", null);
+            this.model.getSimulator().scheduleEventRel(24.0, this, "fireInfectAgePerDay", null);
         }
         catch (Exception e)
         {
@@ -425,9 +424,9 @@ public class PersonMonitor extends EventProducer
     {
         int ageBracket = (int) Math.floor(person.getAge() / 10.0);
         this.deathsPerAgeBracketPerDay[ageBracket]++;
-        fireTimedEvent(new TimedEvent<Double>(DEATH_EVENT, this, person.getAge(),
-                this.model.getSimulator().getSimulatorTime()));
-        fireTimedEvent(new TimedEvent<Double>(DEAD_PERSON_EVENT, this, person, this.model.getSimulator().getSimulatorTime()));
+        fireTimedEvent(
+                new TimedEvent<Double>(DEATH_EVENT, person.getAge(), this.model.getSimulator().getSimulatorTime()));
+        fireTimedEvent(new TimedEvent<Double>(DEAD_PERSON_EVENT, person, this.model.getSimulator().getSimulatorTime()));
     }
 
     /**
@@ -437,13 +436,13 @@ public class PersonMonitor extends EventProducer
     {
         try
         {
-            fireTimedEvent(new TimedEvent<Double>(DEATHS_AGE_PER_DAY_EVENT, this, this.deathsPerAgeBracketPerDay,
+            fireTimedEvent(new TimedEvent<Double>(DEATHS_AGE_PER_DAY_EVENT, this.deathsPerAgeBracketPerDay,
                     this.model.getSimulator().getSimulatorTime()));
             for (int ageBracket = 0; ageBracket < 11; ageBracket++)
             {
                 this.deathsPerAgeBracketPerDay[ageBracket] = 0;
             }
-            this.model.getSimulator().scheduleEventRel(24.0, this, this, "fireDeathsAgePerDay", null);
+            this.model.getSimulator().scheduleEventRel(24.0, this, "fireDeathsAgePerDay", null);
         }
         catch (Exception e)
         {
@@ -458,15 +457,15 @@ public class PersonMonitor extends EventProducer
     {
         try
         {
-            fireTimedEvent(new TimedEvent<Double>(INFECT_ALL_LOCATIONTYPES_PER_HOUR_EVENT, this,
+            fireTimedEvent(new TimedEvent<Double>(INFECT_ALL_LOCATIONTYPES_PER_HOUR_EVENT,
                     new HashMap<>(this.infectionsPerLocationTypePerHour), this.model.getSimulator().getSimulatorTime()));
             for (Map.Entry<LocationType, Integer> entry : this.infectionsPerLocationTypePerHour.entrySet())
             {
-                fireTimedEvent(new TimedEvent<Double>(this.INFECT_LOCATIONTYPE_PER_HOUR_EVENT.get(entry.getKey()), this,
+                fireTimedEvent(new TimedEvent<Double>(this.INFECT_LOCATIONTYPE_PER_HOUR_EVENT.get(entry.getKey()),
                         entry.getValue(), this.model.getSimulator().getSimulatorTime()));
                 this.infectionsPerLocationTypePerHour.put(entry.getKey(), 0);
             }
-            this.model.getSimulator().scheduleEventRel(1.0, this, this, "fireInfectLocationTypePerHour", null);
+            this.model.getSimulator().scheduleEventRel(1.0, this, "fireInfectLocationTypePerHour", null);
         }
         catch (Exception e)
         {
@@ -483,11 +482,11 @@ public class PersonMonitor extends EventProducer
         {
             for (Map.Entry<LocationType, Integer> entry : this.infectionsPerLocationTypePerDay.entrySet())
             {
-                fireTimedEvent(new TimedEvent<Double>(this.INFECT_LOCATIONTYPE_PER_DAY_EVENT.get(entry.getKey()), this,
+                fireTimedEvent(new TimedEvent<Double>(this.INFECT_LOCATIONTYPE_PER_DAY_EVENT.get(entry.getKey()),
                         entry.getValue(), this.model.getSimulator().getSimulatorTime()));
                 this.infectionsPerLocationTypePerDay.put(entry.getKey(), 0);
             }
-            this.model.getSimulator().scheduleEventRel(24.0, this, this, "fireInfectLocationTypePerDay", null);
+            this.model.getSimulator().scheduleEventRel(24.0, this, "fireInfectLocationTypePerDay", null);
         }
         catch (Exception e)
         {
@@ -501,8 +500,7 @@ public class PersonMonitor extends EventProducer
      */
     public void reportAge(final int age)
     {
-        this.fireTimedEvent(
-                new TimedEvent<Double>(AGE_EVENT, this, age, this.model.getSimulator().getSimulatorTime()));
+        this.fireTimedEvent(new TimedEvent<Double>(AGE_EVENT, age, this.model.getSimulator().getSimulatorTime()));
     }
 
     /**
@@ -511,8 +509,7 @@ public class PersonMonitor extends EventProducer
      */
     public void reportFamilySize(final int size)
     {
-        this.fireTimedEvent(
-                new TimedEvent<Double>(FAMILY_EVENT, this, size, this.model.getSimulator().getSimulatorTime()));
+        this.fireTimedEvent(new TimedEvent<Double>(FAMILY_EVENT, size, this.model.getSimulator().getSimulatorTime()));
     }
 
     /**
@@ -521,12 +518,5 @@ public class PersonMonitor extends EventProducer
     public TIntIntMap getYesterdayInfectionsPersonType()
     {
         return this.yesterdayInfectionsPersonType;
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public Serializable getSourceId()
-    {
-        return "PersonMonitor";
     }
 }

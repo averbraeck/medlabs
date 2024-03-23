@@ -1,6 +1,6 @@
 package nl.tudelft.simulation.medlabs.activity.locator;
 
-import org.djunits.Throw;
+import org.djutils.exceptions.Throw;
 
 import nl.tudelft.simulation.jstats.streams.Java2Random;
 import nl.tudelft.simulation.jstats.streams.StreamInterface;

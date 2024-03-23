@@ -1,14 +1,13 @@
 package nl.tudelft.simulation.medlabs.location;
 
-import java.io.Serializable;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import org.djutils.event.EventProducer;
+import org.djutils.event.EventType;
+import org.djutils.event.LocalEventProducer;
 import org.djutils.event.TimedEvent;
-import org.djutils.event.TimedEventType;
 import org.djutils.metadata.MetaData;
 import org.djutils.metadata.ObjectDescriptor;
 
@@ -34,7 +33,7 @@ import nl.tudelft.simulation.medlabs.simulation.TimeUnit;
  * @author Mingxin Zhang
  * @author <a href="https://www.tudelft.nl/averbraeck">Alexander Verbraeck</a>
  */
-public class LocationType extends EventProducer
+public class LocationType extends LocalEventProducer
 {
     /** */
     private static final long serialVersionUID = 1L;
@@ -120,13 +119,13 @@ public class LocationType extends EventProducer
     protected int numberPersons = 0;
 
     /** statistics update event. */
-    public static final TimedEventType STATISTICS_EVENT =
-            new TimedEventType("STATISTICS_EVENT", new MetaData("numberPersons", "number of persons in this location type",
+    public static final EventType STATISTICS_EVENT =
+            new EventType("STATISTICS_EVENT", new MetaData("numberPersons", "number of persons in this location type",
                     new ObjectDescriptor("numberPersons", "number of persons in this location type", Integer.class)));
 
     /** activity duration event. */
-    public static final TimedEventType DURATION_EVENT =
-            new TimedEventType("DURATION_EVENT", new MetaData("duration", "duration in this location type",
+    public static final EventType DURATION_EVENT =
+            new EventType("DURATION_EVENT", new MetaData("duration", "duration in this location type",
                     new ObjectDescriptor("duration", "duration in this location type", Double.class)));
 
     /**
@@ -162,13 +161,6 @@ public class LocationType extends EventProducer
         this.fractionActivities = 1.0;
         this.alternativeLocationType = this;
         this.reportAsLocationName = name;
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public Serializable getSourceId()
-    {
-        return this.name;
     }
 
     /**
@@ -415,13 +407,12 @@ public class LocationType extends EventProducer
      */
     public void reportStatistics()
     {
-        this.fireTimedEvent(new TimedEvent<Double>(STATISTICS_EVENT, this, this.numberPersons,
-                this.model.getSimulator().getSimulatorTime()));
+        this.fireTimedEvent(
+                new TimedEvent<Double>(STATISTICS_EVENT, this.numberPersons, this.model.getSimulator().getSimulatorTime()));
 
         try
         {
-            this.model.getSimulator().scheduleEventRel(TimeUnit.convert(10.0, TimeUnit.MINUTE), this, this, "reportStatistics",
-                    null);
+            this.model.getSimulator().scheduleEventRel(TimeUnit.convert(10.0, TimeUnit.MINUTE), this, "reportStatistics", null);
         }
         catch (Exception exception)
         {
@@ -435,8 +426,7 @@ public class LocationType extends EventProducer
      */
     public void reportActivityDuration(final double duration)
     {
-        this.fireTimedEvent(
-                new TimedEvent<Double>(DURATION_EVENT, this, duration, this.model.getSimulator().getSimulatorTime()));
+        this.fireTimedEvent(new TimedEvent<Double>(DURATION_EVENT, duration, this.model.getSimulator().getSimulatorTime()));
     }
 
     /**

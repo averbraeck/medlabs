@@ -5,10 +5,11 @@ import java.io.Serializable;
 import javax.naming.NamingException;
 
 import nl.tudelft.simulation.dsol.SimRuntimeException;
-import nl.tudelft.simulation.dsol.simulators.DEVSSimulator;
+import nl.tudelft.simulation.dsol.simulators.DevsSimulator;
+import nl.tudelft.simulation.dsol.simulators.ErrorStrategy;
 
 /**
- * SimpleDEVSSimulator is a simulator that is aimed at executing TinySimEvents where time is stored as a double, with a unit
+ * SimpleDevsSimulator is a simulator that is aimed at executing TinySimEvents where time is stored as a double, with a unit
  * value in hours.
  * <p>
  * Copyright (c) 2020-2024 Delft University of Technology, Jaffalaan 5, 2628 BX Delft, the Netherlands. All rights reserved. The
@@ -21,7 +22,7 @@ import nl.tudelft.simulation.dsol.simulators.DEVSSimulator;
  * </p>
  * @author <a href="https://www.tudelft.nl/averbraeck">Alexander Verbraeck</a>
  */
-public class SimpleDEVSSimulator extends DEVSSimulator<Double> implements SimpleDEVSSimulatorInterface
+public class SimpleDevsSimulator extends DevsSimulator<Double> implements SimpleDevsSimulatorInterface
 {
     /** */
     private static final long serialVersionUID = 20200918L;
@@ -33,7 +34,7 @@ public class SimpleDEVSSimulator extends DEVSSimulator<Double> implements Simple
      * Initialize the Simulator.
      * @param id Serializable; the id that is used in events and statistics
      */
-    public SimpleDEVSSimulator(final Serializable id)
+    public SimpleDevsSimulator(final Serializable id)
     {
         super(id);
     }
@@ -55,18 +56,18 @@ public class SimpleDEVSSimulator extends DEVSSimulator<Double> implements Simple
 
     /** {@inheritDoc} */
     @Override
-    public void scheduleEventRel(final double delay, final TimeUnit unit, final Object source, final Object target,
-            final String method, final Object[] args)
+    public void scheduleEventRel(final double delay, final TimeUnit unit, final Object target, final String method,
+            final Object[] args)
     {
-        scheduleEventRel(TimeUnit.convert(delay, unit), source, target, method, args);
+        scheduleEventRel(TimeUnit.convert(delay, unit), target, method, args);
     }
 
     /** {@inheritDoc} */
     @Override
-    public void scheduleEventAbs(final double time, final TimeUnit unit, final Object source, final Object target,
-            final String method, final Object[] args)
+    public void scheduleEventAbs(final double time, final TimeUnit unit, final Object target, final String method,
+            final Object[] args)
     {
-        scheduleEventAbs(TimeUnit.convert(time, unit), source, target, method, args);
+        scheduleEventAbs(TimeUnit.convert(time, unit), target, method, args);
     }
 
     /** {@inheritDoc} */
@@ -83,7 +84,7 @@ public class SimpleDEVSSimulator extends DEVSSimulator<Double> implements Simple
             final SimpleModelInterface model, final int replicationNr, final long seed)
             throws SimRuntimeException, NamingException
     {
-        setPauseOnError(true);
+        setErrorStrategy(ErrorStrategy.WARN_AND_PAUSE);
         SimpleReplication newReplication = new SimpleReplication("rep" + replicationNr, startTime, warmupPeriod, runLength);
         super.initialize(model, newReplication);
     }

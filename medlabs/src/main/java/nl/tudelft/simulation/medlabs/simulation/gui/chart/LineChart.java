@@ -2,10 +2,10 @@ package nl.tudelft.simulation.medlabs.simulation.gui.chart;
 
 import java.rmi.RemoteException;
 
-import org.djutils.event.EventInterface;
-import org.djutils.event.EventProducerInterface;
-import org.djutils.event.EventTypeInterface;
-import org.djutils.event.TimedEventInterface;
+import org.djutils.event.Event;
+import org.djutils.event.EventProducer;
+import org.djutils.event.EventType;
+import org.djutils.event.TimedEvent;
 import org.djutils.exceptions.Throw;
 import org.knowm.xchart.XYChart;
 import org.knowm.xchart.XYChartBuilder;
@@ -37,7 +37,7 @@ public class LineChart extends DynamicChart<XYChart>
 
     /** the event to listen to update the graph with new points. */
     @SuppressWarnings("checkstyle:visibilitymodifier")
-    protected EventTypeInterface listenerEventType = null;
+    protected EventType listenerEventType = null;
 
     /** the series. */
     @SuppressWarnings("checkstyle:visibilitymodifier")
@@ -141,7 +141,7 @@ public class LineChart extends DynamicChart<XYChart>
      * @param eventType EventType; the event to listen to
      * @throws RemoteException on networking error for remote events
      */
-    public void listenTo(final EventProducerInterface eventProducer, final EventTypeInterface eventType) throws RemoteException
+    public void listenTo(final EventProducer eventProducer, final EventType eventType) throws RemoteException
     {
         Throw.when(this.listenerEventType != null, RuntimeException.class,
                 "eventType " + this.listenerEventType + " already registered");
@@ -151,14 +151,14 @@ public class LineChart extends DynamicChart<XYChart>
 
     /** {@inheritDoc} */
     @Override
-    public void notify(final EventInterface event) throws RemoteException
+    public void notify(final Event event) throws RemoteException
     {
         if (event.getType().equals(this.listenerEventType))
         {
-            if (event instanceof TimedEventInterface<?>)
+            if (event instanceof TimedEvent<?>)
             {
                 // assume time + Number
-                TimedEventInterface<?> timedEvent = (TimedEventInterface<?>) event;
+                TimedEvent<?> timedEvent = (TimedEvent<?>) event;
                 if (timedEvent.getTimeStamp() instanceof Number && timedEvent.getContent() instanceof Number)
                 {
                     double x = ((Number) timedEvent.getTimeStamp()).doubleValue();

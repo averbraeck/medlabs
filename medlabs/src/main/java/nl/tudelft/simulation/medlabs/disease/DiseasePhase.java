@@ -1,6 +1,6 @@
 package nl.tudelft.simulation.medlabs.disease;
 
-import org.djutils.event.TimedEventType;
+import org.djutils.event.EventType;
 import org.djutils.metadata.MetaData;
 import org.djutils.metadata.ObjectDescriptor;
 
@@ -39,8 +39,8 @@ public class DiseasePhase
     private int numberOfPersons = 0;
 
     /** the statistics event type. */
-    @SuppressWarnings({ "checkstyle:visibilitymodifier", "checkstyle:membername" })
-    public TimedEventType DISEASE_STATISTICS_EVENT;
+    @SuppressWarnings({"checkstyle:visibilitymodifier", "checkstyle:membername"})
+    public EventType DISEASE_STATISTICS_EVENT;
 
     /**
      * Create a new disease phase with a name.
@@ -56,7 +56,7 @@ public class DiseasePhase
         this.index = index;
         this.diseaseState = diseaseState;
         this.DISEASE_STATISTICS_EVENT =
-                new TimedEventType("DISEASE_STATISTICS_EVENT_" + disease.getName() + "_" + name, new MetaData(name,
+                new EventType("DISEASE_STATISTICS_EVENT_" + disease.getName() + "_" + name, new MetaData(name,
                         disease.getName() + "_" + name, new ObjectDescriptor("number", "number in phase", Integer.class)));
     }
 

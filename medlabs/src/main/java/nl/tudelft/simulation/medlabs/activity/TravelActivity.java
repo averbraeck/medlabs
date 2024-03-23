@@ -90,8 +90,8 @@ public abstract class TravelActivity extends Activity
         travelLocation.getLocationType().reportActivityDuration(activityDuration);
 
         this.model.getSimulator()
-                .scheduleEvent(new TinySimEvent(this.model.getSimulator().getSimulatorTime() + activityDuration, this, this,
-                        "finishTravelActivity", new Object[] { person, travelLocation, toLocation }));
+                .scheduleEvent(new TinySimEvent(this.model.getSimulator().getSimulatorTime() + activityDuration, this,
+                        "finishTravelActivity", new Object[] {person, travelLocation, toLocation}));
     }
 
     /** {@inheritDoc} */

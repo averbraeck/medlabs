@@ -1,10 +1,8 @@
 package nl.tudelft.simulation.medlabs.disease;
 
-import java.io.Serializable;
-
-import org.djunits.Throw;
-import org.djutils.event.EventProducer;
+import org.djutils.event.LocalEventProducer;
 import org.djutils.event.TimedEvent;
+import org.djutils.exceptions.Throw;
 
 import nl.tudelft.simulation.dsol.SimRuntimeException;
 import nl.tudelft.simulation.medlabs.model.MedlabsModelInterface;
@@ -24,7 +22,7 @@ import nl.tudelft.simulation.medlabs.person.Person;
  * @author Mingxin Zhang
  * @author <a href="https://www.tudelft.nl/averbraeck">Alexander Verbraeck</a>
  */
-public class DiseaseMonitor extends EventProducer
+public class DiseaseMonitor extends LocalEventProducer
 {
     /** */
     private static final long serialVersionUID = 20200927L;
@@ -51,7 +49,7 @@ public class DiseaseMonitor extends EventProducer
         this.model = model;
         this.disease = disease;
         this.intervalHours = intervalHours;
-        this.model.getSimulator().scheduleEventRel(0.0, this, this, "reportDiseaseStatistics", null);
+        this.model.getSimulator().scheduleEventRel(0.0, this, "reportDiseaseStatistics", null);
     }
 
     /**
@@ -61,12 +59,12 @@ public class DiseaseMonitor extends EventProducer
     {
         for (DiseasePhase diseasePhase : this.disease.getDiseasePhases())
         {
-            this.fireEvent(new TimedEvent<Double>(diseasePhase.DISEASE_STATISTICS_EVENT, this,
-                    diseasePhase.getNumberOfPersons(), this.model.getSimulator().getSimulatorTime()));
+            this.fireEvent(new TimedEvent<Double>(diseasePhase.DISEASE_STATISTICS_EVENT, diseasePhase.getNumberOfPersons(),
+                    this.model.getSimulator().getSimulatorTime()));
         }
         try
         {
-            this.model.getSimulator().scheduleEventRel(this.intervalHours, this, this, "reportDiseaseStatistics", null);
+            this.model.getSimulator().scheduleEventRel(this.intervalHours, this, "reportDiseaseStatistics", null);
         }
         catch (SimRuntimeException exception)
         {
@@ -83,7 +81,7 @@ public class DiseaseMonitor extends EventProducer
     {
         System.out.println("Day " + this.model.getDay() + ": " + infectiousPerson + " infected " + infectedPerson);
     }
-    
+
     /**
      * Return the disease for which this is the monitor.
      * @return Disease; the disease
@@ -91,13 +89,6 @@ public class DiseaseMonitor extends EventProducer
     public DiseaseProgression getDisease()
     {
         return this.disease;
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public Serializable getSourceId()
-    {
-        return "diseaseMonitor";
     }
 
 }

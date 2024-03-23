@@ -27,8 +27,8 @@ import javax.swing.JTextField;
 import javax.swing.UIManager;
 import javax.swing.filechooser.FileFilter;
 
-import org.djutils.event.EventInterface;
-import org.djutils.event.EventListenerInterface;
+import org.djutils.event.Event;
+import org.djutils.event.EventListener;
 import org.knowm.xchart.BitmapEncoder;
 import org.knowm.xchart.BitmapEncoder.BitmapFormat;
 import org.knowm.xchart.CSVExporter;
@@ -47,14 +47,14 @@ import org.knowm.xchart.internal.chartpart.Chart;
  * @author <a href="https://www.tudelft.nl/averbraeck">Alexander Verbraeck</a>
  * @param <T> the type of chart
  */
-public class MenuXChartPanel<T extends Chart<?, ?>> extends XChartPanel<T> implements EventListenerInterface
+public class MenuXChartPanel<T extends Chart<?, ?>> extends XChartPanel<T> implements EventListener
 {
     /** */
     private static final long serialVersionUID = 20220918L;
-    
+
     /** the dynamic chart for which this is the panel. */
     private final DynamicChart<T> dynamicChart;
-    
+
     /**
      * Create a chart from XChart in a panel that allows for a more extended menu on right-click.
      * @param dynamicChart T; the chart to display in a panel
@@ -63,7 +63,7 @@ public class MenuXChartPanel<T extends Chart<?, ?>> extends XChartPanel<T> imple
     {
         super(dynamicChart.getChart());
         this.dynamicChart = dynamicChart;
-        
+
         // remove the existing mouse listener for the popup menu
         MouseListener[] mls = getListeners(MouseListener.class);
         for (MouseListener ml : mls)
@@ -75,7 +75,7 @@ public class MenuXChartPanel<T extends Chart<?, ?>> extends XChartPanel<T> imple
         // add a new, extensible, mouse listener that also includes the XChartPanel menu options
         MouseListener menuListener = new PopUpMenuClickListener();
         this.addMouseListener(menuListener);
-        
+
         dynamicChart.addListener(this, DynamicChart.UPDATE_EVENT);
     }
 
@@ -96,7 +96,7 @@ public class MenuXChartPanel<T extends Chart<?, ?>> extends XChartPanel<T> imple
 
     /** {@inheritDoc} */
     @Override
-    public void notify(final EventInterface event) throws RemoteException
+    public void notify(final Event event) throws RemoteException
     {
         if (event.getType().equals(DynamicChart.UPDATE_EVENT))
         {

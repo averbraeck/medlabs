@@ -1,7 +1,7 @@
 package nl.tudelft.simulation.medlabs.simulation.gui;
 
 import nl.tudelft.simulation.dsol.swing.gui.control.ClockPanel;
-import nl.tudelft.simulation.medlabs.simulation.SimpleDEVSSimulatorInterface;
+import nl.tudelft.simulation.medlabs.simulation.SimpleDevsSimulatorInterface;
 
 /**
  * ClockLabel for a double time. The formatter has been adjusted to display days and hours since the start of the simulation.
@@ -25,7 +25,7 @@ public class MedlabsClockPanel extends ClockPanel<Double>
      * Construct a clock panel with a double time.
      * @param simulator SimulatorInterface&lt;A, R, T&gt;; the simulator
      */
-    public MedlabsClockPanel(final SimpleDEVSSimulatorInterface simulator)
+    public MedlabsClockPanel(final SimpleDevsSimulatorInterface simulator)
     {
         super(simulator);
         setPrevSimTime(0.0);

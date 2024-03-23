@@ -1,6 +1,6 @@
 package nl.tudelft.simulation.medlabs.animation;
 
-import nl.tudelft.simulation.dsol.animation.D2.Renderable2D;
+import nl.tudelft.simulation.dsol.animation.d2.Renderable2d;
 import nl.tudelft.simulation.medlabs.common.ModelLocatable;
 
 /**
@@ -17,7 +17,7 @@ import nl.tudelft.simulation.medlabs.common.ModelLocatable;
  * @author Mingxin Zhang
  * @author <a href="https://www.tudelft.nl/averbraeck">Alexander Verbraeck</a>
  */
-public abstract class TinyRenderable2D extends Renderable2D<ModelLocatable>
+public abstract class TinyRenderable2D extends Renderable2d<ModelLocatable>
 {
     /** */
     private static final long serialVersionUID = 20200920L;

@@ -114,7 +114,7 @@ public class IdxPerson extends AbstractPerson
         try
         {
             this.model.getSimulator().scheduleEvent(
-                    new TinySimEvent(this.model.getSimulator().getSimulatorTime(), this, this, "executeStartOfActivity", null));
+                    new TinySimEvent(this.model.getSimulator().getSimulatorTime(), this, "executeStartOfActivity", null));
         }
         catch (Exception exception)
         {

@@ -1,13 +1,12 @@
 package nl.tudelft.simulation.medlabs.simulation.gui.chart;
 
 import java.awt.Container;
-import java.io.Serializable;
 import java.rmi.RemoteException;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import org.djutils.event.EventListenerInterface;
-import org.djutils.event.EventProducer;
+import org.djutils.event.EventListener;
 import org.djutils.event.EventType;
+import org.djutils.event.LocalEventProducer;
 import org.djutils.metadata.MetaData;
 import org.knowm.xchart.internal.chartpart.Chart;
 
@@ -21,7 +20,7 @@ import nl.tudelft.simulation.dsol.swing.Swingable;
  * @author <a href="https://www.tudelft.nl/averbraeck">Alexander Verbraeck</a>
  * @param <T> The chart type
  */
-public abstract class DynamicChart<T extends Chart<?, ?>> extends EventProducer implements EventListenerInterface, Swingable
+public abstract class DynamicChart<T extends Chart<?, ?>> extends LocalEventProducer implements EventListener, Swingable
 {
     /** */
     private static final long serialVersionUID = 20220918L;
@@ -72,13 +71,6 @@ public abstract class DynamicChart<T extends Chart<?, ?>> extends EventProducer 
                 }
             }
         }.start();
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public Serializable getSourceId()
-    {
-        return "DynamicChart";
     }
 
     /**

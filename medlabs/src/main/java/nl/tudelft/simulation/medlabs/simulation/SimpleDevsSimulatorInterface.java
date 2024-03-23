@@ -3,11 +3,11 @@ package nl.tudelft.simulation.medlabs.simulation;
 import javax.naming.NamingException;
 
 import nl.tudelft.simulation.dsol.SimRuntimeException;
-import nl.tudelft.simulation.dsol.simulators.DEVSSimulatorInterface;
+import nl.tudelft.simulation.dsol.simulators.DevsSimulatorInterface;
 
 /**
- * SimpleDEVSSimulatorInterface is a simulator that accepts double time for relative and absolute simulation events. The
- * time is given in hours, to make scheduling during the day as natural as possible.
+ * SimpleDevsSimulatorInterface is a simulator that accepts double time for relative and absolute simulation events. The time is
+ * given in hours, to make scheduling during the day as natural as possible.
  * <p>
  * Copyright (c) 2020-2024 Delft University of Technology, Jaffalaan 5, 2628 BX Delft, the Netherlands. All rights reserved. The
  * MEDLABS project (Modeling Epidemic Disease with Large-scale Agent-Based Simulation) is aimed at providing policy analysis
@@ -19,7 +19,7 @@ import nl.tudelft.simulation.dsol.simulators.DEVSSimulatorInterface;
  * </p>
  * @author <a href="https://www.tudelft.nl/averbraeck">Alexander Verbraeck</a>
  */
-public interface SimpleDEVSSimulatorInterface extends DEVSSimulatorInterface<Double>
+public interface SimpleDevsSimulatorInterface extends DevsSimulatorInterface<Double>
 {
     /**
      * Return the weekday in the current simulation; 0 is Monday, 6 = Sunday.
@@ -31,23 +31,21 @@ public interface SimpleDEVSSimulatorInterface extends DEVSSimulatorInterface<Dou
      * Schedule a simulation event with a relative time delay.
      * @param delay double; the delay in the given time unit
      * @param unit TimeUnit; the unit in which the delay is specified
-     * @param source Object; the source object from which the SimEvent is scheduled
      * @param target Object; the target object on which the method execution is scheduled
      * @param method String; the name of the method to execute within the target object
      * @param args Object[]; the arguments for the method call
      */
-    void scheduleEventRel(double delay, TimeUnit unit, Object source, Object target, String method, Object[] args);
+    void scheduleEventRel(double delay, TimeUnit unit, Object target, String method, Object[] args);
 
     /**
      * Schedule a simulation event on an absolute time.
      * @param time double; the scheduled time in the given time unit
      * @param unit TimeUnit; the unit in which the time is specified
-     * @param source Object; the source object from which the SimEvent is scheduled
      * @param target Object; the target object on which the method execution is scheduled
      * @param method String; the name of the method to execute within the target object
      * @param args Object[]; the arguments for the method call
      */
-    void scheduleEventAbs(double time, TimeUnit unit, Object source, Object target, String method, Object[] args);
+    void scheduleEventAbs(double time, TimeUnit unit, Object target, String method, Object[] args);
 
     /**
      * Initialize a simulation engine without animation; the easy way. PauseOnError is set to true;
@@ -82,7 +80,7 @@ public interface SimpleDEVSSimulatorInterface extends DEVSSimulatorInterface<Dou
     SimpleReplication getReplication();
 
     /**
-     * Return the simulator time in hours since the start of the simulation. 
+     * Return the simulator time in hours since the start of the simulation.
      * @return double; the simulator time in hours since the start of the simulation.
      */
     @Override

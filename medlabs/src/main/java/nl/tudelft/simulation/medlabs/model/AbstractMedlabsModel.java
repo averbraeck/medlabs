@@ -1,6 +1,5 @@
 package nl.tudelft.simulation.medlabs.model;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -12,7 +11,7 @@ import gnu.trove.map.TIntObjectMap;
 import gnu.trove.map.hash.TIntObjectHashMap;
 import gnu.trove.set.TIntSet;
 import nl.tudelft.simulation.dsol.SimRuntimeException;
-import nl.tudelft.simulation.dsol.model.AbstractDSOLModel;
+import nl.tudelft.simulation.dsol.model.AbstractDsolModel;
 import nl.tudelft.simulation.dsol.model.inputparameters.InputParameterBoolean;
 import nl.tudelft.simulation.dsol.model.inputparameters.InputParameterException;
 import nl.tudelft.simulation.dsol.model.inputparameters.InputParameterInteger;
@@ -34,7 +33,7 @@ import nl.tudelft.simulation.medlabs.person.Person;
 import nl.tudelft.simulation.medlabs.person.PersonMonitor;
 import nl.tudelft.simulation.medlabs.person.PersonType;
 import nl.tudelft.simulation.medlabs.policy.Policy;
-import nl.tudelft.simulation.medlabs.simulation.SimpleDEVSSimulatorInterface;
+import nl.tudelft.simulation.medlabs.simulation.SimpleDevsSimulatorInterface;
 
 /**
  * Abstract class from which a disease model for a certain city or region can be extended.
@@ -51,7 +50,7 @@ import nl.tudelft.simulation.medlabs.simulation.SimpleDEVSSimulatorInterface;
  * @author <a href="https://www.tudelft.nl/averbraeck">Alexander Verbraeck</a>
  */
 @SuppressWarnings("checkstyle:visibilitymodifier")
-public abstract class AbstractMedlabsModel extends AbstractDSOLModel<Double, SimpleDEVSSimulatorInterface>
+public abstract class AbstractMedlabsModel extends AbstractDsolModel<Double, SimpleDevsSimulatorInterface>
         implements MedlabsModelInterface
 {
     /** */
@@ -134,10 +133,10 @@ public abstract class AbstractMedlabsModel extends AbstractDSOLModel<Double, Sim
 
     /**
      * Construct the model and set the simulator.
-     * @param simulator SimpleDEVSSimulatorInterface; the simulator for this model
+     * @param simulator SimpleDevsSimulatorInterface; the simulator for this model
      * @param propertyFilename String; the name of the property file
      */
-    public AbstractMedlabsModel(final SimpleDEVSSimulatorInterface simulator, final String propertyFilename)
+    public AbstractMedlabsModel(final SimpleDevsSimulatorInterface simulator, final String propertyFilename)
     {
         super(simulator);
         this.propertyFilename = propertyFilename;
@@ -159,7 +158,7 @@ public abstract class AbstractMedlabsModel extends AbstractDSOLModel<Double, Sim
             this.randomStream = new MersenneTwister(getParameterValueLong("generic.Seed") + 1L);
             this.reproducibleJava2Random = new ReproducibleRandomGenerator(getParameterValueLong("generic.Seed") + 2L);
             this.u01 = new DistUniform(this.randomStream, 0.0, 1.0);
-            
+
             // create the activity monitor. TODO: maybe move to actual model?
             this.activityMonitor = new ActivityMonitor(this);
 
@@ -173,7 +172,7 @@ public abstract class AbstractMedlabsModel extends AbstractDSOLModel<Double, Sim
             }
 
             // schedule the week pattern changes just before midnight every day
-            getSimulator().scheduleEventRel(23.999, this, this, "checkChangeWeekPattern", null);
+            getSimulator().scheduleEventRel(23.999, this, "checkChangeWeekPattern", null);
             System.out.println("Model constructed");
         }
         catch (Exception exception)
@@ -246,7 +245,7 @@ public abstract class AbstractMedlabsModel extends AbstractDSOLModel<Double, Sim
     protected void checkChangeWeekPattern()
     {
         // TODO: implement loop over all persons and see if they need to change
-        getSimulator().scheduleEventRel(24.0, this, this, "checkChangeWeekPattern", null);
+        getSimulator().scheduleEventRel(24.0, this, "checkChangeWeekPattern", null);
     }
 
     /** {@inheritDoc} */
@@ -464,13 +463,6 @@ public abstract class AbstractMedlabsModel extends AbstractDSOLModel<Double, Sim
     public String getPropertyFilename()
     {
         return this.propertyFilename;
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public Serializable getSourceId()
-    {
-        return "MedlabsModel";
     }
 
 }

@@ -7,8 +7,8 @@ import java.rmi.RemoteException;
 import java.util.List;
 import java.util.Map;
 
-import org.djutils.event.EventInterface;
-import org.djutils.event.EventListenerInterface;
+import org.djutils.event.Event;
+import org.djutils.event.EventListener;
 
 import gnu.trove.map.TIntDoubleMap;
 import nl.tudelft.simulation.medlabs.activity.ActivityMonitor;
@@ -37,7 +37,7 @@ import nl.tudelft.simulation.medlabs.person.Worker;
  * </p>
  * @author <a href="https://www.tudelft.nl/averbraeck">Alexander Verbraeck</a>
  */
-public class ResultWriter implements EventListenerInterface
+public class ResultWriter implements EventListener
 {
     /** */
     private static final long serialVersionUID = 20201005L;
@@ -244,7 +244,7 @@ public class ResultWriter implements EventListenerInterface
         }
         this.locationTypeWriter.write("\n");
         this.locationTypeWriter.flush();
-        this.model.getSimulator().scheduleEventRel(0.5, this, this, "writeLocationTypeLine", null);
+        this.model.getSimulator().scheduleEventRel(0.5, this, "writeLocationTypeLine", null);
     }
 
     private void writeDiseasePhaseHeader(final DiseaseProgression disease)
@@ -267,7 +267,7 @@ public class ResultWriter implements EventListenerInterface
         }
         this.diseasePhaseWriter.write("\n");
         this.diseasePhaseWriter.flush();
-        this.model.getSimulator().scheduleEventRel(0.5, this, this, "writeDiseasePhaseLine", new Object[] {disease});
+        this.model.getSimulator().scheduleEventRel(0.5, this, "writeDiseasePhaseLine", new Object[] {disease});
     }
 
     private void writeInfectionLocationHeader()
@@ -379,9 +379,9 @@ public class ResultWriter implements EventListenerInterface
         }
         this.personDumpWriter.flush();
 
-        // this.model.getSimulator().scheduleEventRel(24.0 * personDumpInterval, this, this, "writePersonDump",
+        // this.model.getSimulator().scheduleEventRel(24.0 * personDumpInterval, this, "writePersonDump",
         // new Object[] { personDumpInterval });
-        this.model.getSimulator().scheduleEventRel(1.0 * personDumpInterval, this, this, "writePersonDump",
+        this.model.getSimulator().scheduleEventRel(1.0 * personDumpInterval, this, "writePersonDump",
                 new Object[] {personDumpInterval});
     }
 
@@ -759,7 +759,7 @@ public class ResultWriter implements EventListenerInterface
     /** {@inheritDoc} */
     @SuppressWarnings("unchecked")
     @Override
-    public void notify(final EventInterface event) throws RemoteException
+    public void notify(final Event event) throws RemoteException
     {
         if (event.getType().equals(PersonMonitor.INFECT_ALL_LOCATIONTYPES_PER_HOUR_EVENT))
         {

@@ -4,9 +4,9 @@ import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.djutils.event.EventInterface;
-import org.djutils.event.EventProducerInterface;
-import org.djutils.event.EventTypeInterface;
+import org.djutils.event.Event;
+import org.djutils.event.EventProducer;
+import org.djutils.event.EventType;
 import org.djutils.exceptions.Throw;
 import org.knowm.xchart.CategoryChart;
 import org.knowm.xchart.CategoryChartBuilder;
@@ -36,7 +36,7 @@ public abstract class AbstractHistogram<T> extends DynamicChart<CategoryChart>
 
     /** the event with the x-value to listen to. */
     @SuppressWarnings("checkstyle:visibilitymodifier")
-    protected EventTypeInterface listenerEventType = null;
+    protected EventType listenerEventType = null;
 
     /**
      * Create a new histogram.
@@ -125,7 +125,7 @@ public abstract class AbstractHistogram<T> extends DynamicChart<CategoryChart>
      * @param eventType EventType; the event to listen to
      * @throws RemoteException on networking error for remote events
      */
-    public void listenTo(final EventProducerInterface eventProducer, final EventTypeInterface eventType) throws RemoteException
+    public void listenTo(final EventProducer eventProducer, final EventType eventType) throws RemoteException
     {
         Throw.when(this.listenerEventType != null, RuntimeException.class,
                 "eventType " + this.listenerEventType + " already registered");
@@ -136,7 +136,7 @@ public abstract class AbstractHistogram<T> extends DynamicChart<CategoryChart>
     /** {@inheritDoc} */
     @SuppressWarnings("unchecked")
     @Override
-    public void notify(final EventInterface event) throws RemoteException
+    public void notify(final Event event) throws RemoteException
     {
         if (event.getType().equals(this.listenerEventType))
         {

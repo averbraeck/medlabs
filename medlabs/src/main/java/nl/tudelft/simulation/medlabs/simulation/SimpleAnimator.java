@@ -5,10 +5,11 @@ import java.io.Serializable;
 import javax.naming.NamingException;
 
 import nl.tudelft.simulation.dsol.SimRuntimeException;
-import nl.tudelft.simulation.dsol.simulators.DEVSRealTimeAnimator;
+import nl.tudelft.simulation.dsol.simulators.DevsRealTimeAnimator;
+import nl.tudelft.simulation.dsol.simulators.ErrorStrategy;
 
-public class SimpleAnimator extends DEVSRealTimeAnimator<Double>
-        implements SimpleDEVSSimulatorInterface, SimpleAnimatorInterface
+public class SimpleAnimator extends DevsRealTimeAnimator<Double>
+        implements SimpleDevsSimulatorInterface, SimpleAnimatorInterface
 {
     /**  */
     private static final long serialVersionUID = 20200918L;
@@ -50,18 +51,18 @@ public class SimpleAnimator extends DEVSRealTimeAnimator<Double>
 
     /** {@inheritDoc} */
     @Override
-    public void scheduleEventRel(final double delay, final TimeUnit unit, final Object source, final Object target,
-            final String method, final Object[] args)
+    public void scheduleEventRel(final double delay, final TimeUnit unit, final Object target, final String method,
+            final Object[] args)
     {
-        scheduleEventRel(TimeUnit.convert(delay, unit), source, target, method, args);
+        scheduleEventRel(TimeUnit.convert(delay, unit), target, method, args);
     }
 
     /** {@inheritDoc} */
     @Override
-    public void scheduleEventAbs(final double time, final TimeUnit unit, final Object source, final Object target,
-            final String method, final Object[] args)
+    public void scheduleEventAbs(final double time, final TimeUnit unit, final Object target, final String method,
+            final Object[] args)
     {
-        scheduleEventAbs(TimeUnit.convert(time, unit), source, target, method, args);
+        scheduleEventAbs(TimeUnit.convert(time, unit), target, method, args);
     }
 
     /** {@inheritDoc} */
@@ -78,7 +79,7 @@ public class SimpleAnimator extends DEVSRealTimeAnimator<Double>
             final SimpleModelInterface model, final int replicationNr, final long seed)
             throws SimRuntimeException, NamingException
     {
-        setPauseOnError(true);
+        setErrorStrategy(ErrorStrategy.WARN_AND_PAUSE);
         SimpleReplication newReplication = new SimpleReplication("rep" + replicationNr, startTime, warmupPeriod, runLength);
         super.initialize(model, newReplication);
 

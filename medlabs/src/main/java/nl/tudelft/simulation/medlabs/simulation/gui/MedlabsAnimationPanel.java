@@ -9,10 +9,10 @@ import java.util.Set;
 import org.djutils.draw.bounds.Bounds2d;
 
 import nl.tudelft.simulation.dsol.animation.Locatable;
-import nl.tudelft.simulation.dsol.animation.D2.Renderable2DInterface;
+import nl.tudelft.simulation.dsol.animation.d2.Renderable2dInterface;
 import nl.tudelft.simulation.dsol.simulators.SimulatorInterface;
-import nl.tudelft.simulation.dsol.swing.animation.D2.AnimationPanel;
-import nl.tudelft.simulation.language.DSOLException;
+import nl.tudelft.simulation.dsol.swing.animation.d2.AnimationPanel;
+import nl.tudelft.simulation.language.DsolException;
 
 /**
  * MedlabsAnimationPanel is an animation panel that reacts on 'String' toggles.
@@ -49,17 +49,17 @@ public class MedlabsAnimationPanel extends AnimationPanel
      * @param homeExtent Bounds2d; the home (initial) extent of the panel
      * @param simulator SimulatorInterface&lt;?, ?, ?&gt;; the simulator of which we want to know the events for animation
      * @throws RemoteException on network error for one of the listeners
-     * @throws DSOLException when the simulator is not implementing the AnimatorInterface
+     * @throws DsolException when the simulator is not implementing the AnimatorInterface
      */
     public MedlabsAnimationPanel(final Bounds2d homeExtent, final SimulatorInterface<?> simulator)
-            throws RemoteException, DSOLException
+            throws RemoteException, DsolException
     {
         super(homeExtent, simulator);
     }
 
     /** {@inheritDoc} */
     @Override
-    public boolean isShowElement(final Renderable2DInterface<? extends Locatable> element)
+    public boolean isShowElement(final Renderable2dInterface<? extends Locatable> element)
     {
         Locatable locatable = element.getSource();
         if (locatable == null)

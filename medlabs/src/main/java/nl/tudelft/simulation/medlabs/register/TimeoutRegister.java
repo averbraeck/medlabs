@@ -60,7 +60,7 @@ public class TimeoutRegister extends LastDateRegister
                 it.remove();
             }
         }
-        this.model.getSimulator().scheduleEventRel(24.0, this, this, "cleanup", new Object[] {});
+        this.model.getSimulator().scheduleEventRel(24.0, this, "cleanup", new Object[] {});
     }
 
 }

@@ -45,27 +45,25 @@ public class TinySimEvent extends AbstractSimEvent<Double>
     /**
      * The constructor of the event stores the time the event must be executed and the object and method to invoke.
      * @param executionTime Double; the absolute time the event has to be executed.
-     * @param source Object; the source that created the method
      * @param target Object; the object on which the method must be invoked.
      * @param methodName String; the method to invoke
      * @param args Object[]; the arguments the method to invoke with
      */
-    public TinySimEvent(final double executionTime, final Object source, final Object target, final String methodName,
+    public TinySimEvent(final double executionTime, final Object target, final String methodName,
             final Object[] args)
     {
-        this(executionTime, SimEventInterface.NORMAL_PRIORITY, source, target, methodName, args);
+        this(executionTime, SimEventInterface.NORMAL_PRIORITY, target, methodName, args);
     }
 
     /**
      * The constructor of the event stores the time the event must be executed and the object and method to invoke.
      * @param executionTime Double; the time the event has to be executed.
      * @param priority short; the priority of the event
-     * @param source Object; the source that created the method
      * @param target Object; the object on which the method must be invoked.
      * @param methodName String; the method to invoke
      * @param args Object[]; the arguments the method to invoke with
      */
-    public TinySimEvent(final double executionTime, final short priority, final Object source, final Object target,
+    public TinySimEvent(final double executionTime, final short priority, final Object target,
             final String methodName, final Object[] args)
     {
         super(executionTime, priority);

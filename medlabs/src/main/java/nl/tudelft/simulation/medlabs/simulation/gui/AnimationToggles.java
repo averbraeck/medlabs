@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.Set;
 
 import nl.tudelft.simulation.dsol.animation.Locatable;
-import nl.tudelft.simulation.dsol.swing.gui.animation.DSOLAnimationTab;
+import nl.tudelft.simulation.dsol.swing.gui.animation.DsolAnimationTab;
 import nl.tudelft.simulation.medlabs.location.Location;
 import nl.tudelft.simulation.medlabs.location.LocationType;
 import nl.tudelft.simulation.medlabs.model.MedlabsModelInterface;
@@ -43,7 +43,7 @@ public class AnimationToggles
      * @param model MedlabsModelInterface; the model
      * @param panel MedlabsAnimationPanel; the Animation tab.
      */
-    public static void setTextAnimationTogglesStandard(final MedlabsModelInterface model, final DSOLAnimationTab panel)
+    public static void setTextAnimationTogglesStandard(final MedlabsModelInterface model, final DsolAnimationTab panel)
     {
         panel.addToggleText("INFRASTRUCTURE");
         for (LocationType type : model.getLocationTypeIndexMap().values())
@@ -110,7 +110,7 @@ public class AnimationToggles
      * @param panel MedlabsAnimationPanel; the Animation tab.
      * @param locatableClass Class&lt;? extends Locatable&gt;; the class for which the animation has to be shown.
      */
-    public static void showAnimationClass(final MedlabsModelInterface model, final DSOLAnimationTab panel,
+    public static void showAnimationClass(final MedlabsModelInterface model, final DsolAnimationTab panel,
             final Class<? extends Locatable> locatableClass)
     {
         panel.getAnimationPanel().showClass(locatableClass);
@@ -123,7 +123,7 @@ public class AnimationToggles
      * @param panel MedlabsAnimationPanel; the Animation tab.
      * @param locatableClass Class&lt;? extends Locatable&gt;; the class for which the animation has to be shown.
      */
-    public static void hideAnimationClass(final MedlabsModelInterface model, final DSOLAnimationTab panel,
+    public static void hideAnimationClass(final MedlabsModelInterface model, final DsolAnimationTab panel,
             final Class<? extends Locatable> locatableClass)
     {
         panel.getAnimationPanel().hideClass(locatableClass);
@@ -135,7 +135,7 @@ public class AnimationToggles
      * @param model MedlabsModelInterface; the model
      * @param panel MedlabsAnimationPanel; the Animation tab.
      */
-    public static void showAnimationStandard(final MedlabsModelInterface model, final DSOLAnimationTab panel)
+    public static void showAnimationStandard(final MedlabsModelInterface model, final DsolAnimationTab panel)
     {
         for (LocationType type : model.getLocationTypeIndexMap().values())
         {

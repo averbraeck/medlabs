@@ -12,7 +12,7 @@ import org.pmw.tinylog.Level;
 import gnu.trove.iterator.TIntObjectIterator;
 import gnu.trove.map.TIntObjectMap;
 import gnu.trove.set.TIntSet;
-import nl.tudelft.simulation.dsol.swing.gui.DSOLPanel;
+import nl.tudelft.simulation.dsol.swing.gui.DsolPanel;
 import nl.tudelft.simulation.dsol.swing.gui.TablePanel;
 import nl.tudelft.simulation.dsol.swing.gui.control.AbstractControlPanel;
 import nl.tudelft.simulation.medlabs.disease.DiseasePhase;
@@ -23,7 +23,7 @@ import nl.tudelft.simulation.medlabs.location.animation.LocationAnimation;
 import nl.tudelft.simulation.medlabs.model.MedlabsModelInterface;
 import nl.tudelft.simulation.medlabs.person.Person;
 import nl.tudelft.simulation.medlabs.person.PersonMonitor;
-import nl.tudelft.simulation.medlabs.simulation.SimpleDEVSSimulatorInterface;
+import nl.tudelft.simulation.medlabs.simulation.SimpleDevsSimulatorInterface;
 import nl.tudelft.simulation.medlabs.simulation.gui.chart.HistogramDouble;
 import nl.tudelft.simulation.medlabs.simulation.gui.chart.HistogramInt;
 import nl.tudelft.simulation.medlabs.simulation.gui.chart.LineChart;
@@ -41,7 +41,7 @@ import nl.tudelft.simulation.medlabs.simulation.gui.chart.LineChart;
  * </p>
  * @author <a href="https://www.tudelft.nl/averbraeck">Alexander Verbraeck</a>
  */
-public class MedlabsPanel extends DSOLPanel
+public class MedlabsPanel extends DsolPanel
 {
     /** */
     private static final long serialVersionUID = 20210128L;
@@ -110,7 +110,7 @@ public class MedlabsPanel extends DSOLPanel
      */
     protected void addLocationStatistics()
     {
-        SimpleDEVSSimulatorInterface simulator = getModel().getSimulator();
+        SimpleDevsSimulatorInterface simulator = getModel().getSimulator();
 
         // create the location statistics
         int rows = (int) Math.ceil(1.0 * getModel().getLocationTypeIndexMap().size() / 6.0);
@@ -149,7 +149,7 @@ public class MedlabsPanel extends DSOLPanel
                 locationCharts.setCell(chart.getSwingPanel(), col, row);
 
                 // make sure every LocationType reports about its status every 5 minutes
-                simulator.scheduleEventRel(0.0, locationType, locationType, "reportStatistics", null);
+                simulator.scheduleEventRel(0.0, locationType, "reportStatistics", null);
 
                 HistogramDouble histogram = null;
                 if (locationType.getName() == "metrotrain" || locationType.getName() == "bus"
@@ -188,7 +188,7 @@ public class MedlabsPanel extends DSOLPanel
 
     private void addDiseaseStatistics(final DiseaseProgression disease)
     {
-        SimpleDEVSSimulatorInterface simulator = getModel().getSimulator();
+        SimpleDevsSimulatorInterface simulator = getModel().getSimulator();
 
         int rows = (int) Math.ceil(1.0 * disease.getDiseasePhases().size() / 4.0);
         TablePanel diseaseCharts = new TablePanel(4, rows);
@@ -229,7 +229,7 @@ public class MedlabsPanel extends DSOLPanel
      */
     protected void addInfectionStatisticsPerLocationType()
     {
-        SimpleDEVSSimulatorInterface simulator = getModel().getSimulator();
+        SimpleDevsSimulatorInterface simulator = getModel().getSimulator();
 
         // create the location statistics
         int rows = (int) Math.ceil(1.0 * getModel().getLocationTypeIndexMap().size() / 6.0);
@@ -274,7 +274,7 @@ public class MedlabsPanel extends DSOLPanel
      */
     protected void addInfectionStatisticsPerAge()
     {
-        SimpleDEVSSimulatorInterface simulator = getModel().getSimulator();
+        SimpleDevsSimulatorInterface simulator = getModel().getSimulator();
 
         // create the age statistics
         TablePanel infectionAgeCharts = new TablePanel(4, 3);

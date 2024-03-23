@@ -2,7 +2,7 @@ package nl.tudelft.simulation.medlabs.simulation;
 
 import org.djutils.draw.bounds.Bounds2d;
 
-import nl.tudelft.simulation.dsol.model.DSOLModel;
+import nl.tudelft.simulation.dsol.model.DsolModel;
 
 /**
  * SimpleModelInterface ensures we can get the extent of the animation if needed.
@@ -17,7 +17,7 @@ import nl.tudelft.simulation.dsol.model.DSOLModel;
  * </p>
  * @author <a href="https://www.tudelft.nl/averbraeck">Alexander Verbraeck</a>
  */
-public interface SimpleModelInterface extends DSOLModel<Double, SimpleDEVSSimulatorInterface>
+public interface SimpleModelInterface extends DsolModel<Double, SimpleDevsSimulatorInterface>
 {
     /**
      * get the extent for the animation.

@@ -23,7 +23,7 @@ import nl.tudelft.simulation.medlabs.person.PersonMonitor;
 import nl.tudelft.simulation.medlabs.person.PersonType;
 import nl.tudelft.simulation.medlabs.policy.Policy;
 import nl.tudelft.simulation.medlabs.properties.Properties;
-import nl.tudelft.simulation.medlabs.simulation.SimpleDEVSSimulatorInterface;
+import nl.tudelft.simulation.medlabs.simulation.SimpleDevsSimulatorInterface;
 import nl.tudelft.simulation.medlabs.simulation.SimpleModelInterface;
 
 /**
@@ -55,7 +55,7 @@ public interface MedlabsModelInterface extends SimpleModelInterface
 {
     /** @return the simulator for the model */
     @Override
-    SimpleDEVSSimulatorInterface getSimulator();
+    SimpleDevsSimulatorInterface getSimulator();
 
     /** @return whether the simulation is interactive or a batch run */
     boolean isInteractive();

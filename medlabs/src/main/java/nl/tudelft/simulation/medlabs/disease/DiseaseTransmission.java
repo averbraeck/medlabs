@@ -16,7 +16,7 @@ import nl.tudelft.simulation.medlabs.AbstractModelNamed;
 import nl.tudelft.simulation.medlabs.location.Location;
 import nl.tudelft.simulation.medlabs.model.MedlabsModelInterface;
 import nl.tudelft.simulation.medlabs.person.Person;
-import nl.tudelft.simulation.medlabs.simulation.SimpleDEVSSimulatorInterface;
+import nl.tudelft.simulation.medlabs.simulation.SimpleDevsSimulatorInterface;
 
 /**
  * Calculation that each location carries out when people leave or enter the location. When there are infectious persons in the
@@ -58,7 +58,7 @@ public abstract class DiseaseTransmission extends AbstractModelNamed implements 
     private TLongFloatMap lastCalculationCache = new TLongFloatHashMap();
 
     /** the simulator. */
-    private final SimpleDEVSSimulatorInterface simulator;
+    private final SimpleDevsSimulatorInterface simulator;
 
     /**
      * Create a new Transmission model.

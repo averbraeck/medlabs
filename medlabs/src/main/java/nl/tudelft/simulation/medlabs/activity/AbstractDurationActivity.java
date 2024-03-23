@@ -70,7 +70,7 @@ public abstract class AbstractDurationActivity extends Activity
         activityLocation.getLocationType().reportActivityDuration(activityDuration);
         
         this.model.getSimulator()
-                .scheduleEvent(new TinySimEvent(this.model.getSimulator().getSimulatorTime() + activityDuration, this, this,
+                .scheduleEvent(new TinySimEvent(this.model.getSimulator().getSimulatorTime() + activityDuration, this,
                         "finishActivity", new Object[] { person }));
     }
 

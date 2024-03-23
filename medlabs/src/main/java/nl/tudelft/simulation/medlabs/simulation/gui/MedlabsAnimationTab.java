@@ -19,8 +19,8 @@ import org.djutils.logger.CategoryLogger;
 
 import nl.tudelft.simulation.dsol.animation.Locatable;
 import nl.tudelft.simulation.dsol.simulators.SimulatorInterface;
-import nl.tudelft.simulation.dsol.swing.gui.animation.DSOLAnimationGisTab;
-import nl.tudelft.simulation.language.DSOLException;
+import nl.tudelft.simulation.dsol.swing.gui.animation.DsolAnimationGisTab;
+import nl.tudelft.simulation.language.DsolException;
 
 /**
  * MedlabsAnimationTab.java.
@@ -35,7 +35,7 @@ import nl.tudelft.simulation.language.DSOLException;
  * </p>
  * @author <a href="https://www.tudelft.nl/averbraeck">Alexander Verbraeck</a>
  */
-public class MedlabsAnimationTab extends DSOLAnimationGisTab
+public class MedlabsAnimationTab extends DsolAnimationGisTab
 {
     /** */
     private static final long serialVersionUID = 20211231L;
@@ -51,10 +51,10 @@ public class MedlabsAnimationTab extends DSOLAnimationGisTab
      * @param homeExtent Bounds2d; initial extent of the animation
      * @param simulator SimulatorInterface; the simulator
      * @throws RemoteException when notification of the animation panel fails
-     * @throws DSOLException when simulator does not implement the AnimatorInterface
+     * @throws DsolException when simulator does not implement the AnimatorInterface
      */
     public MedlabsAnimationTab(final Bounds2d homeExtent, final SimulatorInterface<?> simulator)
-            throws RemoteException, DSOLException
+            throws RemoteException, DsolException
     {
         super(simulator, new MedlabsAnimationPanel(homeExtent, simulator));
     }

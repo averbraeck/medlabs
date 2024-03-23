@@ -6,9 +6,9 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.djutils.event.EventInterface;
-import org.djutils.event.EventProducerInterface;
-import org.djutils.event.EventTypeInterface;
+import org.djutils.event.Event;
+import org.djutils.event.EventProducer;
+import org.djutils.event.EventType;
 import org.djutils.exceptions.Throw;
 import org.knowm.xchart.XYChart;
 import org.knowm.xchart.XYChartBuilder;
@@ -143,10 +143,10 @@ public class MultiLineChart extends DynamicChart<XYChart>
      * @param eventType EventType; the event to listen to
      * @throws RemoteException on networking error for remote events
      */
-    public void listenTo(final String seriesName, final EventProducerInterface eventProducer,
-            final EventTypeInterface eventType) throws RemoteException
+    public void listenTo(final String seriesName, final EventProducer eventProducer, final EventType eventType)
+            throws RemoteException
     {
-        String key = eventType.getName() + "#" + eventProducer.getSourceId();
+        String key = eventType.getName();
         Throw.when(this.listenerEventTypes.containsKey(key), RuntimeException.class,
                 "eventType " + this.listenerEventTypes + " already registered");
         this.listenerEventTypes.put(key, seriesName);
@@ -155,9 +155,9 @@ public class MultiLineChart extends DynamicChart<XYChart>
 
     /** {@inheritDoc} */
     @Override
-    public void notify(final EventInterface event) throws RemoteException
+    public void notify(final Event event) throws RemoteException
     {
-        String seriesName = this.listenerEventTypes.get(event.getType().getName() + "#" + event.getSourceId());
+        String seriesName = this.listenerEventTypes.get(event.getType().getName());
         if (seriesName != null)
         {
             if (event.getContent() instanceof double[])

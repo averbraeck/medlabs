@@ -31,7 +31,7 @@ public abstract class AdaptiveClosurePolicy extends ClosurePolicy
     {
         super(model, name, closureLocations);
         double nextMidnight = 24.0 * Math.ceil(this.model.getSimulator().getSimulatorTime() / 24.0);
-        this.model.getSimulator().scheduleEventAbs(nextMidnight, this, this, "monitor", null);
+        this.model.getSimulator().scheduleEventAbs(nextMidnight, this, "monitor", null);
     }
 
     /**
@@ -40,7 +40,7 @@ public abstract class AdaptiveClosurePolicy extends ClosurePolicy
     protected void monitor()
     {
         monitorAndOpenOrClose();
-        this.model.getSimulator().scheduleEventRel(24.0, this, this, "monitor", null);
+        this.model.getSimulator().scheduleEventRel(24.0, this, "monitor", null);
     }
 
     /**

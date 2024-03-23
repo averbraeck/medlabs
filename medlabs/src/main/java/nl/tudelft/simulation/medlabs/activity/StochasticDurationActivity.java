@@ -1,6 +1,6 @@
 package nl.tudelft.simulation.medlabs.activity;
 
-import org.djunits.Throw;
+import org.djutils.exceptions.Throw;
 
 import nl.tudelft.simulation.jstats.distributions.DistContinuous;
 import nl.tudelft.simulation.medlabs.activity.locator.LocatorInterface;

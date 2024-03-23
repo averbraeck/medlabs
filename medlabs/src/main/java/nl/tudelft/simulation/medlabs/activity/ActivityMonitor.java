@@ -6,9 +6,9 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.djutils.event.EventProducer;
+import org.djutils.event.EventType;
+import org.djutils.event.LocalEventProducer;
 import org.djutils.event.TimedEvent;
-import org.djutils.event.TimedEventType;
 import org.djutils.metadata.MetaData;
 import org.djutils.metadata.ObjectDescriptor;
 
@@ -30,7 +30,7 @@ import nl.tudelft.simulation.medlabs.model.MedlabsModelInterface;
  * </p>
  * @author <a href="https://www.tudelft.nl/averbraeck">Alexander Verbraeck</a>
  */
-public class ActivityMonitor extends EventProducer
+public class ActivityMonitor extends LocalEventProducer
 {
     /** */
     private static final long serialVersionUID = 20221030L;
@@ -57,7 +57,7 @@ public class ActivityMonitor extends EventProducer
     TIntDoubleMap totMap0;
 
     /** statistics event for daily hours per location type per person type. */
-    public static final TimedEventType ACTIVITY_DAY_STATISTICS_EVENT = new TimedEventType("ACTIVITY_DAY_STATISTICS_EVENT",
+    public static final EventType ACTIVITY_DAY_STATISTICS_EVENT = new EventType("ACTIVITY_DAY_STATISTICS_EVENT",
             new MetaData("acthours/loctype/persontype", "daily activity hours per location type per person type",
                     new ObjectDescriptor("acthours/loctype/persontype",
                             "daily activity hours per location type per person type", List.class),
@@ -65,7 +65,7 @@ public class ActivityMonitor extends EventProducer
                     new ObjectDescriptor("persontype-nr", "map of person type name to number", Map.class)));
 
     /** statistics event for cumulative total hours per location type per person type. */
-    public static final TimedEventType ACTIVITY_TOT_STATISTICS_EVENT = new TimedEventType("ACTIVITY_TOT_STATISTICS_EVENT",
+    public static final EventType ACTIVITY_TOT_STATISTICS_EVENT = new EventType("ACTIVITY_TOT_STATISTICS_EVENT",
             new MetaData("totacthours/loctype/persontype", "total activity hours per location type per person type",
                     new ObjectDescriptor("totacthours/loctype/persontype",
                             "total activity hours per location type per person type", List.class),
@@ -89,7 +89,7 @@ public class ActivityMonitor extends EventProducer
         this.dayMap0 = this.dayHoursPerLocPerPerson.get(0);
         this.totMap0 = this.totHoursPerLocPerPerson.get(0);
         // make sure the event is scheduled AFTER the midnight reset for the activities to capture a full day
-        this.model.getSimulator().scheduleEventRel(24.001, this, this, "reportActivityStatistics", null);
+        this.model.getSimulator().scheduleEventRel(24.001, this, "reportActivityStatistics", null);
     }
 
     /**
@@ -98,10 +98,10 @@ public class ActivityMonitor extends EventProducer
     protected void reportActivityStatistics()
     {
         // send the maps to any listeners (e.g., the ResultWriter)
-        this.fireEvent(new TimedEvent<Double>(ACTIVITY_DAY_STATISTICS_EVENT, this,
+        fireEvent(new TimedEvent<Double>(ACTIVITY_DAY_STATISTICS_EVENT,
                 new Object[] {(Serializable) this.dayHoursPerLocPerPerson, this.locationTypeToNrMap, this.personTypeToNrMap},
                 this.model.getSimulator().getSimulatorTime()));
-        this.fireEvent(new TimedEvent<Double>(ACTIVITY_TOT_STATISTICS_EVENT, this,
+        fireEvent(new TimedEvent<Double>(ACTIVITY_TOT_STATISTICS_EVENT,
                 new Object[] {(Serializable) this.totHoursPerLocPerPerson, this.locationTypeToNrMap, this.personTypeToNrMap},
                 this.model.getSimulator().getSimulatorTime()));
         // clean the daily map
@@ -115,7 +115,7 @@ public class ActivityMonitor extends EventProducer
         // schedule the next day's event
         try
         {
-            this.model.getSimulator().scheduleEventRel(24.0, this, this, "reportActivityStatistics", null);
+            this.model.getSimulator().scheduleEventRel(24.0, this, "reportActivityStatistics", null);
         }
         catch (SimRuntimeException exception)
         {
@@ -164,10 +164,4 @@ public class ActivityMonitor extends EventProducer
         this.totMap0.put(personTypeNr, this.totMap0.get(personTypeNr) + hours);
     }
 
-    /** {@inheritDoc} */
-    @Override
-    public Serializable getSourceId()
-    {
-        return "ActivityMonitor";
-    }
 }
