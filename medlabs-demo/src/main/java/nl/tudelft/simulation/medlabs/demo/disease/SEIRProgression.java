@@ -90,9 +90,27 @@ public class SEIRProgression extends DiseaseProgression
     // Progression model
     // -------------------------------------------------------------
 
+
     /** {@inheritDoc} */
     @Override
-    public void changeDiseasePhase(final Person person, final DiseasePhase nextPhase)
+    public boolean expose(final Person exposedPerson, final DiseasePhase exposurePhase)
+    {
+        exposedPerson.getDiseasePhase().removePerson();
+        exposedPerson.setDiseasePhase(exposed);
+        exposed.addPerson();
+        double incubationPeriod = this.distIncubationPeriod.getDuration();
+
+        this.model.getSimulator().scheduleEventRel(incubationPeriod, this, this, "changeDiseasePhase",
+                new Object[] {exposedPerson, SEIRProgression.infected});
+        return true;
+    }
+    
+    /**
+     * Update the disease phase for a person.
+     * @param person Person; 
+     * @param nextPhase DiseasePhase; 
+     */
+    protected void changeDiseasePhase(final Person person, final DiseasePhase nextPhase)
     {
         MedlabsModelInterface model = person.getModel();
 
@@ -102,14 +120,8 @@ public class SEIRProgression extends DiseaseProgression
 
         if (nextPhase == exposed)
         {
-            person.getDiseasePhase().removePerson();
-            person.setDiseasePhase(exposed);
-            exposed.addPerson();
-            double incubationPeriod = this.distIncubationPeriod.getDuration();
-
-            model.getSimulator().scheduleEventRel(incubationPeriod, this, person, "changePhase",
-                    new Object[] {SEIRProgression.infected});
-            return;
+            System.err.println("Should have been handled with expose(...) method");
+            expose(person, exposed);
         }
 
         // -------------------------------------------------------------
@@ -122,8 +134,8 @@ public class SEIRProgression extends DiseaseProgression
             person.setDiseasePhase(infected);
             infected.addPerson();
 
-            model.getSimulator().scheduleEventRel(this.distInfectedToRecovery.getDuration(), TimeUnit.HOUR, this, person,
-                    "changePhase", new Object[] {recovered});
+            model.getSimulator().scheduleEventRel(this.distInfectedToRecovery.getDuration(), TimeUnit.HOUR, this, this,
+                    "changeDiseasePhase", new Object[] {person, recovered});
             return;
         }
 

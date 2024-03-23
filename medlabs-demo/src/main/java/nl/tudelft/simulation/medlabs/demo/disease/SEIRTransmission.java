@@ -1,8 +1,11 @@
 package nl.tudelft.simulation.medlabs.demo.disease;
 
 import gnu.trove.iterator.TIntIterator;
+import gnu.trove.list.TIntList;
+import gnu.trove.list.array.TIntArrayList;
 import gnu.trove.map.TIntObjectMap;
 import gnu.trove.set.TIntSet;
+import gnu.trove.set.hash.TIntHashSet;
 import nl.tudelft.simulation.medlabs.disease.DiseaseTransmission;
 import nl.tudelft.simulation.medlabs.location.Location;
 import nl.tudelft.simulation.medlabs.location.LocationType;
@@ -138,6 +141,7 @@ public class SEIRTransmission extends DiseaseTransmission
         double area = location.getTotalSurfaceM2();
 
         TIntObjectMap<Person> personMap = this.model.getPersonMap();
+        TIntList infectiousPersonList = new TIntArrayList();
         double now = this.model.getSimulator().getSimulatorTime().doubleValue();
 
         if (lt.isInfectInSublocation() || location.getNumberOfSubLocations() < 2)
@@ -173,6 +177,7 @@ public class SEIRTransmission extends DiseaseTransmission
                         maxTij = contribution;
                         mostInfectiousPerson = person;
                     }
+                    infectiousPersonList.add(person.getId());
                 }
             }
             if (sumTij == 0.0)
@@ -191,7 +196,7 @@ public class SEIRTransmission extends DiseaseTransmission
                     {
                         person.setExposureTime((float) now);
                         this.model.getPersonMonitor().reportExposure(person, location, mostInfectiousPerson);
-                        this.model.getDiseaseProgression().changeDiseasePhase(person, SEIRProgression.exposed);
+                        this.model.getDiseaseProgression().expose(person, SEIRProgression.exposed, infectiousPersonList);
                     }
                 }
             }
@@ -230,6 +235,7 @@ public class SEIRTransmission extends DiseaseTransmission
                         maxTij = contribution;
                         mostInfectiousPerson = person;
                     }
+                    infectiousPersonList.add(person.getId());
                 }
             }
             if (sumTij == 0.0)
@@ -249,7 +255,7 @@ public class SEIRTransmission extends DiseaseTransmission
                     {
                         person.setExposureTime((float) now);
                         this.model.getPersonMonitor().reportExposure(person, location, mostInfectiousPerson);
-                        this.model.getDiseaseProgression().changeDiseasePhase(person, SEIRProgression.exposed);
+                        this.model.getDiseaseProgression().expose(person, SEIRProgression.exposed, infectiousPersonList);
                     }
                 }
             }

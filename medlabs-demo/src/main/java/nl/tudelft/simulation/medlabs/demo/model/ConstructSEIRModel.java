@@ -233,7 +233,7 @@ public class ConstructSEIRModel
             {
                 if (person.getAge() >= ageMin && person.getAge() <= ageMax)
                 {
-                    this.model.getDiseaseProgression().changeDiseasePhase(person, SEIRProgression.exposed);
+                    this.model.getDiseaseProgression().expose(person, SEIRProgression.exposed);
                     numberToInfect--;
                 }
             }
