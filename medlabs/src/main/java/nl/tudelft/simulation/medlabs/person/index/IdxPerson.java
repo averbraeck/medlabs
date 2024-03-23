@@ -162,13 +162,6 @@ public class IdxPerson extends AbstractPerson
 
     /** {@inheritDoc} */
     @Override
-    public void changePhase(final DiseasePhase nextPhase)
-    {
-        this.model.getDiseaseProgression().changeDiseasePhase(this, nextPhase);
-    }
-
-    /** {@inheritDoc} */
-    @Override
     public String toString()
     {
         return getClass().getSimpleName() + "[id=" + getId() + ", age=" + getAge() + ", " + getCurrentLocation() + "."
@@ -292,8 +285,8 @@ public class IdxPerson extends AbstractPerson
     public void setCurrentWeekPattern(final WeekPattern currentWeekPattern)
     {
         // TODO: set the activity to -1 to avoid problems with retrieving the previous activity
-        // This does not work... 
-    	// getCurrentLocation().removePerson(this);
+        // This does not work...
+        // getCurrentLocation().removePerson(this);
         this.currentWeekPatternIndex = (short) currentWeekPattern.getId();
     }
 
