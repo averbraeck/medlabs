@@ -11,20 +11,19 @@ import javax.naming.NamingException;
 import org.djutils.draw.bounds.Bounds2d;
 
 import nl.tudelft.simulation.dsol.SimRuntimeException;
-import nl.tudelft.simulation.dsol.animation.D2.RenderableScale;
+import nl.tudelft.simulation.dsol.animation.d2.RenderableScale;
 import nl.tudelft.simulation.dsol.model.inputparameters.InputParameter;
 import nl.tudelft.simulation.dsol.model.inputparameters.InputParameterException;
 import nl.tudelft.simulation.dsol.model.inputparameters.InputParameterMap;
 import nl.tudelft.simulation.dsol.model.inputparameters.reader.ReadInputParameters;
-import nl.tudelft.simulation.dsol.swing.gui.DSOLPanel;
-import nl.tudelft.simulation.dsol.swing.gui.animation.DSOLAnimationApplication;
-import nl.tudelft.simulation.dsol.swing.gui.animation.DSOLAnimationTab;
+import nl.tudelft.simulation.dsol.swing.gui.DsolPanel;
+import nl.tudelft.simulation.dsol.swing.gui.animation.DsolAnimationApplication;
+import nl.tudelft.simulation.dsol.swing.gui.animation.DsolAnimationTab;
 import nl.tudelft.simulation.dsol.swing.gui.control.RealTimeControlPanel;
 import nl.tudelft.simulation.dsol.swing.gui.inputparameters.TabbedParameterDialog;
-import nl.tudelft.simulation.language.DSOLException;
-import nl.tudelft.simulation.medlabs.location.Location;
+import nl.tudelft.simulation.language.DsolException;
 import nl.tudelft.simulation.medlabs.simulation.SimpleAnimator;
-import nl.tudelft.simulation.medlabs.simulation.SimpleDEVSSimulator;
+import nl.tudelft.simulation.medlabs.simulation.SimpleDevsSimulator;
 import nl.tudelft.simulation.medlabs.simulation.gui.AnimationToggles;
 import nl.tudelft.simulation.medlabs.simulation.gui.MedlabsAnimationTab;
 import nl.tudelft.simulation.medlabs.simulation.gui.MedlabsClockPanel;
@@ -42,21 +41,21 @@ import nl.tudelft.simulation.medlabs.simulation.gui.MedlabsPanel;
  * @author <a href="https://www.linkedin.com/in/mikhailsirenko">Mikhail Sirenko</a>
  * @author <a href="https://www.tudelft.nl/averbraeck">Alexander Verbraeck</a>
  */
-public class SEIRApplication extends DSOLAnimationApplication
+public class SEIRApplication extends DsolAnimationApplication
 {
     /** */
     private static final long serialVersionUID = 20201001L;
 
     /**
      * Create a DSOL application with animation.
-     * @param panel DSOLPanel; this should be the tabbed panel of the simulation
+     * @param panel DsolPanel; this should be the tabbed panel of the simulation
      * @param title String; the title of the window
-     * @param animationTab DSOLAnimationTab; the animation tab to add, e.g. one containing GIS
+     * @param animationTab DsolAnimationTab; the animation tab to add, e.g. one containing GIS
      * @throws RemoteException on network error
-     * @throws DSOLException when simulator does not implement the AnimatorInterface
+     * @throws DsolException when simulator does not implement the AnimatorInterface
      */
-    public SEIRApplication(final DSOLPanel panel, final String title, final DSOLAnimationTab animationTab)
-            throws RemoteException, DSOLException
+    public SEIRApplication(final DsolPanel panel, final String title, final DsolAnimationTab animationTab)
+            throws RemoteException, DsolException
     {
         super(panel, title, animationTab);
     }
@@ -64,7 +63,7 @@ public class SEIRApplication extends DSOLAnimationApplication
     /**
      * @param args String[]. args[0]: properties filename. args[1]: interactive / batch. If parameters are missing,
      *            "/default.properties" is assumed for args[0] and "interactive" is assumed for args[1].
-     * @throws DSOLException
+     * @throws DsolException
      * @throws NamingException
      * @throws SimRuntimeException
      * @throws IOException
@@ -73,7 +72,7 @@ public class SEIRApplication extends DSOLAnimationApplication
      * @throws URISyntaxException
      * @throws Exception
      */
-    public static void main(final String[] args) throws DSOLException, SimRuntimeException, NamingException,
+    public static void main(final String[] args) throws DsolException, SimRuntimeException, NamingException,
             FileNotFoundException, InputParameterException, IOException, URISyntaxException
     {
         String propertyFilename = (args.length > 0) ? args[0] : "/default.properties";
@@ -92,9 +91,9 @@ public class SEIRApplication extends DSOLAnimationApplication
                 double runLengthDays = (double) model.getParameterValueInt("generic.RunLength");
                 long seed = model.getParameterValueLong("generic.Seed");
                 simulator.initialize(0.0, 0.0, runLengthDays * 24.0, model, seed);
-                Bounds2d mapBounds = model.getExtent(); 
-                // DSOLAnimationGisTab gisTab =
-                // new DSOLAnimationGisTab(mapBounds, (SimpleAnimator) model.getSimulator());
+                Bounds2d mapBounds = model.getExtent();
+                // DsolAnimationGisTab gisTab =
+                // new DsolAnimationGisTab(mapBounds, (SimpleAnimator) model.getSimulator());
                 MedlabsAnimationTab gisTab = new MedlabsAnimationTab(mapBounds, (SimpleAnimator) model.getSimulator());
                 gisTab.getAnimationPanel().setRenderableScale(
                         new RenderableScale(Math.cos(Math.toRadians(mapBounds.midPoint().getY())), 1.0 / 111319.24));
@@ -117,7 +116,7 @@ public class SEIRApplication extends DSOLAnimationApplication
         }
         else
         {
-            model = new SEIRModel(new SimpleDEVSSimulator("SimSEIR"), propertyFilename);
+            model = new SEIRModel(new SimpleDevsSimulator("SimSEIR"), propertyFilename);
             model.setInteractive(false);
             ReadInputParameters.loadfromProperties(propertyFilename, model.getInputParameterMap());
             ReadInputParameters.loadFromArgs(args, true, model.getInputParameterMap());

@@ -5,7 +5,6 @@ import gnu.trove.list.TIntList;
 import gnu.trove.list.array.TIntArrayList;
 import gnu.trove.map.TIntObjectMap;
 import gnu.trove.set.TIntSet;
-import gnu.trove.set.hash.TIntHashSet;
 import nl.tudelft.simulation.medlabs.disease.DiseaseTransmission;
 import nl.tudelft.simulation.medlabs.location.Location;
 import nl.tudelft.simulation.medlabs.location.LocationType;

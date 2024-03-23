@@ -100,7 +100,7 @@ public class SEIRProgression extends DiseaseProgression
         exposed.addPerson();
         double incubationPeriod = this.distIncubationPeriod.getDuration();
 
-        this.model.getSimulator().scheduleEventRel(incubationPeriod, this, this, "changeDiseasePhase",
+        this.model.getSimulator().scheduleEventRel(incubationPeriod, this, "changeDiseasePhase",
                 new Object[] {exposedPerson, SEIRProgression.infected});
         return true;
     }
@@ -134,7 +134,7 @@ public class SEIRProgression extends DiseaseProgression
             person.setDiseasePhase(infected);
             infected.addPerson();
 
-            model.getSimulator().scheduleEventRel(this.distInfectedToRecovery.getDuration(), TimeUnit.HOUR, this, this,
+            model.getSimulator().scheduleEventRel(this.distInfectedToRecovery.getDuration(), TimeUnit.HOUR, this,
                     "changeDiseasePhase", new Object[] {person, recovered});
             return;
         }

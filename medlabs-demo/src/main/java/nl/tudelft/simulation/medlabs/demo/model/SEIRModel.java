@@ -1,6 +1,5 @@
 package nl.tudelft.simulation.medlabs.demo.model;
 
-import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -19,7 +18,7 @@ import nl.tudelft.simulation.medlabs.model.AbstractMedlabsModel;
 import nl.tudelft.simulation.medlabs.person.Person;
 import nl.tudelft.simulation.medlabs.person.index.IdxPerson;
 import nl.tudelft.simulation.medlabs.properties.Properties;
-import nl.tudelft.simulation.medlabs.simulation.SimpleDEVSSimulatorInterface;
+import nl.tudelft.simulation.medlabs.simulation.SimpleDevsSimulatorInterface;
 
 /**
  * SEIRModel.java.
@@ -49,27 +48,20 @@ public class SEIRModel extends AbstractMedlabsModel
 
     /** the cached extent. */
     private Bounds2d extent = null;
-    
+
     /** The location type for a house where persons are generated. */
     private final LocationType locationTypeHouse;
 
     /**
      * Construct the model.
-     * @param simulator SimpleDEVSSimulatorInterface; the simulator
+     * @param simulator SimpleDevsSimulatorInterface; the simulator
      * @param propertyFilename String; the path of the property file name to use
      */
-    public SEIRModel(final SimpleDEVSSimulatorInterface simulator, final String propertyFilename)
+    public SEIRModel(final SimpleDevsSimulatorInterface simulator, final String propertyFilename)
     {
         super(simulator, propertyFilename);
         this.locationTypeHouse =
                 new LocationType(this, (byte) 0, "house", Location.class, HouseAnimation.class, true, true, 1.0);
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public Serializable getSourceId()
-    {
-        return "MEDLABS SEIR Model";
     }
 
     /** {@inheritDoc} */
@@ -81,7 +73,7 @@ public class SEIRModel extends AbstractMedlabsModel
 
         if (!isInteractive())
         {
-            getSimulator().scheduleEventNow(this, this, "hourTick", null);
+            getSimulator().scheduleEventNow(this, "hourTick", null);
         }
     }
 
@@ -96,7 +88,7 @@ public class SEIRModel extends AbstractMedlabsModel
         {
             System.out.print(".");
         }
-        getSimulator().scheduleEventRel(1.0, this, this, "hourTick", null);
+        getSimulator().scheduleEventRel(1.0, this, "hourTick", null);
     }
 
     /** {@inheritDoc} */
@@ -175,7 +167,7 @@ public class SEIRModel extends AbstractMedlabsModel
     {
         return this.locationTypeHouse;
     }
-    
+
     /**
      * @return the basePath
      */
