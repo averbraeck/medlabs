@@ -21,17 +21,17 @@
     <maven.compiler.source>${jdk.version}</maven.compiler.source>
     <maven.compiler.target>${jdk.version}</maven.compiler.target>
     <maven.compiler.release>${jdk.version}</maven.compiler.release>
-    <osm.version>0.48.3</osm.version>
-    <dsol.version>4.0.1</dsol.version>
-    <fastcsv.version>2.2.0</fastcsv.version>
-    <junit.version>5.10.0</junit.version>
-    <jodatime.version>2.11.1</jodatime.version>
-    <poi.version>5.2.3</poi.version>
-    <mysql.version>8.0.30</mysql.version>
-    <jgrapht-version>1.5.1</jgrapht-version>
+    <osm.version>0.49.2</osm.version>
+    <dsol.version>4.2.1</dsol.version>
+    <fastcsv.version>2.2.2</fastcsv.version>
+    <junit.version>5.10.2</junit.version>
+    <jodatime.version>2.12.7</jodatime.version>
+    <poi.version>5.2.5</poi.version>
+    <mysql.version>8.3.0</mysql.version>
+    <jgrapht-version>1.5.2</jgrapht-version>
     <trove.version>3.0.3</trove.version>
     <jfree.version>1.5.3</jfree.version>
-    <xstream.version>1.4.18</xstream.version>
+    <xstream.version>1.4.20</xstream.version>
   </properties>
 
   <dependencies>
@@ -112,8 +112,8 @@
       </dependency>
 
       <dependency>
-        <groupId>mysql</groupId>
-        <artifactId>mysql-connector-java</artifactId>
+        <groupId>com.mysql</groupId>
+        <artifactId>mysql-connector-j</artifactId>
         <version>${mysql.version}</version>
       </dependency>
 
