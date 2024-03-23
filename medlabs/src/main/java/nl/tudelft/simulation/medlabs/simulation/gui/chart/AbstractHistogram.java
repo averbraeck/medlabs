@@ -10,7 +10,6 @@ import org.djutils.event.EventTypeInterface;
 import org.djutils.exceptions.Throw;
 import org.knowm.xchart.CategoryChart;
 import org.knowm.xchart.CategoryChartBuilder;
-import org.knowm.xchart.style.Styler.ToolTipType;
 
 /**
  * AbstractHistogram is the parent class for a histogram that can display counted values per bin. It embeds a chart that can

@@ -3,8 +3,6 @@ package nl.tudelft.simulation.medlabs.simulation.gui.chart;
 import java.awt.Container;
 import java.io.Serializable;
 import java.rmi.RemoteException;
-import java.util.Timer;
-import java.util.TimerTask;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.djutils.event.EventListenerInterface;
