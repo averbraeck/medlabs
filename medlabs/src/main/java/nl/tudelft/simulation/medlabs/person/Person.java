@@ -6,7 +6,6 @@ import java.rmi.RemoteException;
 import org.djutils.draw.bounds.Bounds3d;
 import org.djutils.draw.point.Point3d;
 
-import nl.tudelft.simulation.dsol.SimRuntimeException;
 import nl.tudelft.simulation.dsol.animation.Locatable;
 import nl.tudelft.simulation.medlabs.ModelIdentifiable;
 import nl.tudelft.simulation.medlabs.activity.Activity;
@@ -54,12 +53,6 @@ public interface Person extends Locatable, Serializable, PropertiesInterface, Mo
      * Formal end of the activity -- possibly start a next activity.
      */
     void endActivity();
-
-    /**
-     * @param nextPhase the net phase of the disease
-     * @throws SimRuntimeException
-     */
-    void changePhase(DiseasePhase nextPhase);
 
     /** {@inheritDoc} */
     @Override

@@ -126,7 +126,7 @@ public class LocationProbBased extends Location
                         this.model.getPersonMonitor().reportExposure(person, this, person);
                         this.model.getPersonMonitor().reportExposureByRate(person, this.locationTypeId, duration,
                                 this.infectionRate);
-                        this.model.getDiseaseProgression().changeDiseasePhase(person, this.exposed);
+                        this.model.getDiseaseProgression().expose(person, this.exposed);
                     }
                 }
                 else if (this.infectionRateFactor > 0.0)
@@ -151,7 +151,7 @@ public class LocationProbBased extends Location
                             this.model.getPersonMonitor().reportExposure(person, this, person);
                             this.model.getPersonMonitor().reportExposureByRateFactor(person, this.locationTypeId, duration,
                                     this.infectionRateFactor, referencePT, infectedRef, referencePT.getNumberPersons());
-                            this.model.getDiseaseProgression().changeDiseasePhase(person, this.exposed);
+                            this.model.getDiseaseProgression().expose(person, this.exposed);
                         }
                     }
                 }

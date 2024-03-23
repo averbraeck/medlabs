@@ -150,6 +150,15 @@ public interface MedlabsModelInterface extends SimpleModelInterface
         return ((int) Math.floor(getSimulator().getSimulatorTime() / 24)) % 7;
     }
 
+    /**
+     * Return the day of the simulation where the first day is day 0.
+     * @return int; the day of the simulation
+     */
+    default int getDay()
+    {
+        return (int) Math.floor(getSimulator().getSimulatorTime() / 24);
+    }
+
     ///////////////////////////////////////////////////////////////////////////////////////////////////
     // Disease
     ///////////////////////////////////////////////////////////////////////////////////////////////////

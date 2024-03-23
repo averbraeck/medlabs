@@ -7,6 +7,7 @@ import java.util.Map;
 
 import org.djutils.exceptions.Throw;
 
+import gnu.trove.list.TIntList;
 import nl.tudelft.simulation.medlabs.AbstractModelNamed;
 import nl.tudelft.simulation.medlabs.model.MedlabsModelInterface;
 import nl.tudelft.simulation.medlabs.person.Person;
@@ -61,10 +62,51 @@ public abstract class DiseaseProgression extends AbstractModelNamed
     }
 
     /**
-     * @param person
-     * @param nextPhase
+     * Expose a person to the disease. The person might or might not become infected.
+     * @param exposedPerson Person; the person being exposed to the disease
+     * @param exposurePhase DiseasePhase; the phase indicating exposure took place
+     * @return boolean; whether the exposure leads to an infection or not (e.g., to calculate offspring)
      */
-    public abstract void changeDiseasePhase(Person person, DiseasePhase nextPhase);
+    public abstract boolean expose(Person exposedPerson, DiseasePhase exposurePhase);
+
+    /**
+     * Expose a person to the disease. The person might or might not become infected. To count the offspring, the person
+     * potentially transmitting the disease is provided as well.
+     * @param exposedPerson Person; the person being exposed to the disease
+     * @param exposurePhase DiseasePhase; the phase indicating exposure took place
+     * @param infectiousPerson Person; the infectious person possibly transmitting the disease
+     */
+    public void expose(final Person exposedPerson, final DiseasePhase exposurePhase, final Person infectiousPerson)
+    {
+        if (expose(exposedPerson, exposurePhase))
+        {
+            getModel().getDiseaseMonitor().reportInfection(exposedPerson, infectiousPerson);
+        }
+    }
+
+    /**
+     * Expose a person to the disease. The person might or might not become infected. To count the offspring, a list of persons
+     * potentially transmitting the disease is provided as well. One person will be randomly selected from this list.
+     * @param exposedPerson Person; the person being exposed to the disease
+     * @param exposurePhase DiseasePhase; the phase indicating exposure took place
+     * @param infectiousPersonList TIntList; a list of infectious persons possibly transmitting the disease
+     */
+    public void expose(final Person exposedPerson, final DiseasePhase exposurePhase, final TIntList infectiousPersonList)
+    {
+        if (infectiousPersonList.size() == 1)
+        {
+            expose(exposedPerson, exposurePhase, this.model.getPersonMap().get(infectiousPersonList.get(0)));
+        }
+        else if (infectiousPersonList.size() > 1)
+        {
+            expose(exposedPerson, exposurePhase, this.model.getPersonMap()
+                    .get(infectiousPersonList.get(this.model.getRandomStream().nextInt(0, infectiousPersonList.size() - 1))));
+        }
+        else
+        {
+            expose(exposedPerson, exposurePhase);
+        }
+    }
 
     /**
      * @return a safe copy of the phases belonging to this disease

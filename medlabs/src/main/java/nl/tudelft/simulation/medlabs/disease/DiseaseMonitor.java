@@ -8,6 +8,7 @@ import org.djutils.event.TimedEvent;
 
 import nl.tudelft.simulation.dsol.SimRuntimeException;
 import nl.tudelft.simulation.medlabs.model.MedlabsModelInterface;
+import nl.tudelft.simulation.medlabs.person.Person;
 
 /**
  * DiseaseMonitor creates statistics for the number of people in each DiseasePhase every x hours.
@@ -73,6 +74,16 @@ public class DiseaseMonitor extends EventProducer
         }
     }
 
+    /**
+     * Report an infection for potential offspring counting.
+     * @param infectedPerson Person; the person being exposed to the disease
+     * @param infectiousPerson Person; the infectious person possibly transmitting the disease
+     */
+    public void reportInfection(final Person infectedPerson, final Person infectiousPerson)
+    {
+        System.out.println("Day " + this.model.getDay() + ": " + infectiousPerson + " infected " + infectedPerson);
+    }
+    
     /**
      * Return the disease for which this is the monitor.
      * @return Disease; the disease
