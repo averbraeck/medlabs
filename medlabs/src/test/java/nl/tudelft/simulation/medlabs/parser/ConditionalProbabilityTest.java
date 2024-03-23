@@ -115,11 +115,6 @@ public class ConditionalProbabilityTest
         }
 
         @Override
-        public void changePhase(final DiseasePhase nextPhase)
-        {
-        }
-
-        @Override
         public int getAge()
         {
             return this.age;
