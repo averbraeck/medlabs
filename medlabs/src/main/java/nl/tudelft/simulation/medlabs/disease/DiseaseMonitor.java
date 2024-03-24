@@ -1,8 +1,11 @@
 package nl.tudelft.simulation.medlabs.disease;
 
+import org.djutils.event.EventType;
 import org.djutils.event.LocalEventProducer;
 import org.djutils.event.TimedEvent;
 import org.djutils.exceptions.Throw;
+import org.djutils.metadata.MetaData;
+import org.djutils.metadata.ObjectDescriptor;
 
 import nl.tudelft.simulation.dsol.SimRuntimeException;
 import nl.tudelft.simulation.medlabs.model.MedlabsModelInterface;
@@ -36,6 +39,12 @@ public class DiseaseMonitor extends LocalEventProducer
     /** Reporting interval in hours. */
     private final double intervalHours;
 
+    /** statistics event for cumulative total hours per location type per person type. */
+    public static final EventType INFECTION_EVENT = new EventType("INFECTION_EVENT",
+            new MetaData("infection", "infection instance with infectious person",
+                    new ObjectDescriptor("infected-person", "infected person", Person.class),
+                    new ObjectDescriptor("infectious-person", "infectious person", Person.class)));
+
     /**
      * Create a DiseaseMonitor with a reporting interval.
      * @param model MedlabsModelInterface; the model
@@ -59,7 +68,7 @@ public class DiseaseMonitor extends LocalEventProducer
     {
         for (DiseasePhase diseasePhase : this.disease.getDiseasePhases())
         {
-            this.fireEvent(new TimedEvent<Double>(diseasePhase.DISEASE_STATISTICS_EVENT, diseasePhase.getNumberOfPersons(),
+            fireEvent(new TimedEvent<Double>(diseasePhase.DISEASE_STATISTICS_EVENT, diseasePhase.getNumberOfPersons(),
                     this.model.getSimulator().getSimulatorTime()));
         }
         try
@@ -79,7 +88,8 @@ public class DiseaseMonitor extends LocalEventProducer
      */
     public void reportInfection(final Person infectedPerson, final Person infectiousPerson)
     {
-        System.out.println("Day " + this.model.getDay() + ": " + infectiousPerson + " infected " + infectedPerson);
+        fireEvent(new TimedEvent<Double>(INFECTION_EVENT, new Object[] {infectedPerson, infectiousPerson},
+                this.model.getSimulator().getSimulatorTime()));
     }
 
     /**
