@@ -8,6 +8,7 @@ import org.djutils.metadata.MetaData;
 import org.djutils.metadata.ObjectDescriptor;
 
 import nl.tudelft.simulation.dsol.SimRuntimeException;
+import nl.tudelft.simulation.medlabs.location.Location;
 import nl.tudelft.simulation.medlabs.model.MedlabsModelInterface;
 import nl.tudelft.simulation.medlabs.person.Person;
 
@@ -39,11 +40,18 @@ public class DiseaseMonitor extends LocalEventProducer
     /** Reporting interval in hours. */
     private final double intervalHours;
 
-    /** statistics event for cumulative total hours per location type per person type. */
+    /** statistics event for an infection event. */
     public static final EventType INFECTION_EVENT = new EventType("INFECTION_EVENT",
             new MetaData("infection", "infection instance with infectious person",
                     new ObjectDescriptor("infected-person", "infected person", Person.class),
                     new ObjectDescriptor("infectious-person", "infectious person", Person.class)));
+
+    /** statistics event for an offspring event. */
+    public static final EventType OFFSPRING_EVENT = new EventType("OFFSPRING_EVENT",
+            new MetaData("offspring", "number of infected persons by an infectious person in a location",
+                    new ObjectDescriptor("infectious-person", "infectious person", Person.class),
+                    new ObjectDescriptor("location", "location", Location.class),
+                    new ObjectDescriptor("number-infected", "number of infected persons", Integer.class)));
 
     /**
      * Create a DiseaseMonitor with a reporting interval.
@@ -82,13 +90,25 @@ public class DiseaseMonitor extends LocalEventProducer
     }
 
     /**
-     * Report an infection for potential offspring counting.
+     * Report an infection for statistics.
      * @param infectedPerson Person; the person being exposed to the disease
      * @param infectiousPerson Person; the infectious person possibly transmitting the disease
      */
     public void reportInfection(final Person infectedPerson, final Person infectiousPerson)
     {
         fireEvent(new TimedEvent<Double>(INFECTION_EVENT, new Object[] {infectedPerson, infectiousPerson},
+                this.model.getSimulator().getSimulatorTime()));
+    }
+
+    /**
+     * Report offspring for offspring statistics.The method is called when an infectious person leaves a location.
+     * @param infectiousPerson Person; the infectious person possibly transmitting the disease
+     * @param location Location; location where the person spent time
+     * @param nrInfected int; number of infected persons in this location; can be zero
+     */
+    public void reportOffspring(final Person infectiousPerson, final Location location, final int nrInfected)
+    {
+        fireEvent(new TimedEvent<Double>(OFFSPRING_EVENT, new Object[] {infectiousPerson, location, nrInfected},
                 this.model.getSimulator().getSimulatorTime()));
     }
 

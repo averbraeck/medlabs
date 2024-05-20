@@ -6,15 +6,11 @@ import java.io.PrintWriter;
 import java.rmi.RemoteException;
 import java.util.List;
 import java.util.Map;
-import java.util.SortedMap;
-import java.util.TreeMap;
 
 import org.djutils.event.Event;
 import org.djutils.event.EventListener;
 
 import gnu.trove.map.TIntDoubleMap;
-import gnu.trove.set.TIntSet;
-import gnu.trove.set.hash.TIntHashSet;
 import nl.tudelft.simulation.medlabs.activity.ActivityMonitor;
 import nl.tudelft.simulation.medlabs.common.MedlabsRuntimeException;
 import nl.tudelft.simulation.medlabs.disease.DiseaseMonitor;
@@ -107,11 +103,8 @@ public class ResultWriter implements EventListener
     /** The file with the infections. */
     private PrintWriter infectionWriter;
 
-    /** The file with the offspring per infectious person per location type per day. */
-    private PrintWriter offspringWriter;
-
-    /** The offspring map that keeps the offspring data per person(id) per LocationType for a day. */
-    private SortedMap<Integer, SortedMap<String, Integer>> offspringMap = new TreeMap<>();
+    /** The file with the offspring per infectious person per location. */
+    private PrintWriter offspringLocationWriter;
 
     /**
      * Create a writer of results to file.
@@ -206,9 +199,9 @@ public class ResultWriter implements EventListener
             writeInfectionHeader();
             model.getDiseaseMonitor().addListener(this, DiseaseMonitor.INFECTION_EVENT);
 
-            this.offspringWriter = new PrintWriter(outputPath + "/offspring.csv");
-            writeOffspringHeader();
-            model.getSimulator().scheduleEventRel(24.0, this, "writeOffspringLines", null);
+            this.offspringLocationWriter = new PrintWriter(outputPath + "/offspringLocation.csv");
+            writeOffspringLocationHeader();
+            model.getDiseaseMonitor().addListener(this, DiseaseMonitor.OFFSPRING_EVENT);
         }
         catch (IOException ioe)
         {
@@ -812,81 +805,39 @@ public class ResultWriter implements EventListener
         this.infectionWriter.flush();
     }
 
-    /* ***************************************** OFFSPRING ****************************************** */
+    /* ************************************* OFFSPRINGLOCATION ************************************** */
 
-    private void writeOffspringHeader()
+    private void writeOffspringLocationHeader()
     {
-        this.offspringWriter.println("\"Time(h)\",\"infectiousPersonId\",\"infectiousPersonType\",\"infectiousPersonAge\""
-                + ",\"infectiousPersonGender\",\"infectiousPersonDiseasePhase\",\"locationType\",\"nrInfectedPersons\"");
-        this.offspringWriter.flush();
+        this.offspringLocationWriter.println("\"Time(h)\",\"infectiousPersonId\",\"infectiousPersonType\""
+                + ",\"infectiousPersonAge\",\"infectiousPersonGender\",\"infectiousPersonDiseasePhase\""
+                + ",\"locationId\",\"subLocationIndex\",\"locationType\",\"nrPersonsInfected\"");
+        this.offspringLocationWriter.flush();
     }
 
-    private void storeOffspring(final Object[] content)
+    private void writeOffspringLocationLine(final Object[] content)
     {
-        Person infectiousPerson = (Person) content[1];
-        Location location = infectiousPerson.getCurrentLocation();
-        String locationType = location.getLocationType().getName();
-        SortedMap<String, Integer> infectedPersonsLocationMap = this.offspringMap.get(infectiousPerson.getId());
-        if (infectedPersonsLocationMap == null)
-        {
-            infectedPersonsLocationMap = new TreeMap<>();
-            this.offspringMap.put(infectiousPerson.getId(), infectedPersonsLocationMap);
-        }
-        Integer nr = infectedPersonsLocationMap.get(locationType);
-        infectedPersonsLocationMap.put(locationType, nr == null ? 1 : nr + 1);
-    }
-
-    /** Scheduled method, every 24 hours. */
-    protected void writeOffspringLines()
-    {
-        TIntSet writtenIds = new TIntHashSet();
+        Person infectiousPerson = (Person) content[0];
+        Location location = (Location) content[1];
+        int nrPersonsInfected = (int) content[2];
         double time = this.model.getSimulator().getSimulatorTime();
-        for (int infectiousPersonId : this.offspringMap.keySet())
-        {
-            writtenIds.add(infectiousPersonId);
-            Person infectiousPerson = this.model.getPersonMap().get(infectiousPersonId);
-            SortedMap<String, Integer> infectedPersonsLocationMap = this.offspringMap.get(infectiousPersonId);
-            for (String locationType : infectedPersonsLocationMap.keySet())
-            {
-                int nrInfected = infectedPersonsLocationMap.get(locationType);
-                //@formatter:off
-                this.offspringWriter.println(
-                          time + "," 
-                        + infectiousPersonId + ",\"" 
-                        + infectiousPerson.getClass().getSimpleName() + "\"," 
-                        + infectiousPerson.getAge() + ",\"" 
-                        + (infectiousPerson.getGenderFemale() ? "F" : "M") + "\",\""
-                        + infectiousPerson.getDiseasePhase().getName() + "\",\""
-                        + locationType + "\","
-                        + nrInfected);
-                //@formatter:on
-            }
-        }
-        
-        // write a 0 for offspring for all infectious persons without offspring
-        for (Object oPerson : this.model.getPersonMap().values())
-        {
-            Person person = (Person) oPerson;
-            if (person.getDiseasePhase().isIll() && !writtenIds.contains(person.getId()))
-            {
-                //@formatter:off
-                this.offspringWriter.println(
-                          time + "," 
-                        + person.getId() + ",\"" 
-                        + person.getClass().getSimpleName() + "\"," 
-                        + person.getAge() + ",\"" 
-                        + (person.getGenderFemale() ? "F" : "M") + "\",\""
-                        + person.getDiseasePhase().getName() + "\",\""
-                        + "None" + "\","
-                        + 0);
-                //@formatter:on
-            }
-        }
-        
-        this.offspringMap.clear();
-        this.offspringWriter.flush();
-        this.model.getSimulator().scheduleEventRel(24.0, this, "writeOffspringLines", null);
+        //@formatter:off
+        this.offspringLocationWriter.println(
+                  time + "," 
+                + infectiousPerson.getId() + ",\"" 
+                + infectiousPerson.getClass().getSimpleName() + "\"," 
+                + infectiousPerson.getAge() + ",\"" 
+                + (infectiousPerson.getGenderFemale() ? "F" : "M") + "\",\""
+                + infectiousPerson.getDiseasePhase().getName() + "\","
+                + location.getId() + ","
+                + infectiousPerson.getCurrentSubLocationIndex() + ",\"" 
+                + location.getLocationType().getName() + "\","
+                + nrPersonsInfected);
+        //@formatter:on
+        this.offspringLocationWriter.flush();
     }
+
+    /* ****************************************** NOTIFY ******************************************** */
 
     /** {@inheritDoc} */
     @SuppressWarnings("unchecked")
@@ -956,7 +907,10 @@ public class ResultWriter implements EventListener
         else if (event.getType().equals(DiseaseMonitor.INFECTION_EVENT))
         {
             writeInfectionLine((Object[]) event.getContent());
-            storeOffspring((Object[]) event.getContent());
+        }
+        else if (event.getType().equals(DiseaseMonitor.OFFSPRING_EVENT))
+        {
+            writeOffspringLocationLine((Object[]) event.getContent());
         }
     }
 
