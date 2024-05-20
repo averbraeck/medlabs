@@ -3,7 +3,7 @@
 
   <groupId>nl.tudelft.simulation</groupId>
   <artifactId>medlabs-parent</artifactId>
-  <version>2.1.2</version>
+  <version>2.1.3</version>
 
   <name>MedLabs parent project</name>
   <description>MedLabs disease spread parent project</description>
