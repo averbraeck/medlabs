@@ -1,11 +1,10 @@
 package nl.tudelft.simulation.medlabs.demo.disease;
 
 import gnu.trove.iterator.TIntIterator;
-import gnu.trove.list.TIntList;
-import gnu.trove.list.array.TIntArrayList;
 import gnu.trove.map.TIntObjectMap;
 import gnu.trove.set.TIntSet;
 import nl.tudelft.simulation.medlabs.disease.DiseaseTransmission;
+import nl.tudelft.simulation.medlabs.disease.InfectionRecord;
 import nl.tudelft.simulation.medlabs.location.Location;
 import nl.tudelft.simulation.medlabs.location.LocationType;
 import nl.tudelft.simulation.medlabs.model.MedlabsModelInterface;
@@ -126,21 +125,24 @@ public class SEIRTransmission extends DiseaseTransmission
      * @param location Location; the location for which to calculate infectious spread
      * @param subLocationIndex int; the sublocation for which to calculate possible infection(s)
      * @param duration double; the time for which the calculation needs to take place, in hours
-     * @return boolean; whether a calculation took place and the last calculation time in DiseaseTransmission can be updated
+     * @return InfectionRecord; record containing information whether a calculation took place and the last calculation time in
+     *         DiseaseTransmission can be updated, and on the infected and infectious persons in case a calculation was made.
      */
     @Override
-    public boolean infectPeople(final Location location, final TIntSet personsInSublocation, final double duration)
+    public InfectionRecord infectPeople(final Location location, final TIntSet personsInSublocation, final double duration)
     {
+        InfectionRecord infectionRecord = new InfectionRecord(SEIRProgression.exposed);
+
         // has contact been too short?
         if (duration < this.calculationThreshold)
-            return false;
+            return infectionRecord;
+        infectionRecord.setCalculated(true);
 
         // find the infectious persons in the sublocation
         LocationType lt = location.getLocationType();
         double area = location.getTotalSurfaceM2();
 
         TIntObjectMap<Person> personMap = this.model.getPersonMap();
-        TIntList infectiousPersonList = new TIntArrayList();
         double now = this.model.getSimulator().getSimulatorTime().doubleValue();
 
         if (lt.isInfectInSublocation() || location.getNumberOfSubLocations() < 2)
@@ -152,12 +154,10 @@ public class SEIRTransmission extends DiseaseTransmission
             area /= location.getNumberOfSubLocations();
             double factor = -this.beta * this.contagiousness * duration / (lt.getCorrectionFactorArea() * area);
             if (factor == 0.0)
-                return true;
+                return infectionRecord;
 
             // find the infectious persons in the sublocation (and make a set of others)
             double sumTij = 0.0;
-            double maxTij = 0.0;
-            Person mostInfectiousPerson = null;
             for (TIntIterator it = personsInSublocation.iterator(); it.hasNext();)
             {
                 Person person = personMap.get(it.next());
@@ -171,16 +171,11 @@ public class SEIRTransmission extends DiseaseTransmission
                         contribution += (this.t_e_max - te) / (this.t_e_max - this.t_e_mode);
                     // else the person is infected, but not yet or not anymore contagious
                     sumTij += contribution;
-                    if (contribution > maxTij)
-                    {
-                        maxTij = contribution;
-                        mostInfectiousPerson = person;
-                    }
-                    infectiousPersonList.add(person.getId());
+                    infectionRecord.addInfectiousPerson(person.getId());
                 }
             }
             if (sumTij == 0.0)
-                return true;
+                return infectionRecord;
 
             // calculate the probability for all persons present in the sublocation
             double pInfection = 1.0 - Math.exp(factor * sumTij);
@@ -193,9 +188,7 @@ public class SEIRTransmission extends DiseaseTransmission
                     // roll the dice
                     if (this.model.getU01().draw() < pInfection)
                     {
-                        person.setExposureTime((float) now);
-                        this.model.getPersonMonitor().reportExposure(person, location, mostInfectiousPerson);
-                        this.model.getDiseaseProgression().expose(person, SEIRProgression.exposed, infectiousPersonList);
+                        infectionRecord.addInfectedPerson(person.getId());
                     }
                 }
             }
@@ -210,12 +203,10 @@ public class SEIRTransmission extends DiseaseTransmission
             // calculate (beta . p_B . t_i,j) / (sigma_T . A_K)
             double factor = this.beta * this.contagiousness * duration / (lt.getCorrectionFactorArea() * area);
             if (factor == 0.0)
-                return true;
+                return infectionRecord;
 
             // find the infectious persons in the TOTAL location
             double sumTij = 0.0;
-            double maxTij = 0.0;
-            Person mostInfectiousPerson = null;
             for (TIntIterator it = location.getAllPersonIds().iterator(); it.hasNext();)
             {
                 Person person = personMap.get(it.next());
@@ -229,16 +220,11 @@ public class SEIRTransmission extends DiseaseTransmission
                         contribution += 1.0 - te / (this.t_e_max - this.t_e_mode);
                     // else the person is infected, but not contagious
                     sumTij += contribution;
-                    if (contribution > maxTij)
-                    {
-                        maxTij = contribution;
-                        mostInfectiousPerson = person;
-                    }
-                    infectiousPersonList.add(person.getId());
+                    infectionRecord.addInfectiousPerson(person.getId());
                 }
             }
             if (sumTij == 0.0)
-                return true;
+                return infectionRecord;
 
             // calculate the probability for all persons present
             double pInfection = 1.0 - Math.exp(factor * sumTij);
@@ -252,14 +238,12 @@ public class SEIRTransmission extends DiseaseTransmission
                     // roll the dice
                     if (this.model.getU01().draw() < pInfection)
                     {
-                        person.setExposureTime((float) now);
-                        this.model.getPersonMonitor().reportExposure(person, location, mostInfectiousPerson);
-                        this.model.getDiseaseProgression().expose(person, SEIRProgression.exposed, infectiousPersonList);
+                        infectionRecord.addInfectedPerson(person.getId());
                     }
                 }
             }
         }
-        return true;
+        return infectionRecord;
     }
 
     /** {@inheritDoc} */

@@ -93,7 +93,7 @@ public class SEIRProgression extends DiseaseProgression
 
     /** {@inheritDoc} */
     @Override
-    public boolean expose(final Person exposedPerson, final DiseasePhase exposurePhase)
+    public void expose(final Person exposedPerson, final DiseasePhase exposurePhase)
     {
         exposedPerson.getDiseasePhase().removePerson();
         exposedPerson.setDiseasePhase(exposed);
@@ -102,7 +102,6 @@ public class SEIRProgression extends DiseaseProgression
 
         this.model.getSimulator().scheduleEventRel(incubationPeriod, this, "changeDiseasePhase",
                 new Object[] {exposedPerson, SEIRProgression.infected});
-        return true;
     }
     
     /**
