@@ -3,10 +3,13 @@ package nl.tudelft.simulation.medlabs.disease;
 import java.io.Serializable;
 
 import gnu.trove.iterator.TIntIterator;
+import gnu.trove.list.TIntList;
+import gnu.trove.map.TIntIntMap;
 import gnu.trove.map.TIntObjectMap;
 import gnu.trove.map.TLongFloatMap;
 import gnu.trove.map.TLongIntMap;
 import gnu.trove.map.TLongObjectMap;
+import gnu.trove.map.hash.TIntIntHashMap;
 import gnu.trove.map.hash.TLongFloatHashMap;
 import gnu.trove.map.hash.TLongIntHashMap;
 import gnu.trove.map.hash.TLongObjectHashMap;
@@ -46,7 +49,7 @@ public abstract class DiseaseTransmission extends AbstractModelNamed implements 
     private static final long serialVersionUID = 1L;
 
     /** Cache for the sublocations where infectious persons are present to speed up the infection calculations. */
-    private TLongObjectMap<TIntSet> personsInSublocationCache = new TLongObjectHashMap<>();
+    private TLongObjectMap<TIntSet> infectiousPersonsInSublocationCache = new TLongObjectHashMap<>();
 
     /** Cache for the number of people per sublocation. */
     private TLongIntMap nrPersonsInSublocationMap = new TLongIntHashMap();
@@ -56,6 +59,9 @@ public abstract class DiseaseTransmission extends AbstractModelNamed implements 
      * at each location, which is not needed for those sublocations where no infected people are present.
      */
     private TLongFloatMap lastCalculationCache = new TLongFloatHashMap();
+
+    /** Number of caused infections per infectious person in their current location (offspring calculation). */
+    private TIntIntMap infectionsPerInfectiousPersonMap = new TIntIntHashMap(1);
 
     /** the simulator. */
     private final SimpleDevsSimulatorInterface simulator;
@@ -89,17 +95,17 @@ public abstract class DiseaseTransmission extends AbstractModelNamed implements 
         }
         if (!location.getLocationType().isInfectInSublocation() || location.getLocationTypeId() < 0)
             return;
-        
+
         if (!isSublocationInfected(key))
         {
             // check if the newly entered person is infectious
             if (person.getDiseasePhase().isIll())
             {
-                TIntSet persons = this.personsInSublocationCache.get(key);
+                TIntSet persons = this.infectiousPersonsInSublocationCache.get(key);
                 if (persons == null)
                 {
                     persons = new TIntHashSet();
-                    this.personsInSublocationCache.put(key, persons);
+                    this.infectiousPersonsInSublocationCache.put(key, persons);
                     this.lastCalculationCache.put(key, this.simulator.getSimulatorTime().floatValue());
                     // add the persons who are already there
                     TIntObjectMap<Person> personMap = getModel().getPersonMap();
@@ -115,14 +121,16 @@ public abstract class DiseaseTransmission extends AbstractModelNamed implements 
             }
             return;
         }
-        
+
         // cache entry already existed
-        if (infectPeople(location, getPersons(key),
-                this.simulator.getSimulatorTime().doubleValue() - getLastCalculationTime(key)))
+        InfectionRecord infectionRecord = infectPeople(location, getPersons(key),
+                this.simulator.getSimulatorTime().doubleValue() - getLastCalculationTime(key));
+        if (infectionRecord.isCalculated())
         {
+            expose(infectionRecord);
             updateLastCalculationTime(key);
         }
-        this.personsInSublocationCache.get(key).add(person.getId());
+        this.infectiousPersonsInSublocationCache.get(key).add(person.getId());
     }
 
     /**
@@ -143,15 +151,28 @@ public abstract class DiseaseTransmission extends AbstractModelNamed implements 
         }
         if (!location.getLocationType().isInfectInSublocation() || location.getLocationTypeId() < 0)
             return;
-        
+
         if (!isSublocationInfected(key))
         {
             return;
         }
         TIntSet persons = getPersons(key);
-        if (infectPeople(location, persons, this.simulator.getSimulatorTime().doubleValue() - getLastCalculationTime(key)))
+
+        InfectionRecord infectionRecord =
+                infectPeople(location, persons, this.simulator.getSimulatorTime().doubleValue() - getLastCalculationTime(key));
+        if (infectionRecord.isCalculated())
         {
+            expose(infectionRecord);
             updateLastCalculationTime(key);
+            // check if the person infected someone or is considered infectious (both may have changed over time)
+            if (this.infectionsPerInfectiousPersonMap.containsKey(person.getId())
+                    || infectionRecord.getInfectiousPersons().contains(person.getId()))
+            {
+                int nrInfected = this.infectionsPerInfectiousPersonMap.containsKey(person.getId())
+                        ? this.infectionsPerInfectiousPersonMap.get(person.getId()) : 0;
+                getModel().getDiseaseMonitor().reportOffspring(person, person.getCurrentLocation(), nrInfected);
+                this.infectionsPerInfectiousPersonMap.remove(person.getId());
+            }
         }
         persons.remove(person.getId());
 
@@ -162,7 +183,7 @@ public abstract class DiseaseTransmission extends AbstractModelNamed implements 
 
         if (persons.size() == 0)
         {
-            this.personsInSublocationCache.remove(key);
+            this.infectiousPersonsInSublocationCache.remove(key);
             this.lastCalculationCache.remove(key);
             return;
         }
@@ -182,7 +203,7 @@ public abstract class DiseaseTransmission extends AbstractModelNamed implements 
             }
             if (!infected)
             {
-                this.personsInSublocationCache.remove(key);
+                this.infectiousPersonsInSublocationCache.remove(key);
                 this.lastCalculationCache.remove(key);
             }
         }
@@ -195,9 +216,45 @@ public abstract class DiseaseTransmission extends AbstractModelNamed implements 
      * @param location Location; the location for which to calculate infectious spread
      * @param personsInSublocation TIntSet; the persons present in the sublocation (one or more are potentially contagious)
      * @param duration double; the time for which the calculation needs to take place, in hours
-     * @return boolean; whether the calculation took place and the last calculation time can be updated
+     * @return InfectionRecord; information about the infection(s) that took place
      */
-    public abstract boolean infectPeople(Location location, TIntSet personsInSublocation, double duration);
+    public abstract InfectionRecord infectPeople(Location location, TIntSet personsInSublocation, double duration);
+
+    /**
+     * Carry out the actual exposure as the result of a transmission, and trigger all associated statistics.
+     * @param infectionRecord InfectionRecord; information about the infected and infectious persons in the location.
+     */
+    private void expose(final InfectionRecord infectionRecord)
+    {
+        TIntList infectedPersons = infectionRecord.getInfectedPersons();
+        TIntList infectiousPersons = infectionRecord.getInfectiousPersons();
+        for (int i = 0; i < infectedPersons.size(); i++)
+        {
+            Person exposedPerson = getModel().getPersonMap().get(infectedPersons.get(i));
+            exposedPerson.setExposureTime(this.simulator.getSimulatorTime().floatValue());
+
+            Person infectiousPerson = null;
+            if (infectiousPersons.size() == 1)
+            {
+                infectiousPerson = this.model.getPersonMap().get(infectiousPersons.get(0));
+            }
+            else if (infectiousPersons.size() > 1)
+            {
+                infectiousPerson = this.model.getPersonMap()
+                        .get(infectiousPersons.get(this.model.getRandomStream().nextInt(0, infectiousPersons.size() - 1)));
+            }
+            else
+            {
+                System.err.println("Exposure took place, but no infectious person in location!");
+            }
+            getModel().getDiseaseMonitor().reportInfection(exposedPerson, infectiousPerson);
+            this.model.getDiseaseProgression().expose(exposedPerson, infectionRecord.getExposedPhase());
+            this.model.getPersonMonitor().reportExposure(exposedPerson, exposedPerson.getCurrentLocation(), infectiousPerson);
+            this.infectionsPerInfectiousPersonMap.putIfAbsent(infectiousPerson.getId(), 0);
+            this.infectionsPerInfectiousPersonMap.put(infectiousPerson.getId(),
+                    1 + this.infectionsPerInfectiousPersonMap.get(infectiousPerson.getId()));
+        }
+    }
 
     /**
      * Make the key index for the cache.
@@ -218,7 +275,7 @@ public abstract class DiseaseTransmission extends AbstractModelNamed implements 
      */
     public boolean isSublocationInfected(final Location location, final short subLocationIndex)
     {
-        return this.personsInSublocationCache.containsKey(makeCacheKey(location, subLocationIndex));
+        return this.infectiousPersonsInSublocationCache.containsKey(makeCacheKey(location, subLocationIndex));
     }
 
     /**
@@ -228,32 +285,51 @@ public abstract class DiseaseTransmission extends AbstractModelNamed implements 
      */
     protected boolean isSublocationInfected(final long key)
     {
-        return this.personsInSublocationCache.containsKey(key);
+        return this.infectiousPersonsInSublocationCache.containsKey(key);
     }
-    
+
     /**
      * Set a parameter for the transmission model.
      * @param parameterName String; parameter name
-     * @param value double; new value 
+     * @param value double; new value
      */
     public abstract void setParameter(String parameterName, double value);
-    
 
+    /**
+     * Update the last calculation time for the location cache key.
+     * @param key long; the key calculated as (((long) location.getId()) &lt;&lt; 32) + subLocationIndex
+     */
     protected void updateLastCalculationTime(final long key)
     {
         this.lastCalculationCache.put(key, this.simulator.getSimulatorTime().floatValue());
     }
 
+    /**
+     * Return the persons for this location cache key.
+     * @param key long; the key calculated as (((long) location.getId()) &lt;&lt; 32) + subLocationIndex
+     * @return TIntSet; the persons for this location cache key
+     */
     protected TIntSet getPersons(final long key)
     {
-        return this.personsInSublocationCache.get(key);
+        return this.infectiousPersonsInSublocationCache.get(key);
     }
 
+    /**
+     * Return the last time infections were calculated after a person entered or left a (sub)location.
+     * @param key long; the key calculated as (((long) location.getId()) &lt;&lt; 32) + subLocationIndex
+     * @return float; the last time infections were calculated for this location cache key
+     */
     protected float getLastCalculationTime(final long key)
     {
         return this.lastCalculationCache.get(key);
     }
-    
+
+    /**
+     * Return the number of persons for this sublocation.
+     * @param location Location; the location
+     * @param subLocationIndex short; the index of the sublocation
+     * @return int; the number of persons in this sublocation
+     */
     public int getNrPersonsInSublocation(final Location location, final short subLocationIndex)
     {
         long key = makeCacheKey(location, subLocationIndex);
