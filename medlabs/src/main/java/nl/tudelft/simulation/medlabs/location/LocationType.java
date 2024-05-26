@@ -1,9 +1,7 @@
 package nl.tudelft.simulation.medlabs.location;
 
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 
 import org.djutils.event.EventType;
 import org.djutils.event.LocalEventProducer;
@@ -11,10 +9,13 @@ import org.djutils.event.TimedEvent;
 import org.djutils.metadata.MetaData;
 import org.djutils.metadata.ObjectDescriptor;
 
+import gnu.trove.iterator.TIntIterator;
+import gnu.trove.list.TIntList;
+import gnu.trove.list.array.TIntArrayList;
 import gnu.trove.map.TIntObjectMap;
-import gnu.trove.map.TLongIntMap;
 import gnu.trove.map.hash.TIntObjectHashMap;
-import gnu.trove.map.hash.TLongIntHashMap;
+import nl.tudelft.simulation.jstats.streams.MersenneTwister;
+import nl.tudelft.simulation.jstats.streams.StreamInterface;
 import nl.tudelft.simulation.medlabs.location.animation.LocationAnimation;
 import nl.tudelft.simulation.medlabs.model.MedlabsModelInterface;
 import nl.tudelft.simulation.medlabs.simulation.TimeUnit;
@@ -50,6 +51,15 @@ public class LocationType extends LocalEventProducer
     /** the Locations, based on their original id. */
     private TIntObjectMap<Location> locationMap = new TIntObjectHashMap<>();
 
+    /** the locations of this type per grid cell. Key: grid-xy-key. Value: id's of the locations. */
+    private Map<Integer, TIntList> gridLocationMap = new HashMap<>();
+
+    /** cache of the nearest location(s) for a grid cell. */
+    private Map<Integer, TIntList> nearestLocationCache = new HashMap<>();
+
+    /** cache of the location(s) with a certain maximum distance to a grid cell. */
+    private Map<Integer, Map<Double, TIntList>> maxDistanceLocationCache = new HashMap<>();
+
     /** the location type id (byte). */
     private final byte locationTypeid;
 
@@ -77,46 +87,16 @@ public class LocationType extends LocalEventProducer
     /** the name under which the replacement activities need to be reported. */
     private String reportAsLocationName;
 
-    /** resolution for grid in m. */
-    private static double GRID_FACTOR = 500.0;
-
-    /**
-     * lat grid factor. Multiply the lat with this factor and truncate to get grid int. Optimized for Beijing = 40. 0.01 degree
-     * at lon 116 = 1.112 km
-     */
-    private static double GRID_LAT_FACTOR = 111200.0 / GRID_FACTOR;
-
-    /**
-     * lon grid factor. Multiply the lon with this factor and truncate to get grid int. Optimized for Beijing = 116. 0.01 degree
-     * at lat 40 = 0.852 km
-     */
-    private static double GRID_LON_FACTOR = 85200.0 / GRID_FACTOR;
-
-    /** map of lat grid x lon grid -> location array indexes. */
-    private Map<Long, Set<Integer>> gridLatLon = new HashMap<Long, Set<Integer>>();
-
-    /** resolution for nearest cache in m. */
-    private static double CACHE_FACTOR = 200.0;
-
-    /** lat cache factor. Multiply the lat with this factor and truncate to get cache int. */
-    private static double CACHE_LAT_FACTOR = 111200.0 / CACHE_FACTOR;
-
-    /** lon cache factor. Multiply the lon with this factor and truncate to get grid int.. */
-    private static double CACHE_LON_FACTOR = 85200.0 / CACHE_FACTOR;
-
     /** the model. */
     @SuppressWarnings("checkstyle:visibilitymodifier")
     protected MedlabsModelInterface model;
 
-    /** cache of nearest locations of THIS type to a given location of ANOTHER type. */
-    private TLongIntMap nearestCache = new TLongIntHashMap();
-
-    /** cache of set of closest locations with a certain distance from a cache grid location. */
-    private Map<Long, Map<Float, Location[]>> distanceCache = new HashMap<Long, Map<Float, Location[]>>();
-
     /** number of persons in location type for fast statistics. */
     @SuppressWarnings("checkstyle:visibilitymodifier")
     protected int numberPersons = 0;
+
+    /** random generator, to reproduce the chosen nearest locations. */
+    private StreamInterface stream;
 
     /** statistics update event. */
     public static final EventType STATISTICS_EVENT =
@@ -161,6 +141,7 @@ public class LocationType extends LocalEventProducer
         this.fractionActivities = 1.0;
         this.alternativeLocationType = this;
         this.reportAsLocationName = name;
+        this.stream = new MersenneTwister(Math.abs(this.hashCode()));
     }
 
     /**
@@ -172,79 +153,11 @@ public class LocationType extends LocalEventProducer
     }
 
     /**
-     * @return the locationArray
+     * @return the locationMap
      */
     public TIntObjectMap<Location> getLocationMap()
     {
         return this.locationMap;
-    }
-
-    /**
-     * @param location
-     * @return long key based on lat and lon grid factors
-     */
-    private long keyGridLatLon(final Location location)
-    {
-        long gridLat = (long) (location.getLatitude() * GRID_LAT_FACTOR);
-        long gridLon = (long) (location.getLongitude() * GRID_LON_FACTOR);
-        return Integer.MAX_VALUE * gridLat + gridLon;
-    }
-
-    /**
-     * @param location
-     * @return long key based on lat and lon grid factors
-     */
-    private long keyCacheLatLon(final Location location)
-    {
-        long gridLat = (long) (location.getLatitude() * CACHE_LAT_FACTOR);
-        long gridLon = (long) (location.getLongitude() * CACHE_LON_FACTOR);
-        return Integer.MAX_VALUE * gridLat + gridLon;
-    }
-
-    /**
-     * @param locationMap
-     */
-    public void setLocationMap(final TIntObjectMap<Location> locationMap)
-    {
-        this.locationMap = locationMap;
-
-        // fill the lat/lon cache
-        this.gridLatLon.clear();
-        for (Location location : this.locationMap.values(new Location[0]))
-        {
-            long key = keyGridLatLon(location);
-            Set<Integer> locationSet = this.gridLatLon.get(key);
-            if (locationSet == null)
-            {
-                locationSet = new HashSet<Integer>();
-                this.gridLatLon.put(key, locationSet);
-            }
-            // locationSet.add(location.getId());
-            this.gridLatLon.get(key).add(location.getId());
-        }
-
-        // clear the caches
-        this.nearestCache.clear();
-        this.distanceCache.clear();
-    }
-
-    /**
-     * @param location
-     */
-    public void setLocationgridLatLon(final Location location)
-    {
-        long key = keyGridLatLon(location);
-        Set<Integer> locationSet = this.gridLatLon.get(key);
-        if (locationSet == null)
-        {
-            locationSet = new HashSet<Integer>();
-            this.gridLatLon.put(key, locationSet);
-        }
-        // locationSet.add(location.getId());
-        this.gridLatLon.get(key).add(location.getId());
-
-        long startLocationKey = keyCacheLatLon(location);
-        this.nearestCache.put(startLocationKey, location.getId());
     }
 
     /**
@@ -256,12 +169,20 @@ public class LocationType extends LocalEventProducer
     }
 
     /**
-     * Add a location to this type.
+     * Add a location to this type, and store it in the grid.
      * @param location Location; the corresponding location
      */
     public void addLocation(final Location location)
     {
         this.locationMap.put(location.getId(), location);
+        int key = getModel().gridKeyLatLon(location.getLatitude(), location.getLongitude());
+        TIntList gridLocations = this.gridLocationMap.get(key);
+        if (gridLocations == null)
+        {
+            gridLocations = new TIntArrayList();
+            this.gridLocationMap.put(key, gridLocations);
+        }
+        gridLocations.add(location.getId());
     }
 
     /**
@@ -271,68 +192,39 @@ public class LocationType extends LocalEventProducer
      */
     public Location[] getLocationArrayMaxDistanceM(final Location startLocation, final double maxDistanceM)
     {
-        return getLocationArrayMaxDistanceM(startLocation, maxDistanceM, true);
-    }
-
-    /**
-     * @param startLocation
-     * @param maxDistanceM max distance in meters
-     * @param cache or not
-     * @return an array of locations of this location type with a max distance to the startLocation
-     */
-    public Location[] getLocationArrayMaxDistanceM(final Location startLocation, final double maxDistanceM, final boolean cache)
-    {
-        // look up in the cache
-        long keyCache = keyCacheLatLon(startLocation);
-        if (this.distanceCache.containsKey(keyCache))
+        int startKey = startLocation.getGridKey();
+        int startX = startLocation.getGridX();
+        int startY = startLocation.getGridY();
+        TIntList ret = null;
+        if (this.maxDistanceLocationCache.containsKey(startKey)
+                && this.maxDistanceLocationCache.get(startKey).containsKey(maxDistanceM))
         {
-            Location[] locArray = this.distanceCache.get(keyCache).get((float) maxDistanceM);
-            if (locArray != null)
-            {
-                return locArray;
-            }
+            ret = this.maxDistanceLocationCache.get(startKey).get(maxDistanceM);
         }
-
-        Set<Location> locations = new HashSet<Location>();
-
-        // see how many cells we use based on the resolution of the grid. go in both directions.
-        long gridLat = (int) (startLocation.getLatitude() * GRID_LAT_FACTOR);
-        long gridLon = (int) (startLocation.getLongitude() * GRID_LON_FACTOR);
-        int delta = (int) Math.round(0.5 * maxDistanceM / GRID_FACTOR);
-
-        for (long latIndex = gridLat - delta; latIndex <= gridLat + delta; latIndex++)
+        else
         {
-            for (long lonIndex = gridLon - delta; lonIndex <= gridLon + delta; lonIndex++)
+            ret = new TIntArrayList();
+            int hCells = (int) Math.ceil(maxDistanceM / this.model.getGridSizeM());
+            for (int x = startX - hCells; x <= startX + hCells; x++)
             {
-                long key = Integer.MAX_VALUE * latIndex + lonIndex;
-
-                Set<Integer> lonSet = this.gridLatLon.get(key);
-                if (lonSet != null)
+                for (int y = startY - hCells; y <= startY + hCells; y++)
                 {
-                    for (int locIndex : lonSet)
-                    {
-                        Location location = this.locationMap.get(locIndex);
-                        if (startLocation.distanceM(location) <= maxDistanceM)
-                        {
-                            locations.add(location);
-                        }
-                    }
+                    int key = x * 32768 + y;
+                    if (this.gridLocationMap.containsKey(key))
+                        ret.addAll(this.gridLocationMap.get(key));
                 }
             }
+            if (!this.maxDistanceLocationCache.containsKey(startKey))
+                this.maxDistanceLocationCache.put(startKey, new HashMap<>());
+            this.maxDistanceLocationCache.get(startKey).put(maxDistanceM, ret);
         }
 
-        Location[] locArray = locations.toArray(new Location[locations.size()]);
-        if (cache && locArray.length > 0)
-        {
-            Map<Float, Location[]> distanceMap = this.distanceCache.get(keyCache);
-            if (distanceMap == null)
-            {
-                distanceMap = new HashMap<Float, Location[]>();
-                this.distanceCache.put(keyCache, distanceMap);
-            }
-            distanceMap.put((float) maxDistanceM, locArray);
-        }
-        return locArray;
+        // TODO: return the TIntSet. For now: translate to array
+        Location[] arr = new Location[ret.size()];
+        int i = 0;
+        for (TIntIterator it = ret.iterator(); it.hasNext();)
+            arr[i++] = this.locationMap.get(it.next());
+        return arr;
     }
 
     /**
@@ -341,65 +233,60 @@ public class LocationType extends LocalEventProducer
      */
     public Location getNearestLocation(final Location startLocation)
     {
-        long startLocationKey = keyCacheLatLon(startLocation);
-
-        // look up in cache
-        if (this.nearestCache.containsKey(startLocationKey))
+        int startKey = startLocation.getGridKey();
+        int startX = startLocation.getGridX();
+        int startY = startLocation.getGridY();
+        TIntList ret = null;
+        if (this.nearestLocationCache.containsKey(startKey))
         {
-            return this.locationMap.get(this.nearestCache.get(startLocationKey));
+            ret = this.nearestLocationCache.get(startKey);
         }
-
-        // if not found, look in one cell
-        Location nearestLocation = null;
-        long key = keyGridLatLon(startLocation);
-        Set<Integer> lonSet = this.gridLatLon.get(key);
-        if (lonSet != null)
+        else
         {
-            double minDistance = Double.MAX_VALUE;
-            for (int locIndex : lonSet)
+            ret = new TIntArrayList();
+            if (this.gridLocationMap.containsKey(startKey))
+                ret.addAll(this.gridLocationMap.get(startKey));
+            else
             {
-                Location location = this.locationMap.get(locIndex);
-                if (startLocation.distanceM(location) < minDistance)
+                for (int hCells = 1; hCells < 100; hCells++)
                 {
-                    nearestLocation = location;
-                    minDistance = startLocation.distanceM(location);
+                    for (int x = startX - hCells; x <= startX + hCells; x++)
+                    {
+                        for (int y : new int[] {startY - hCells, startY + hCells})
+                        {
+                            int key = x * 32768 + y;
+                            if (this.gridLocationMap.containsKey(key))
+                                ret.addAll(this.gridLocationMap.get(key));
+                        }
+                    }
+                    for (int y = startY - hCells + 1; y < startY + hCells; y++)
+                    {
+                        for (int x : new int[] {startX - hCells, startX + hCells})
+                        {
+                            int key = x * 32768 + y;
+                            if (this.gridLocationMap.containsKey(key))
+                                ret.addAll(this.gridLocationMap.get(key));
+                        }
+                    }
+                    if (ret.size() > 0)
+                        break;
                 }
             }
-
-            this.nearestCache.put(startLocationKey, nearestLocation.getId());
-            return nearestLocation;
+            this.nearestLocationCache.put(startKey, ret);
         }
 
-        // look in a wider distance, now 1 km
-        Location[] locaarray = getLocationArrayMaxDistanceM(startLocation, 1000.0, false);
-        TIntObjectMap<Location> cellLocations = new TIntObjectHashMap<>();
-        for (int i = 0; i < locaarray.length; i++)
+        // choose one (reproducible) value from the found locations
+        if (ret.size() == 0)
         {
-            cellLocations.put(i, locaarray[i]);
+            System.err.println("Could not find nearest location -- picked a random one.");
+            return this.locationMap.get(this.locationMap.keySet().iterator().next());
         }
-
-        // use all locations if nothing within 1000 meters
-        if (cellLocations.size() == 0)
+        if (ret.size() == 1)
         {
-            cellLocations = this.locationMap;
+            return this.locationMap.get(ret.get(0));
         }
-
-        double minDistance = Double.MAX_VALUE;
-        for (Location location : cellLocations.values(new Location[0]))
-        {
-            if (startLocation.distanceM(location) < minDistance)
-            {
-                nearestLocation = location;
-                minDistance = startLocation.distanceM(location);
-            }
-        }
-
-        if (nearestLocation == null)
-        {
-            return null;
-        }
-        this.nearestCache.put(startLocationKey, nearestLocation.getId());
-        return nearestLocation;
+        this.stream.setSeed(Math.abs(hashCode() + 31 * startLocation.hashCode()));
+        return this.locationMap.get(ret.get(this.stream.nextInt(0, ret.size() - 1)));
     }
 
     /**

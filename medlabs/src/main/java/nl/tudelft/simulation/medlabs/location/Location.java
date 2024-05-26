@@ -98,7 +98,7 @@ public class Location implements ModelLocatable
         this.closed = false;
 
         this.model.getLocationMap().put(locationId, this);
-        this.model.getLocationTypeIndexMap().get(locationTypeId).getLocationMap().put(locationId, this);
+        this.model.getLocationTypeIndexMap().get(locationTypeId).addLocation(this);
     }
 
     /**
