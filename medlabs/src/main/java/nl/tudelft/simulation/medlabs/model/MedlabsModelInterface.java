@@ -160,6 +160,92 @@ public interface MedlabsModelInterface extends SimpleModelInterface
     }
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////
+    // Grid
+    ///////////////////////////////////////////////////////////////////////////////////////////////////
+
+    /**
+     * Return the grid size in meters. The map is divided in a square grid with this size as the length and width of the grid
+     * cells. This method can be overridden and if necessary parameterized.
+     * @return int; the grid size in meters
+     */
+    default float getGridSizeM()
+    {
+        return 100f;
+    }
+
+    /**
+     * Return the longitude (x) of the center of the map. By default, it returns the center of The Hague. This method should be
+     * overridden for other locations, and if necessary it can be parameterized.
+     * @return float; the longitude (x) of the map center
+     */
+    default float getLonCenter()
+    {
+        return 4.3f;
+    }
+
+    /**
+     * Return the latitude (y) of the center of the map. By default, it returns the center of The Hague. This method should be
+     * overridden for other locations, and if necessary it can be parameterized.
+     * @return float; the latitude (y) of the map center
+     */
+    default float getLatCenter()
+    {
+        return 52.06f;
+    }
+
+    /**
+     * Return the x-distance in meters with respect to the longitude of the center of the city map.
+     * @param lon float; the longitude for which to calculate the x-distance in m
+     * @return float; the x-distance in meters with respect to the longitude of the center of the city map
+     */
+    default float lonToM(final float lon)
+    {
+        return (float) ((lon - getLonCenter()) * 40075.0 * Math.cos(Math.toRadians(getLatCenter())) / 0.36);
+    }
+
+    /**
+     * Return the y-distance in meters with respect to the latitude of the center of the city map.
+     * @param lat float; the latitude for which to calculate the y-distance in m
+     * @return float; the y-distance in meters with respect to the latitude of the center of the city map
+     */
+    default float latToM(final float lat)
+    {
+        return 111320.0f * (lat - getLatCenter());
+    }
+
+    /**
+     * Return the x-index of the cell for the given longitude, where the center of the city map has coordinates (0, 0).
+     * @param lon float; the longitude for which to calculate the x-index of the cell
+     * @return int; the x-index of the cell with respect to the longitude of the center of the city map
+     */
+    default int lonToGridX(final float lon)
+    {
+        return (int) Math.round(lonToM(lon) / getGridSizeM());
+    }
+
+    /**
+     * Return the y-index of the cell for the given latitude, where the center of the city map has coordinates (0, 0).
+     * @param lat float; the latitude for which to calculate the y-index of the cell
+     * @return int; the y-index of the cell with respect to the latitude of the center of the city map
+     */
+    default int latToGridY(final float lat)
+    {
+        return (int) Math.round(latToM(lat) / getGridSizeM());
+    }
+
+    /**
+     * Return a composed x-y key index of the cell for the given latitude and longitude, relaive to the center of the city map
+     * with coordinates (0, 0).
+     * @param lat float; the latitude for which to calculate the key-index of the cell
+     * @param lon float; the latitude for which to calculate the key-index of the cell
+     * @return int; the key-index of the cell with respect the center of the city map
+     */
+    default int gridKeyLatLon(final float lat, final float lon)
+    {
+        return 32768 * lonToGridX(lon) + latToGridY(lat);
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////////////////////////
     // Disease
     ///////////////////////////////////////////////////////////////////////////////////////////////////
 
