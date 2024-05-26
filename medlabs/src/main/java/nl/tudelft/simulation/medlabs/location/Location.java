@@ -45,11 +45,19 @@ public class Location implements ModelLocatable
     @SuppressWarnings("checkstyle:visibilitymodifier")
     protected MedlabsModelInterface model;
 
-    /** The latitude of the location. */
+    // Note that the lat, lon, gridX and gridY are not final -- they can be dynamic for movable locations!
+    
+    /** The longitude (x) of the location. */
+    private float lon;
+
+    /** The latitude (y) of the location. */
     private float lat;
 
-    /** The longitude of the location. */
-    private float lon;
+    /** The x grid-index of the location. */
+    private short gridX;
+
+    /** The y grid-index of the location. */
+    private short gridY;
 
     /** The number of sub locations (e.g., rooms). */
     @SuppressWarnings("checkstyle:visibilitymodifier")
@@ -83,8 +91,8 @@ public class Location implements ModelLocatable
         this.model = model;
         this.locationId = locationId;
         this.locationTypeId = locationTypeId;
-        this.lat = lat;
-        this.lon = lon;
+        setLon(lon);
+        setLat(lat);
         this.numberOfSubLocations = numberOfSubLocations;
         this.totalSurfaceM2 = surfaceM2;
         this.closed = false;
@@ -151,11 +159,35 @@ public class Location implements ModelLocatable
     }
 
     /**
-     * @return the lon
+     * @return the longitude of coordinate
      */
     public float getLongitude()
     {
         return this.lon;
+    }
+
+    /**
+     * @return gridX, the x grid-index of the location
+     */
+    public short getGridX()
+    {
+        return this.gridX;
+    }
+
+    /**
+     * @return gridY, the y grid-index of the location
+     */
+    public short getGridY()
+    {
+        return this.gridY;
+    }
+
+    /**
+     * @return int, combined x-y grid-index of the location
+     */
+    public int getGridKey()
+    {
+        return 32768 * this.gridX + this.gridY;
     }
 
     /**
@@ -164,6 +196,7 @@ public class Location implements ModelLocatable
     public void setLat(final float lat)
     {
         this.lat = lat;
+        this.gridY = (short) this.model.latToGridY(lat);
     }
 
     /**
@@ -172,6 +205,7 @@ public class Location implements ModelLocatable
     public void setLon(final float lon)
     {
         this.lon = lon;
+        this.gridX = (short) this.model.lonToGridX(lon);
     }
 
     /**
