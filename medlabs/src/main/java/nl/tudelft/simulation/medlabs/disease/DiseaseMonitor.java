@@ -44,7 +44,8 @@ public class DiseaseMonitor extends LocalEventProducer
     public static final EventType INFECTION_EVENT = new EventType("INFECTION_EVENT",
             new MetaData("infection", "infection instance with infectious person",
                     new ObjectDescriptor("infected-person", "infected person", Person.class),
-                    new ObjectDescriptor("infectious-person", "infectious person", Person.class)));
+                    new ObjectDescriptor("infectious-person", "infectious person", Person.class),
+                    new ObjectDescriptor("location", "location", Location.class)));
 
     /** statistics event for an offspring event. */
     public static final EventType OFFSPRING_EVENT = new EventType("OFFSPRING_EVENT",
@@ -93,10 +94,11 @@ public class DiseaseMonitor extends LocalEventProducer
      * Report an infection for statistics.
      * @param infectedPerson Person; the person being exposed to the disease
      * @param infectiousPerson Person; the infectious person possibly transmitting the disease
+     * @param location Location; location where the person spent time
      */
-    public void reportInfection(final Person infectedPerson, final Person infectiousPerson)
+    public void reportInfection(final Person infectedPerson, final Person infectiousPerson, final Location location)
     {
-        fireEvent(new TimedEvent<Double>(INFECTION_EVENT, new Object[] {infectedPerson, infectiousPerson},
+        fireEvent(new TimedEvent<Double>(INFECTION_EVENT, new Object[] {infectedPerson, infectiousPerson, location},
                 this.model.getSimulator().getSimulatorTime()));
     }
 

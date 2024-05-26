@@ -93,7 +93,7 @@ public abstract class DiseaseTransmission extends AbstractModelNamed implements 
         {
             this.nrPersonsInSublocationMap.put(key, this.nrPersonsInSublocationMap.get(key) + 1);
         }
-        if (!location.getLocationType().isInfectInSublocation() || location.getLocationTypeId() < 0)
+        if (location.getLocationTypeId() < 0) // Less than 0 means no infections (e.g., walk, drive, bike).
             return;
 
         if (!isSublocationInfected(key))
@@ -119,7 +119,7 @@ public abstract class DiseaseTransmission extends AbstractModelNamed implements 
                 persons.add(person.getId());
                 updateLastCalculationTime(key);
             }
-            return;
+            return; // because the first infectious person just entered
         }
 
         // cache entry already existed
@@ -149,7 +149,7 @@ public abstract class DiseaseTransmission extends AbstractModelNamed implements 
         {
             this.nrPersonsInSublocationMap.put(key, this.nrPersonsInSublocationMap.get(key) - 1);
         }
-        if (!location.getLocationType().isInfectInSublocation() || location.getLocationTypeId() < 0)
+        if (location.getLocationTypeId() < 0)
             return;
 
         if (!isSublocationInfected(key))
@@ -164,15 +164,16 @@ public abstract class DiseaseTransmission extends AbstractModelNamed implements 
         {
             expose(infectionRecord);
             updateLastCalculationTime(key);
-            // check if the person infected someone or is considered infectious (both may have changed over time)
-            if (this.infectionsPerInfectiousPersonMap.containsKey(person.getId())
-                    || infectionRecord.getInfectiousPersons().contains(person.getId()))
-            {
-                int nrInfected = this.infectionsPerInfectiousPersonMap.containsKey(person.getId())
-                        ? this.infectionsPerInfectiousPersonMap.get(person.getId()) : 0;
-                getModel().getDiseaseMonitor().reportOffspring(person, person.getCurrentLocation(), nrInfected);
-                this.infectionsPerInfectiousPersonMap.remove(person.getId());
-            }
+        }
+
+        // check if the person infected someone or is considered infectious (both may have changed over time)
+        if (this.infectionsPerInfectiousPersonMap.containsKey(person.getId())
+                || infectionRecord.getInfectiousPersons().contains(person.getId()))
+        {
+            int nrInfected = this.infectionsPerInfectiousPersonMap.containsKey(person.getId())
+                    ? this.infectionsPerInfectiousPersonMap.get(person.getId()) : 0;
+            getModel().getDiseaseMonitor().reportOffspring(person, person.getCurrentLocation(), nrInfected);
+            this.infectionsPerInfectiousPersonMap.remove(person.getId());
         }
         persons.remove(person.getId());
 
@@ -247,9 +248,9 @@ public abstract class DiseaseTransmission extends AbstractModelNamed implements 
             {
                 System.err.println("Exposure took place, but no infectious person in location!");
             }
-            getModel().getDiseaseMonitor().reportInfection(exposedPerson, infectiousPerson);
+            getModel().getDiseaseMonitor().reportInfection(exposedPerson, infectiousPerson, infectionRecord.getLocation());
             this.model.getDiseaseProgression().expose(exposedPerson, infectionRecord.getExposedPhase());
-            this.model.getPersonMonitor().reportExposure(exposedPerson, exposedPerson.getCurrentLocation(), infectiousPerson);
+            this.model.getPersonMonitor().reportExposure(exposedPerson, infectionRecord.getLocation(), infectiousPerson);
             this.infectionsPerInfectiousPersonMap.putIfAbsent(infectiousPerson.getId(), 0);
             this.infectionsPerInfectiousPersonMap.put(infectiousPerson.getId(),
                     1 + this.infectionsPerInfectiousPersonMap.get(infectiousPerson.getId()));

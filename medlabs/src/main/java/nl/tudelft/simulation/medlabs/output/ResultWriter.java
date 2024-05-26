@@ -785,8 +785,8 @@ public class ResultWriter implements EventListener
     {
         Person infectedPerson = (Person) content[0];
         Person infectiousPerson = (Person) content[1];
+        Location location = (Location) content[2];
         double time = this.model.getSimulator().getSimulatorTime();
-        Location location = infectedPerson.getCurrentLocation();
         //@formatter:off
         this.infectionWriter.println(
                   time + "," 

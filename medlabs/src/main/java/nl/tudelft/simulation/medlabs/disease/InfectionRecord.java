@@ -2,6 +2,7 @@ package nl.tudelft.simulation.medlabs.disease;
 
 import gnu.trove.list.TIntList;
 import gnu.trove.list.array.TIntArrayList;
+import nl.tudelft.simulation.medlabs.location.Location;
 
 /**
  * InfectionRecord contains the result of an exposure of uninfected persons to infectious persons over a duration.
@@ -21,11 +22,13 @@ public class InfectionRecord
     /**
      * Construct an InfectionRecord.
      * @param exposedPhase DiseasePhase; the disease phase that the person will get after 'successful' exposure
+     * @param location Location; the location, since person.getLocation() might not contain the correct info
      */
-    public InfectionRecord(final DiseasePhase exposedPhase)
+    public InfectionRecord(final DiseasePhase exposedPhase, final Location location)
     {
         super();
         this.exposedPhase = exposedPhase;
+        this.location = location;
     }
 
     /** The disease phase associated with the state that the person will get after 'successful' exposure. */
@@ -39,6 +42,9 @@ public class InfectionRecord
 
     /** Whether a transmission calculation was carried out or not. */
     private boolean calculated = false;
+    
+    /** The location of the infection(s). */
+    private final Location location;
 
     /**
      * @return infectiousPersons
@@ -94,6 +100,22 @@ public class InfectionRecord
     public DiseasePhase getExposedPhase()
     {
         return this.exposedPhase;
+    }
+
+    /**
+     * @return location
+     */
+    public Location getLocation()
+    {
+        return this.location;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public String toString()
+    {
+        return "InfectionRecord [calculated=" + this.calculated + ", location=" + this.location + ", infectiousPersons="
+                + this.infectiousPersons + ", infectedPersons=" + this.infectedPersons + "]";
     }
 
 }

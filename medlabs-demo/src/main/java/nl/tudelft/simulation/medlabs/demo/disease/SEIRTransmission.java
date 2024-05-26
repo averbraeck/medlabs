@@ -131,7 +131,7 @@ public class SEIRTransmission extends DiseaseTransmission
     @Override
     public InfectionRecord infectPeople(final Location location, final TIntSet personsInSublocation, final double duration)
     {
-        InfectionRecord infectionRecord = new InfectionRecord(SEIRProgression.exposed);
+        InfectionRecord infectionRecord = new InfectionRecord(SEIRProgression.exposed, location);
 
         // has contact been too short?
         if (duration < this.calculationThreshold)
