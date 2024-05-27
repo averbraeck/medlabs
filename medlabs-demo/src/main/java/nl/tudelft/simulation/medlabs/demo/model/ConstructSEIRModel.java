@@ -110,8 +110,8 @@ public class ConstructSEIRModel
     {
         this.model.getLocationTypeIndexMap().remove((byte) 0);
         this.model.getLocationTypeNameMap().remove("house");
-        new LocationType(this.model, (byte) 0, "house", Location.class, HouseAnimation.class, true, true, 1.0);
-        new LocationType(this.model, (byte) 1, "work", Location.class, WorkplaceAnimation.class, true, true, 1.0);
+        new LocationType(this.model, (byte) 0, "house", Location.class, HouseAnimation.class, true, true, 1.0, false, 0.25);
+        new LocationType(this.model, (byte) 1, "work", Location.class, WorkplaceAnimation.class, true, true, 1.0, false, 0.25);
     }
 
     private void makeLocations() throws Exception

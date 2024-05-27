@@ -61,7 +61,7 @@ public class SEIRModel extends AbstractMedlabsModel
     {
         super(simulator, propertyFilename);
         this.locationTypeHouse =
-                new LocationType(this, (byte) 0, "house", Location.class, HouseAnimation.class, true, true, 1.0);
+                new LocationType(this, (byte) 0, "house", Location.class, HouseAnimation.class, true, true, 1.0, false, 0.25);
     }
 
     /** {@inheritDoc} */
