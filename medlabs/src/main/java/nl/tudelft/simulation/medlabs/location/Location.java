@@ -130,6 +130,10 @@ public class Location implements ModelLocatable
         this.persons.add(person.getId());
         person.setCurrentSubLocationIndex(index);
         locationType.numberPersons++;
+        
+         double cap = locationType.getCapPersonsPerM2() * this.totalSurfaceM2;
+         if (this.persons.size() > cap)
+             locationType.reportCapacityProblem(this, this.persons.size());
     }
 
     /**

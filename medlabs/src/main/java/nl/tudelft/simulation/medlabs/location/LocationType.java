@@ -13,9 +13,9 @@ import gnu.trove.iterator.TIntIterator;
 import gnu.trove.list.TIntList;
 import gnu.trove.list.array.TIntArrayList;
 import gnu.trove.map.TIntObjectMap;
+import gnu.trove.map.TObjectIntMap;
 import gnu.trove.map.hash.TIntObjectHashMap;
-import nl.tudelft.simulation.jstats.streams.MersenneTwister;
-import nl.tudelft.simulation.jstats.streams.StreamInterface;
+import gnu.trove.map.hash.TObjectIntHashMap;
 import nl.tudelft.simulation.medlabs.location.animation.LocationAnimation;
 import nl.tudelft.simulation.medlabs.model.MedlabsModelInterface;
 import nl.tudelft.simulation.medlabs.simulation.TimeUnit;
@@ -95,8 +95,14 @@ public class LocationType extends LocalEventProducer
     @SuppressWarnings("checkstyle:visibilitymodifier")
     protected int numberPersons = 0;
 
-    /** random generator, to reproduce the chosen nearest locations. */
-    private StreamInterface stream;
+    /** capacity constrained? If false, only warnings will be given when the location is too full. */
+    private boolean capConstrained = false;
+
+    /** capacity as maximum number of persons per square meter. */
+    private double capPersonsPerM2 = 0.25;
+
+    /** capacity problems -- these are reported once every interval. */
+    private TObjectIntMap<Location> capacityProblemMap = new TObjectIntHashMap<>();
 
     /** statistics update event. */
     public static final EventType STATISTICS_EVENT =
@@ -120,11 +126,14 @@ public class LocationType extends LocalEventProducer
      * @param infectInSublocation boolean; whether the sublocation can cause infections. If not, the total location will be
      *            used. If no infection needs to take place, set correctionFactorArea to 0.
      * @param correctionFactorArea double; factor for the rate of contagiousness in this location type, default 1.0.
+     * @param capConstrained boolean; capacity constrained? If false, only warnings will be given when the location is too full
+     * @param capPersonsPerM2 double; capacity as maximum number of persons per square meter
      */
     @SuppressWarnings("checkstyle:parameternumber")
     public LocationType(final MedlabsModelInterface model, final byte locationTypeId, final String name,
             final Class<? extends Location> locationClass, final Class<? extends LocationAnimation> animationClass,
-            final boolean reproducible, final boolean infectInSublocation, final double correctionFactorArea)
+            final boolean reproducible, final boolean infectInSublocation, final double correctionFactorArea,
+            final boolean capConstrained, final double capPersonsPerM2)
     {
         this.model = model;
         this.locationTypeid = locationTypeId;
@@ -134,6 +143,8 @@ public class LocationType extends LocalEventProducer
         this.reproducible = reproducible;
         this.infectInSublocation = infectInSublocation;
         this.correctionFactorArea = correctionFactorArea;
+        this.capConstrained = capConstrained;
+        this.capPersonsPerM2 = capPersonsPerM2;
         model.getLocationTypeNameMap().put(name, this);
         model.getLocationTypeIndexMap().put(locationTypeId, this);
         model.getLocationTypeList().add(this);
@@ -141,7 +152,6 @@ public class LocationType extends LocalEventProducer
         this.fractionActivities = 1.0;
         this.alternativeLocationType = this;
         this.reportAsLocationName = name;
-        this.stream = new MersenneTwister(Math.abs(this.hashCode()));
     }
 
     /**
@@ -285,8 +295,8 @@ public class LocationType extends LocalEventProducer
         {
             return this.locationMap.get(ret.get(0));
         }
-        this.stream.setSeed(Math.abs(hashCode() + 31 * startLocation.hashCode()));
-        return this.locationMap.get(ret.get(this.stream.nextInt(0, ret.size() - 1)));
+        return this.locationMap.get(ret.get(this.model.getReproducibleJava2Random().nextInt(0, ret.size() - 1,
+                hashCode() + 31 * startLocation.hashCode())));
     }
 
     /**
@@ -334,6 +344,33 @@ public class LocationType extends LocalEventProducer
         this.fractionActivities = fractionActivities;
         this.alternativeLocationType = alternativeLocationType;
         this.reportAsLocationName = reportAsLocationName;
+    }
+
+    public void reportCapacityProblem(final Location location, final int nrPersons)
+    {
+        if (nrPersons > this.capacityProblemMap.get(location))
+            this.capacityProblemMap.put(location, nrPersons);
+    }
+
+    public void reportCapacityProblems()
+    {
+        for (Location location : this.capacityProblemMap.keys(new Location[0]))
+        {
+            int nr = this.capacityProblemMap.get(location);
+            System.out.println(this.model.getSimulator().getSimulatorTime() + ": " + nr + " persons in " + location
+                    + ". Surface=" + location.getTotalSurfaceM2() + "m2. Capacity/m2=" + this.capPersonsPerM2 + ". Persons/m2 "
+                    + (nr / location.getTotalSurfaceM2()));
+        }
+        this.capacityProblemMap.clear();
+        try
+        {
+            this.model.getSimulator().scheduleEventRel(TimeUnit.convert(60.0, TimeUnit.MINUTE), this, "reportCapacityProblems",
+                    null);
+        }
+        catch (Exception exception)
+        {
+            exception.printStackTrace();
+        }
     }
 
     /**
@@ -411,6 +448,22 @@ public class LocationType extends LocalEventProducer
     public void setCorrectionFactorArea(final double correctionFactorArea)
     {
         this.correctionFactorArea = correctionFactorArea;
+    }
+
+    /**
+     * @return capConstrained
+     */
+    public boolean isCapConstrained()
+    {
+        return this.capConstrained;
+    }
+
+    /**
+     * @return capPersonsPerM2
+     */
+    public double getCapPersonsPerM2()
+    {
+        return this.capPersonsPerM2;
     }
 
     /**
