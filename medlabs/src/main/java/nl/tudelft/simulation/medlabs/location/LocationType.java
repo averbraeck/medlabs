@@ -346,12 +346,21 @@ public class LocationType extends LocalEventProducer
         this.reportAsLocationName = reportAsLocationName;
     }
 
+    /**
+     * Report that there is a violation of the capacity for a location. Store it in a Map to report, e.g. once an hour.
+     * @param location Location; the location that reported a violation
+     * @param nrPersons int; the number of persons that is currently in the location.
+     */
     public void reportCapacityProblem(final Location location, final int nrPersons)
     {
         if (nrPersons > this.capacityProblemMap.get(location))
             this.capacityProblemMap.put(location, nrPersons);
     }
 
+    /**
+     * Report that one or more locations used more capacity than what was available for the location. Currently, the reporting
+     * is done on the console. Later, it will be sent to the ResultWriter.
+     */
     public void reportCapacityProblems()
     {
         for (Location location : this.capacityProblemMap.keys(new Location[0]))
