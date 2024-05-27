@@ -150,6 +150,8 @@ public class MedlabsPanel extends DsolPanel
 
                 // make sure every LocationType reports about its status every 5 minutes
                 simulator.scheduleEventRel(0.0, locationType, "reportStatistics", null);
+                // make sure every locationType reports on its capacity problems
+                simulator.scheduleEventRel(0.0, locationType, "reportCapacityProblems", null);
 
                 HistogramDouble histogram = null;
                 if (locationType.getName() == "metrotrain" || locationType.getName() == "bus"

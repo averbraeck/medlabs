@@ -141,11 +141,11 @@ public abstract class AbstractMedlabsModel extends AbstractDsolModel<Double, Sim
         super(simulator);
         this.propertyFilename = propertyFilename;
         makeInputParameterMap();
-        LocationType walkLT = new LocationType(this, (byte) -1, "walk", Location.class, null, false, false, 0.0);
+        LocationType walkLT = new LocationType(this, (byte) -1, "walk", Location.class, null, false, false, 0.0, false, 1.0);
         this.locationWalk = new Location(this, -1, walkLT.getLocationTypeId(), 0.0f, 0.0f, (short) 1, 1E6f);
-        LocationType bikeLT = new LocationType(this, (byte) -2, "bike", Location.class, null, false, false, 0.0);
+        LocationType bikeLT = new LocationType(this, (byte) -2, "bike", Location.class, null, false, false, 0.0, false, 1.0);
         this.locationBike = new Location(this, -2, bikeLT.getLocationTypeId(), 0.0f, 0.0f, (short) 1, 1E6f);
-        LocationType carLT = new LocationType(this, (byte) -3, "car", Location.class, null, false, false, 0.0);
+        LocationType carLT = new LocationType(this, (byte) -3, "car", Location.class, null, false, false, 0.0, false, 1.0);
         this.locationCar = new Location(this, -3, carLT.getLocationTypeId(), 0.0f, 0.0f, (short) 1, 1E6f);
     }
 
