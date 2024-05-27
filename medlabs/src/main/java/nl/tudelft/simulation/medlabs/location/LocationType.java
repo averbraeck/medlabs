@@ -91,9 +91,11 @@ public class LocationType extends LocalEventProducer
     @SuppressWarnings("checkstyle:visibilitymodifier")
     protected MedlabsModelInterface model;
 
+    /** total capacity. */
+    private int totalCapacity = 0;
+
     /** number of persons in location type for fast statistics. */
-    @SuppressWarnings("checkstyle:visibilitymodifier")
-    protected int numberPersons = 0;
+    private int numberPersons = 0;
 
     /** capacity constrained? If false, only warnings will be given when the location is too full. */
     private boolean capConstrained = false;
@@ -193,14 +195,25 @@ public class LocationType extends LocalEventProducer
             this.gridLocationMap.put(key, gridLocations);
         }
         gridLocations.add(location.getId());
+        this.totalCapacity += location.getCapacity();
+    }
+
+    public void incNumberPersons()
+    {
+        this.numberPersons++;
+    }
+
+    public void decNumberPersons()
+    {
+        this.numberPersons--;
     }
 
     /**
-     * @param startLocation
+     * @param startLocation the location where the person is currently, and to which a 'near' location needs to be found.
      * @param maxDistanceM max distance in meters
-     * @return an array of locations of this location type with a max distance to the startLocation
+     * @return a list of location id's of this location type with a max distance to the startLocation
      */
-    public Location[] getLocationArrayMaxDistanceM(final Location startLocation, final double maxDistanceM)
+    public TIntList getLocationListMaxDistanceM(final Location startLocation, final double maxDistanceM)
     {
         int startKey = startLocation.getGridKey();
         int startX = startLocation.getGridX();
@@ -228,8 +241,17 @@ public class LocationType extends LocalEventProducer
                 this.maxDistanceLocationCache.put(startKey, new HashMap<>());
             this.maxDistanceLocationCache.get(startKey).put(maxDistanceM, ret);
         }
+        return ret;
+    }
 
-        // TODO: return the TIntSet. For now: translate to array
+    /**
+     * @param startLocation the location where the person is currently, and to which a 'near' location needs to be found.
+     * @param maxDistanceM max distance in meters
+     * @return a list of location id's of this location type with a max distance to the startLocation
+     */
+    public Location[] getLocationArrayMaxDistanceM(final Location startLocation, final double maxDistanceM)
+    {
+        TIntList ret = getLocationListMaxDistanceM(startLocation, maxDistanceM);
         Location[] arr = new Location[ret.size()];
         int i = 0;
         for (TIntIterator it = ret.iterator(); it.hasNext();)
@@ -238,7 +260,40 @@ public class LocationType extends LocalEventProducer
     }
 
     /**
-     * @param startLocation
+     * @param startLocation the location where the person is currently, and to which a 'near' location needs to be found.
+     * @param maxDistanceM max distance in meters
+     * @return a list of location id's of this location type with a max distance to the startLocation
+     */
+    public TIntList getLocationListMaxDistanceMCap(final Location startLocation, final double maxDistanceM)
+    {
+        // first test the general nearest location, and filter on capacity
+        TIntList nearestLocations = filterCap(getLocationListMaxDistanceM(startLocation, maxDistanceM));
+        if (nearestLocations.size() > 0)
+            return nearestLocations;
+
+        // give the single nearest available location if nothing can be found in the neighbourhood for now.
+        // TODO: search spirally
+        nearestLocations.add(getNearestLocationCap(startLocation).getId());
+        return nearestLocations;
+    }
+
+    /**
+     * @param startLocation the location where the person is currently, and to which a 'near' location needs to be found.
+     * @param maxDistanceM max distance in meters
+     * @return an array of locations of this location type with a max distance to the startLocation
+     */
+    public Location[] getLocationArrayMaxDistanceMCap(final Location startLocation, final double maxDistanceM)
+    {
+        TIntList ret = getLocationListMaxDistanceMCap(startLocation, maxDistanceM);
+        Location[] arr = new Location[ret.size()];
+        int i = 0;
+        for (TIntIterator it = ret.iterator(); it.hasNext();)
+            arr[i++] = this.locationMap.get(it.next());
+        return arr;
+    }
+
+    /**
+     * @param startLocation the location where the person is currently, and to which a 'near' location needs to be found.
      * @return the nearest location of this location type to the startLocation
      */
     public Location getNearestLocation(final Location startLocation)
@@ -288,8 +343,8 @@ public class LocationType extends LocalEventProducer
         // choose one (reproducible) value from the found locations
         if (ret.size() == 0)
         {
-            System.err.println("Could not find nearest location -- picked a random one.");
-            return this.locationMap.get(this.locationMap.keySet().iterator().next());
+            System.err.println(this.model.getSimulator().getSimulatorTime() + ": NO NEAREST LOCATION FOUND FOR TYPE " + this);
+            return null;
         }
         if (ret.size() == 1)
         {
@@ -297,6 +352,85 @@ public class LocationType extends LocalEventProducer
         }
         return this.locationMap.get(ret.get(this.model.getReproducibleJava2Random().nextInt(0, ret.size() - 1,
                 hashCode() + 31 * startLocation.hashCode())));
+    }
+
+    /**
+     * @param startLocation the location where the person is currently, and to which a 'near' location needs to be found.
+     * @return the nearest location of this location type to the startLocation
+     */
+    public Location getNearestLocationCap(final Location startLocation)
+    {
+        // first test the general nearest location
+        Location nearestLocation = getNearestLocation(startLocation);
+        if (nearestLocation.belowCapacity())
+            return nearestLocation;
+
+        // otherwise, find a near location that is not full
+        int startKey = startLocation.getGridKey();
+        int startX = startLocation.getGridX();
+        int startY = startLocation.getGridY();
+        TIntList ret = new TIntArrayList();
+        if (this.nearestLocationCache.containsKey(startKey))
+        {
+            ret = filterCap(this.nearestLocationCache.get(startKey));
+        }
+        if (ret.size() == 0)
+        {
+            if (this.gridLocationMap.containsKey(startKey))
+                ret.addAll(filterCap(this.gridLocationMap.get(startKey)));
+            else
+            {
+                for (int hCells = 1; hCells < 100; hCells++)
+                {
+                    for (int x = startX - hCells; x <= startX + hCells; x++)
+                    {
+                        for (int y : new int[] {startY - hCells, startY + hCells})
+                        {
+                            int key = x * 32768 + y;
+                            if (this.gridLocationMap.containsKey(key))
+                                ret.addAll(filterCap(this.gridLocationMap.get(key)));
+                        }
+                    }
+                    for (int y = startY - hCells + 1; y < startY + hCells; y++)
+                    {
+                        for (int x : new int[] {startX - hCells, startX + hCells})
+                        {
+                            int key = x * 32768 + y;
+                            if (this.gridLocationMap.containsKey(key))
+                                ret.addAll(filterCap(this.gridLocationMap.get(key)));
+                        }
+                    }
+                    if (ret.size() > 0)
+                        break;
+                }
+            }
+        }
+
+        // choose one (reproducible) value from the found locations
+        if (ret.size() == 0)
+        {
+            System.err.println(this.model.getSimulator().getSimulatorTime() + ": ALL LOCATIONS FOR TYPE " + this
+                    + " are full! cap=" + this.totalCapacity + ", use=" + this.numberPersons);
+            return null;
+        }
+        if (ret.size() == 1)
+        {
+            return this.locationMap.get(ret.get(0));
+        }
+        return this.locationMap.get(ret.get(this.model.getReproducibleJava2Random().nextInt(0, ret.size() - 1,
+                hashCode() + 31 * startLocation.hashCode())));
+    }
+
+    private TIntList filterCap(final TIntList locationList)
+    {
+        TIntList outList = new TIntArrayList();
+        for (TIntIterator it = locationList.iterator(); it.hasNext();)
+        {
+            Location loc = this.locationMap.get(it.next());
+            if (loc.belowCapacity())
+                outList.add(loc.getId());
+        }
+        return outList;
     }
 
     /**

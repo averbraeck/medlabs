@@ -95,6 +95,7 @@ public class NearestLocatorChoice implements LocatorInterface
                                 this.stream.setSeed(this.seed + person.getId()); // reproducible by person id
                                 if (this.stream.nextDouble() < lt.getFractionActivities())
                                 {
+                                    loc.addReservation(person);
                                     return loc; // can still go to the nearest location
                                 }
                             }
@@ -108,6 +109,7 @@ public class NearestLocatorChoice implements LocatorInterface
                 }
 
                 // location is open
+                loc.addReservation(person);
                 return loc;
             }
         }

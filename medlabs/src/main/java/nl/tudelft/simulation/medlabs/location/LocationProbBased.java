@@ -101,7 +101,7 @@ public class LocationProbBased extends Location
 
         this.persons.add(person.getId());
         person.setCurrentSubLocationIndex(index);
-        locationType.numberPersons++;
+        locationType.incNumberPersons();
     }
 
     /** {@inheritDoc} */
@@ -110,7 +110,7 @@ public class LocationProbBased extends Location
     {
         if (this.persons.remove(person.getId()))
         {
-            this.model.getLocationTypeIndexMap().get(this.locationTypeId).numberPersons--;
+            this.model.getLocationTypeIndexMap().get(this.locationTypeId).decNumberPersons();
             double now = this.model.getSimulator().getSimulatorTime().doubleValue();
             double duration = now - this.enterTimes.get(person.getId());
             this.enterTimes.remove(person.getId());

@@ -14,7 +14,8 @@ import nl.tudelft.simulation.medlabs.person.Person;
 
 /**
  * The NearestLocatorChoise locator draws a type of location to return with a probability, and then returns the closest location
- * of that type relative to the current location of the Person.
+ * of that type relative to the current location of the Person. This version of the locator uses a capacity constraint on the
+ * location, where persons will avoid the location when it is full.
  * <p>
  * Copyright (c) 2014-2024 Delft University of Technology, Jaffalaan 5, 2628 BX Delft, the Netherlands. All rights reserved. The
  * MEDLABS project (Modeling Epidemic Disease with Large-scale Agent-Based Simulation) is aimed at providing policy analysis
@@ -60,7 +61,7 @@ public class NearestLocatorChoiceCap implements LocatorInterface
         this.activityLocationTypeMap = activityLocationTypeMap;
         this.reproducible = reproducible;
         this.seed = this.activityLocationTypeMap.values().iterator().next().getModel().getDefaultStream().getOriginalSeed()
-                + "NearestLocatorChoice".hashCode();
+                + "NearestLocatorChoiceCap".hashCode();
         this.stream = new Java2Random(this.seed);
     }
 
@@ -79,7 +80,9 @@ public class NearestLocatorChoiceCap implements LocatorInterface
                 {
                     return person.getHomeLocation();
                 }
-                Location loc = entry.getValue().getNearestLocation(startLocation);
+                Location loc = entry.getValue().getNearestLocationCap(startLocation);
+                if (loc == null)
+                    loc = person.getHomeLocation();
                 LocationType lt = loc.getLocationType();
 
                 if (lt.getFractionActivities() < 1.0 || lt.getFractionOpen() < 1.0)
@@ -95,19 +98,23 @@ public class NearestLocatorChoiceCap implements LocatorInterface
                                 this.stream.setSeed(this.seed + person.getId()); // reproducible by person id
                                 if (this.stream.nextDouble() < lt.getFractionActivities())
                                 {
+                                    loc.addReservation(person);
                                     return loc; // can still go to the nearest location
                                 }
                             }
                         }
                     }
-                    
+
                     LocationType alt = lt.getAlternativeLocationType();
                     if (person.getModel().getLocationTypeHouse().getLocationTypeId() == alt.getLocationTypeId())
                         return person.getHomeLocation();
-                    return new NearestLocator(new CurrentLocator(), alt).getLocation(person);
+                    loc = new NearestLocatorCap(new CurrentLocator(), alt).getLocation(person);
+                    if (loc == null)
+                        loc = person.getHomeLocation();
                 }
 
                 // location is open
+                loc.addReservation(person);
                 return loc;
             }
         }

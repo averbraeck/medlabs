@@ -74,6 +74,9 @@ public class Location implements ModelLocatable
     /** The ids of the persons in the location. */
     @SuppressWarnings("checkstyle:visibilitymodifier")
     protected TIntSet persons = new TIntHashSet();
+    
+    /** The ids of the persons with reservations for this location (persons who are on their way). */
+    private TIntSet reservations = new TIntHashSet();
 
     /**
      * Create a location.
@@ -128,11 +131,11 @@ public class Location implements ModelLocatable
         getModel().getDiseaseTransmission().calculateTransmissionEnter(this, index, person);
 
         this.persons.add(person.getId());
+        this.reservations.remove(person.getId());
         person.setCurrentSubLocationIndex(index);
-        locationType.numberPersons++;
-        
-         double cap = locationType.getCapPersonsPerM2() * this.totalSurfaceM2;
-         if (this.persons.size() > cap)
+        locationType.incNumberPersons();
+
+        if (aboveCapacity() && locationType.isCapConstrained())
              locationType.reportCapacityProblem(this, this.persons.size());
     }
 
@@ -148,12 +151,49 @@ public class Location implements ModelLocatable
 
         if (this.persons.remove(person.getId()))
         {
-            this.model.getLocationTypeIndexMap().get(this.locationTypeId).numberPersons--;
+            this.model.getLocationTypeIndexMap().get(this.locationTypeId).decNumberPersons();
             return true;
         }
         return false;
     }
 
+    /**
+     * Return whether the location is still below capacity (meaning that it would fit one more person).
+     * @return boolean; whether the location is still below capacity
+     */
+    public boolean belowCapacity()
+    {
+        return this.persons.size() + this.reservations.size() < getCapacity() - 1.0;
+    }
+
+    /**
+     * Return whether the location is above capacity.
+     * @return boolean; whether the location is above capacity
+     */
+    public boolean aboveCapacity()
+    {
+        return this.persons.size() + this.reservations.size() > getCapacity();
+    }
+
+    /**
+     * Add a reservation for this person, who might be on the way to the location.
+     * @param person Person; the person to add a reservation for
+     */
+    public void addReservation(final Person person)
+    {
+        this.reservations.add(person.getId());
+    }
+    
+    /**
+     * Return the capacity of the location based on the number of square meters of the location.
+     * @return int; the capacity of the location based on the number of square meters of the location
+     */
+    public int getCapacity()
+    {
+        LocationType locationType = this.model.getLocationTypeIndexMap().get(this.locationTypeId);
+        return (int) Math.round(locationType.getCapPersonsPerM2() * this.totalSurfaceM2);
+    }
+    
     /**
      * @return the latitude of coordinate
      */

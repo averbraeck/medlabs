@@ -74,6 +74,7 @@ public class NearestLocator implements LocatorInterface
                         this.stream.setSeed(this.seed + person.getId()); // reproducible by person id
                         if (this.stream.nextDouble() < this.activityLocationType.getFractionActivities())
                         {
+                            nearestLocation.addReservation(person);
                             return nearestLocation; // can still go to the nearest location
                         }
                     }
@@ -85,7 +86,7 @@ public class NearestLocator implements LocatorInterface
                 return person.getHomeLocation();
             return new NearestLocator(new CurrentLocator(), alt).getLocation(person);
         }
-
+        nearestLocation.addReservation(person);
         return nearestLocation;
     }
 

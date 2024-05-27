@@ -9,7 +9,8 @@ import nl.tudelft.simulation.medlabs.location.LocationType;
 import nl.tudelft.simulation.medlabs.person.Person;
 
 /**
- * The NearestLocator returns the closest location of a certain type relative to the current location of the Person.
+ * The NearestLocator returns the closest location of a certain type relative to the current location of the Person. This
+ * version of the locator uses a capacity constraint on the location, where persons will avoid the location when it is full.
  * <p>
  * Copyright (c) 2014-2024 Delft University of Technology, Jaffalaan 5, 2628 BX Delft, the Netherlands. All rights reserved. The
  * MEDLABS project (Modeling Epidemic Disease with Large-scale Agent-Based Simulation) is aimed at providing policy analysis
@@ -29,7 +30,7 @@ public class NearestLocatorCap implements LocatorInterface
 
     /** the type of location to return, e.g. "playground" */
     private final LocationType activityLocationType;
-    
+
     /** local reproducible stream. */
     private StreamInterface stream = null;
 
@@ -46,7 +47,7 @@ public class NearestLocatorCap implements LocatorInterface
         Throw.whenNull(activityLocationType, "activityLocationType cannot be null");
         this.startLocator = startLocator;
         this.activityLocationType = activityLocationType;
-        this.seed = this.activityLocationType.getModel().getDefaultStream().getOriginalSeed() + "NearestLocator".hashCode();
+        this.seed = this.activityLocationType.getModel().getDefaultStream().getOriginalSeed() + "NearestLocatorCap".hashCode();
         this.stream = new Java2Random(this.seed);
     }
 
@@ -59,14 +60,16 @@ public class NearestLocatorCap implements LocatorInterface
         {
             return person.getHomeLocation();
         }
-        
-        Location nearestLocation = this.activityLocationType.getNearestLocation(startLocation);
+
+        Location loc = this.activityLocationType.getNearestLocationCap(startLocation);
+        if (loc == null)
+            loc = person.getHomeLocation();
         if (this.activityLocationType.getFractionActivities() < 1.0 || this.activityLocationType.getFractionOpen() < 1.0)
         {
             // person might be forced to go somewhere else or to stay at home
             if (this.activityLocationType.getFractionOpen() > 0.0)
             {
-                this.stream.setSeed(this.seed + nearestLocation.getId()); // reproducible by nearest location id
+                this.stream.setSeed(this.seed + loc.getId()); // reproducible by nearest location id
                 if (this.stream.nextDouble() < this.activityLocationType.getFractionOpen())
                 {
                     if (this.activityLocationType.getFractionActivities() > 0.0)
@@ -74,19 +77,22 @@ public class NearestLocatorCap implements LocatorInterface
                         this.stream.setSeed(this.seed + person.getId()); // reproducible by person id
                         if (this.stream.nextDouble() < this.activityLocationType.getFractionActivities())
                         {
-                            return nearestLocation; // can still go to the nearest location
+                            loc.addReservation(person);
+                            return loc; // can still go to the nearest location
                         }
                     }
                 }
             }
-            
+
             LocationType alt = this.activityLocationType.getAlternativeLocationType();
             if (person.getModel().getLocationTypeHouse().getLocationTypeId() == alt.getLocationTypeId())
                 return person.getHomeLocation();
-            return new NearestLocatorCap(new CurrentLocator(), alt).getLocation(person);
+            loc = new NearestLocatorCap(new CurrentLocator(), alt).getLocation(person);
+            if (loc == null)
+                loc = person.getHomeLocation();
         }
-
-        return nearestLocation;
+        loc.addReservation(person);
+        return loc;
     }
 
 }

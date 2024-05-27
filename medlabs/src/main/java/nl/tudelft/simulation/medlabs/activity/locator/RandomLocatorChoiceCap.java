@@ -15,7 +15,8 @@ import nl.tudelft.simulation.medlabs.person.Person;
 
 /**
  * The RandomLocatorChoise locator draws a type of location to return with a probability, and then returns a random location of
- * that type within a certain distance, e.g., a restaurant within a 2 kilometer radius.
+ * that type within a certain distance, e.g., a restaurant within a 2 kilometer radius. This version of the locator uses a
+ * capacity constraint on the location, where persons will avoid the location when it is full.
  * <p>
  * Copyright (c) 2014-2024 Delft University of Technology, Jaffalaan 5, 2628 BX Delft, the Netherlands. All rights reserved. The
  * MEDLABS project (Modeling Epidemic Disease with Large-scale Agent-Based Simulation) is aimed at providing policy analysis
@@ -68,7 +69,7 @@ public class RandomLocatorChoiceCap implements LocatorInterface
         this.maxDistanceM = maxDistanceM;
         this.reproducible = reproducible;
         this.seed = this.activityLocationTypeMap.values().iterator().next().getModel().getDefaultStream().getOriginalSeed()
-                + "RandomLocator".hashCode();
+                + "RandomLocatorChoiceCap".hashCode();
         this.stream = new Java2Random(this.seed);
     }
 
@@ -90,11 +91,13 @@ public class RandomLocatorChoiceCap implements LocatorInterface
                     return person.getHomeLocation();
                 }
 
-                Location[] locations = lt.getLocationArrayMaxDistanceM(startLocation, this.maxDistanceM);
+                Location[] locations = lt.getLocationArrayMaxDistanceMCap(startLocation, this.maxDistanceM);
                 Location loc = null;
                 if (locations.length == 0)
                 {
-                    loc =  lt.getNearestLocation(startLocation);
+                    loc = lt.getNearestLocationCap(startLocation);
+                    if (loc == null)
+                        loc = person.getHomeLocation();
                 }
                 else
                 {
@@ -106,9 +109,9 @@ public class RandomLocatorChoiceCap implements LocatorInterface
                     {
                         index = locations.length - 1;
                     }
-                    loc =  locations[index];
+                    loc = locations[index];
                 }
-                
+
                 if (lt.getFractionActivities() < 1.0 || lt.getFractionOpen() < 1.0)
                 {
                     // person might be forced to go somewhere else or to stay at home
@@ -122,19 +125,23 @@ public class RandomLocatorChoiceCap implements LocatorInterface
                                 this.stream.setSeed(this.seed + person.getId()); // reproducible by person id
                                 if (this.stream.nextDouble() < lt.getFractionActivities())
                                 {
+                                    loc.addReservation(person);
                                     return loc; // can still go to the chosen location
                                 }
                             }
                         }
                     }
-                    
+
                     LocationType alt = lt.getAlternativeLocationType();
                     if (person.getModel().getLocationTypeHouse().getLocationTypeId() == alt.getLocationTypeId())
                         return person.getHomeLocation();
-                    return new NearestLocator(new CurrentLocator(), alt).getLocation(person);
+                    loc = new NearestLocatorCap(new CurrentLocator(), alt).getLocation(person);
+                    if (loc == null)
+                        loc = person.getHomeLocation();
                 }
 
                 // location is open
+                loc.addReservation(person);
                 return loc;
             }
         }

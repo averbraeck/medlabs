@@ -11,7 +11,8 @@ import nl.tudelft.simulation.medlabs.person.Person;
 
 /**
  * The RandomLocator returns a random location of a certain type within a certain distanc, e.g., a restaurant within a 2
- * kilometer radius.
+ * kilometer radius. This version of the locator uses a capacity constraint on the location, where persons will avoid the
+ * location when it is full.
  * <p>
  * Copyright (c) 2014-2024 Delft University of Technology, Jaffalaan 5, 2628 BX Delft, the Netherlands. All rights reserved. The
  * MEDLABS project (Modeling Epidemic Disease with Large-scale Agent-Based Simulation) is aimed at providing policy analysis
@@ -60,7 +61,7 @@ public class RandomLocatorCap implements LocatorInterface
         this.activityLocationType = activityLocationType;
         this.maxDistanceM = maxDistanceM;
         this.reproducible = reproducible;
-        this.seed = this.activityLocationType.getModel().getDefaultStream().getOriginalSeed() + "RandomLocator".hashCode();
+        this.seed = this.activityLocationType.getModel().getDefaultStream().getOriginalSeed() + "RandomLocatorCap".hashCode();
         this.stream = new Java2Random(this.seed);
     }
 
@@ -71,11 +72,13 @@ public class RandomLocatorCap implements LocatorInterface
         MedlabsModelInterface model = person.getModel();
         Location startLocation = this.startLocator.getLocation(person);
 
-        Location[] locations = this.activityLocationType.getLocationArrayMaxDistanceM(startLocation, this.maxDistanceM);
+        Location[] locations = this.activityLocationType.getLocationArrayMaxDistanceMCap(startLocation, this.maxDistanceM);
         Location loc = null;
         if (locations.length == 0)
         {
-            loc = this.activityLocationType.getNearestLocation(startLocation);
+            loc = this.activityLocationType.getNearestLocationCap(startLocation);
+            if (loc == null)
+                loc = person.getHomeLocation();
         }
         else
         {
@@ -101,19 +104,23 @@ public class RandomLocatorCap implements LocatorInterface
                         this.stream.setSeed(this.seed + person.getId()); // reproducible by person id
                         if (this.stream.nextDouble() < this.activityLocationType.getFractionActivities())
                         {
+                            loc.addReservation(person);
                             return loc; // can still go to the chosen location
                         }
                     }
                 }
             }
-            
+
             LocationType alt = this.activityLocationType.getAlternativeLocationType();
             if (person.getModel().getLocationTypeHouse().getLocationTypeId() == alt.getLocationTypeId())
                 return person.getHomeLocation();
-            return new NearestLocator(new CurrentLocator(), alt).getLocation(person);
+            loc = new NearestLocatorCap(new CurrentLocator(), alt).getLocation(person);
+            if (loc == null)
+                loc = person.getHomeLocation();
         }
-        
+
         // location is open
+        loc.addReservation(person);
         return loc;
     }
 
