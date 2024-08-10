@@ -22,16 +22,16 @@ public class MovableLocation extends Location
      * Create a movable location.
      * @param model MedlabsModelInterface; the model for looking up the simulator and other model objects
      * @param id int; the location id within the locationType
-     * @param locationTypeId byte; the index number of the locationType
+     * @param locationType LocationType; the location type
      * @param lat float; latitude of the location
      * @param lon float; longitude of the location
      * @param numberOfSubLocations short; number of sub locations (e.g., rooms)
      * @param surfaceM2 float total surface in m2
      */
-    public MovableLocation(final MedlabsModelInterface model, final int id, final byte locationTypeId, final float lat,
+    public MovableLocation(final MedlabsModelInterface model, final int id, final LocationType locationType, final float lat,
             final float lon, final short numberOfSubLocations, final float surfaceM2)
     {
-        super(model, id, locationTypeId, lat, lon, numberOfSubLocations, surfaceM2);
+        super(model, id, locationType, lat, lon, numberOfSubLocations, surfaceM2);
     }
 
     /** {@inheritDoc} */

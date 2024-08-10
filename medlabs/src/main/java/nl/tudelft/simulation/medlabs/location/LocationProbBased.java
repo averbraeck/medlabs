@@ -47,7 +47,7 @@ public class LocationProbBased extends Location
      * Create a location.
      * @param model MedlabsModelInterface; the model for looking up the simulator and other model objects
      * @param locationId int; the location id within the locationType
-     * @param locationTypeId byte; the index number of the locationType
+     * @param locationType LocationType; the location type
      * @param lat float; latitude of the location
      * @param lon float; longitude of the location
      * @param numberOfSubLocations short; number of sub locations (e.g., rooms)
@@ -61,12 +61,12 @@ public class LocationProbBased extends Location
      * @param exposed DiseasePhase; the exact phase a person needs to enter into when being exposed in the location based on
      *            probability
      */
-    public LocationProbBased(final MedlabsModelInterface model, final int locationId, final byte locationTypeId,
+    public LocationProbBased(final MedlabsModelInterface model, final int locationId, final LocationType locationType,
             final float lat, final float lon, final short numberOfSubLocations, final float surfaceM2,
             final double infectionRateFactor, final double infectionRate, final Map<PersonType, PersonType> referenceGroup,
             final DiseasePhase exposed)
     {
-        super(model, locationId, locationTypeId, lat, lon, numberOfSubLocations, surfaceM2);
+        super(model, locationId, locationType, lat, lon, numberOfSubLocations, surfaceM2);
         this.infectionRateFactor = infectionRateFactor;
         this.infectionRate = infectionRate;
         this.referenceGroup = referenceGroup;
@@ -79,12 +79,11 @@ public class LocationProbBased extends Location
     {
         // Calculate the sublocation index
         short index;
-        LocationType locationType = this.model.getLocationTypeIndexMap().get(this.locationTypeId);
-        if (locationType.getLocationTypeId() == this.model.getLocationTypeHouse().getLocationTypeId())
+        if (this.locationType.getLocationTypeId() == this.model.getLocationTypeHouse().getLocationTypeId())
             index = person.getHomeSubLocationIndex();
         else if (this.numberOfSubLocations < 2)
             index = 0;
-        else if (locationType.isReproducible())
+        else if (this.locationType.isReproducible())
             index = (short) this.model.getReproducibleJava2Random().nextInt(0, this.numberOfSubLocations,
                     (person.hashCode() * 1000 + this.locationId));
         else
@@ -101,7 +100,7 @@ public class LocationProbBased extends Location
 
         this.persons.add(person.getId());
         person.setCurrentSubLocationIndex(index);
-        locationType.incNumberPersons();
+        this.locationType.incNumberPersons();
     }
 
     /** {@inheritDoc} */
@@ -110,7 +109,7 @@ public class LocationProbBased extends Location
     {
         if (this.persons.remove(person.getId()))
         {
-            this.model.getLocationTypeIndexMap().get(this.locationTypeId).decNumberPersons();
+            this.model.getLocationTypeIndexMap().get(getLocationTypeId()).decNumberPersons();
             double now = this.model.getSimulator().getSimulatorTime().doubleValue();
             double duration = now - this.enterTimes.get(person.getId());
             this.enterTimes.remove(person.getId());
@@ -124,7 +123,7 @@ public class LocationProbBased extends Location
                         person.setExposureTime((float) now);
                         // Take the person him/herself as the cause -- probability-based so probably same type of person
                         this.model.getPersonMonitor().reportExposure(person, this, person);
-                        this.model.getPersonMonitor().reportExposureByRate(person, this.locationTypeId, duration,
+                        this.model.getPersonMonitor().reportExposureByRate(person, getLocationTypeId(), duration,
                                 this.infectionRate);
                         this.model.getDiseaseProgression().expose(person, this.exposed);
                     }
@@ -149,7 +148,7 @@ public class LocationProbBased extends Location
                             person.setExposureTime((float) now);
                             // Take the person him/herself as the cause -- probability-based so probably same type of person
                             this.model.getPersonMonitor().reportExposure(person, this, person);
-                            this.model.getPersonMonitor().reportExposureByRateFactor(person, this.locationTypeId, duration,
+                            this.model.getPersonMonitor().reportExposureByRateFactor(person, getLocationTypeId(), duration,
                                     this.infectionRateFactor, referencePT, infectedRef, referencePT.getNumberPersons());
                             this.model.getDiseaseProgression().expose(person, this.exposed);
                         }

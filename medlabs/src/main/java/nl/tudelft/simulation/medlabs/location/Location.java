@@ -2,6 +2,7 @@ package nl.tudelft.simulation.medlabs.location;
 
 import java.rmi.RemoteException;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 
 import org.djutils.draw.bounds.Bounds3d;
@@ -37,16 +38,16 @@ public class Location implements ModelLocatable
     @SuppressWarnings("checkstyle:visibilitymodifier")
     protected int locationId;
 
-    /** The locationTypeId indicates the index number of the locationType. */
+    /** The locationType. */
     @SuppressWarnings("checkstyle:visibilitymodifier")
-    protected final byte locationTypeId;
+    protected final LocationType locationType;
 
     /** The model for looking up the simulator and other model objects. */
     @SuppressWarnings("checkstyle:visibilitymodifier")
     protected MedlabsModelInterface model;
 
     // Note that the lat, lon, gridX and gridY are not final -- they can be dynamic for movable locations!
-    
+
     /** The longitude (x) of the location. */
     private float lon;
 
@@ -74,34 +75,35 @@ public class Location implements ModelLocatable
     /** The ids of the persons in the location. */
     @SuppressWarnings("checkstyle:visibilitymodifier")
     protected TIntSet persons = new TIntHashSet();
-    
+
     /** The ids of the persons with reservations for this location (persons who are on their way). */
-    private TIntSet reservations = new TIntHashSet();
+    @SuppressWarnings("checkstyle:visibilitymodifier")
+    protected TIntSet reservations = new TIntHashSet();
 
     /**
      * Create a location.
      * @param model MedlabsModelInterface; the model for looking up the simulator and other model objects
      * @param locationId int; the location id within the locationType
-     * @param locationTypeId byte; the index number of the locationType
+     * @param locationType LocationType; the location type
      * @param lat float; latitude of the location
      * @param lon float; longitude of the location
      * @param numberOfSubLocations short; number of sub locations (e.g., rooms)
      * @param surfaceM2 float total surface in m2
      */
-    public Location(final MedlabsModelInterface model, final int locationId, final byte locationTypeId, final float lat,
+    public Location(final MedlabsModelInterface model, final int locationId, final LocationType locationType, final float lat,
             final float lon, final short numberOfSubLocations, final float surfaceM2)
     {
         this.model = model;
         this.locationId = locationId;
-        this.locationTypeId = locationTypeId;
+        this.locationType = locationType;
         setLon(lon);
         setLat(lat);
         this.numberOfSubLocations = numberOfSubLocations;
-        this.totalSurfaceM2 = surfaceM2;
+        this.totalSurfaceM2 = surfaceM2 * (float) this.locationType.getSizeFactor();
         this.closed = false;
 
         this.model.getLocationMap().put(locationId, this);
-        this.model.getLocationTypeIndexMap().get(locationTypeId).addLocation(this);
+        getLocationType().addLocation(this);
     }
 
     /**
@@ -112,7 +114,7 @@ public class Location implements ModelLocatable
     {
         // Calculate the sublocation index
         short index;
-        LocationType locationType = this.model.getLocationTypeIndexMap().get(this.locationTypeId);
+        LocationType locationType = getLocationType();
         if (locationType.getLocationTypeId() == this.model.getLocationTypeHouse().getLocationTypeId())
             index = person.getHomeSubLocationIndex();
         else if (this.numberOfSubLocations < 2)
@@ -130,13 +132,14 @@ public class Location implements ModelLocatable
         // calculate infection spread in this location (BEFORE this person actually enters)
         getModel().getDiseaseTransmission().calculateTransmissionEnter(this, index, person);
 
-        this.persons.add(person.getId());
-        this.reservations.remove(person.getId());
+        if (this.persons.add(person.getId()))
+            locationType.incNumberPersons();
+        if (this.reservations.remove(person.getId()))
+            locationType.decNumberReserved();
         person.setCurrentSubLocationIndex(index);
-        locationType.incNumberPersons();
 
-        if (aboveCapacity() && locationType.isCapConstrained())
-             locationType.reportCapacityProblem(this, this.persons.size());
+        if (this.persons.size() > getCapacity() && locationType.isCapConstrained())
+            locationType.reportCapacityProblem(this, this.persons.size());
     }
 
     /**
@@ -151,7 +154,7 @@ public class Location implements ModelLocatable
 
         if (this.persons.remove(person.getId()))
         {
-            this.model.getLocationTypeIndexMap().get(this.locationTypeId).decNumberPersons();
+            getLocationType().decNumberPersons();
             return true;
         }
         return false;
@@ -181,19 +184,22 @@ public class Location implements ModelLocatable
      */
     public void addReservation(final Person person)
     {
-        this.reservations.add(person.getId());
+        if (this.getLocationType().isCapConstrained())
+        {
+            if (this.reservations.add(person.getId()))
+                getLocationType().incNumberReserved();
+        }
     }
-    
+
     /**
      * Return the capacity of the location based on the number of square meters of the location.
      * @return int; the capacity of the location based on the number of square meters of the location
      */
     public int getCapacity()
     {
-        LocationType locationType = this.model.getLocationTypeIndexMap().get(this.locationTypeId);
-        return (int) Math.round(locationType.getCapPersonsPerM2() * this.totalSurfaceM2);
+        return (int) Math.round(this.locationType.getCapPersonsPerM2() * this.totalSurfaceM2);
     }
-    
+
     /**
      * @return the latitude of coordinate
      */
@@ -231,7 +237,7 @@ public class Location implements ModelLocatable
      */
     public int getGridKey()
     {
-        return 32768 * this.gridX + this.gridY;
+        return this.model.gridKeyXY(this.gridX, this.gridY);
     }
 
     /**
@@ -331,7 +337,7 @@ public class Location implements ModelLocatable
      */
     public byte getLocationTypeId()
     {
-        return this.locationTypeId;
+        return this.locationType.getLocationTypeId();
     }
 
     /**
@@ -339,7 +345,7 @@ public class Location implements ModelLocatable
      */
     public LocationType getLocationType()
     {
-        return this.model.getLocationTypeIndexMap().get(this.locationTypeId);
+        return this.locationType;
     }
 
     /** {@inheritDoc} */
@@ -395,16 +401,11 @@ public class Location implements ModelLocatable
     @Override
     public int hashCode()
     {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result + this.locationId;
-        result = prime * result + this.locationTypeId;
-        return result;
+        return Objects.hash(this.locationId, this.locationType);
     }
 
     /** {@inheritDoc} */
     @Override
-    @SuppressWarnings("checkstyle:needbraces")
     public boolean equals(final Object obj)
     {
         if (this == obj)
@@ -414,11 +415,7 @@ public class Location implements ModelLocatable
         if (getClass() != obj.getClass())
             return false;
         Location other = (Location) obj;
-        if (this.locationId != other.locationId)
-            return false;
-        if (this.locationTypeId != other.locationTypeId)
-            return false;
-        return true;
+        return this.locationId == other.locationId && Objects.equals(this.locationType, other.locationType);
     }
 
 }

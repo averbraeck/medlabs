@@ -97,14 +97,23 @@ public class LocationType extends LocalEventProducer
     /** number of persons in location type for fast statistics. */
     private int numberPersons = 0;
 
+    /** number of persons in location type for fast statistics. */
+    private int numberReserved = 0;
+
     /** capacity constrained? If false, only warnings will be given when the location is too full. */
     private boolean capConstrained = false;
 
     /** capacity as maximum number of persons per square meter. */
     private double capPersonsPerM2 = 0.25;
+    
+    /** the factor to apply for the size to make locations 'grow' or 'shrink'. */
+    private final double sizeFactor;
 
-    /** capacity problems -- these are reported once every interval. */
-    private TObjectIntMap<Location> capacityProblemMap = new TObjectIntHashMap<>();
+    /** capacity overflow problems -- these are reported once every interval. */
+    private TObjectIntMap<Location> capacityOverflowMap = new TObjectIntHashMap<>();
+
+    /** capacity constraint problems -- these are failed attempts to use the location. */
+    private int failedAllocationAttempts = 0;
 
     /** statistics update event. */
     public static final EventType STATISTICS_EVENT =
@@ -115,6 +124,12 @@ public class LocationType extends LocalEventProducer
     public static final EventType DURATION_EVENT =
             new EventType("DURATION_EVENT", new MetaData("duration", "duration in this location type",
                     new ObjectDescriptor("duration", "duration in this location type", Double.class)));
+
+    /** capacity violation event. */
+    public static final EventType CAPACITY_VIOLATION_EVENT = new EventType("CAPACITY_VIOLATION_EVENT");
+
+    /** capacity allocation problem event. */
+    public static final EventType CAPACITY_ALLOCATION_EVENT = new EventType("CAPACITY_ALLOCATION_EVENT");
 
     /**
      * Create a new location type.
@@ -130,12 +145,13 @@ public class LocationType extends LocalEventProducer
      * @param correctionFactorArea double; factor for the rate of contagiousness in this location type, default 1.0.
      * @param capConstrained boolean; capacity constrained? If false, only warnings will be given when the location is too full
      * @param capPersonsPerM2 double; capacity as maximum number of persons per square meter
+     * @param sizeFactor double; the factor to apply for the size to make locations 'grow' or 'shrink'
      */
     @SuppressWarnings("checkstyle:parameternumber")
     public LocationType(final MedlabsModelInterface model, final byte locationTypeId, final String name,
             final Class<? extends Location> locationClass, final Class<? extends LocationAnimation> animationClass,
             final boolean reproducible, final boolean infectInSublocation, final double correctionFactorArea,
-            final boolean capConstrained, final double capPersonsPerM2)
+            final boolean capConstrained, final double capPersonsPerM2, final double sizeFactor)
     {
         this.model = model;
         this.locationTypeid = locationTypeId;
@@ -154,6 +170,7 @@ public class LocationType extends LocalEventProducer
         this.fractionActivities = 1.0;
         this.alternativeLocationType = this;
         this.reportAsLocationName = name;
+        this.sizeFactor = sizeFactor;
     }
 
     /**
@@ -198,14 +215,36 @@ public class LocationType extends LocalEventProducer
         this.totalCapacity += location.getCapacity();
     }
 
+    /**
+     * Increment the number of persons in this location type by 1.
+     */
     public void incNumberPersons()
     {
         this.numberPersons++;
     }
 
+    /**
+     * Decrement the number of persons in this location type by 1.
+     */
     public void decNumberPersons()
     {
         this.numberPersons--;
+    }
+
+    /**
+     * Increment the number of reservations for this location type by 1.
+     */
+    public void incNumberReserved()
+    {
+        this.numberReserved++;
+    }
+
+    /**
+     * Decrement the number of reservations for this location type by 1.
+     */
+    public void decNumberReserved()
+    {
+        this.numberReserved--;
     }
 
     /**
@@ -227,12 +266,12 @@ public class LocationType extends LocalEventProducer
         else
         {
             ret = new TIntArrayList();
-            int hCells = (int) Math.ceil(maxDistanceM / this.model.getGridSizeM());
+            int hCells = this.model.metersToGridCells(maxDistanceM);
             for (int x = startX - hCells; x <= startX + hCells; x++)
             {
                 for (int y = startY - hCells; y <= startY + hCells; y++)
                 {
-                    int key = x * 32768 + y;
+                    int key = getModel().gridKeyXY(x, y);
                     if (this.gridLocationMap.containsKey(key))
                         ret.addAll(this.gridLocationMap.get(key));
                 }
@@ -247,7 +286,7 @@ public class LocationType extends LocalEventProducer
     /**
      * @param startLocation the location where the person is currently, and to which a 'near' location needs to be found.
      * @param maxDistanceM max distance in meters
-     * @return a list of location id's of this location type with a max distance to the startLocation
+     * @return an array of locations of this location type with a max distance to the startLocation
      */
     public Location[] getLocationArrayMaxDistanceM(final Location startLocation, final double maxDistanceM)
     {
@@ -272,8 +311,9 @@ public class LocationType extends LocalEventProducer
             return nearestLocations;
 
         // give the single nearest available location if nothing can be found in the neighbourhood for now.
-        // TODO: search spirally
-        nearestLocations.add(getNearestLocationCap(startLocation).getId());
+        Location nLocCap = getNearestLocationCap(startLocation);
+        if (nLocCap != null)
+            nearestLocations.add(nLocCap.getId());
         return nearestLocations;
     }
 
@@ -344,6 +384,7 @@ public class LocationType extends LocalEventProducer
         if (ret.size() == 0)
         {
             System.err.println(this.model.getSimulator().getSimulatorTime() + ": NO NEAREST LOCATION FOUND FOR TYPE " + this);
+            this.failedAllocationAttempts++;
             return null;
         }
         if (ret.size() == 1)
@@ -360,6 +401,13 @@ public class LocationType extends LocalEventProducer
      */
     public Location getNearestLocationCap(final Location startLocation)
     {
+        // test if there is capacity at all
+        if (this.capConstrained && this.numberPersons + this.numberReserved >= this.totalCapacity)
+        {
+            this.failedAllocationAttempts++;
+            return null;
+        }
+            
         // first test the general nearest location
         Location nearestLocation = getNearestLocation(startLocation);
         if (nearestLocation.belowCapacity())
@@ -376,41 +424,38 @@ public class LocationType extends LocalEventProducer
         }
         if (ret.size() == 0)
         {
-            if (this.gridLocationMap.containsKey(startKey))
-                ret.addAll(filterCap(this.gridLocationMap.get(startKey)));
-            else
+            for (int hCells = 1; hCells < 100; hCells++)
             {
-                for (int hCells = 1; hCells < 100; hCells++)
+                for (int x = startX - hCells; x <= startX + hCells; x++)
                 {
-                    for (int x = startX - hCells; x <= startX + hCells; x++)
+                    for (int y : new int[] {startY - hCells, startY + hCells})
                     {
-                        for (int y : new int[] {startY - hCells, startY + hCells})
-                        {
-                            int key = x * 32768 + y;
-                            if (this.gridLocationMap.containsKey(key))
-                                ret.addAll(filterCap(this.gridLocationMap.get(key)));
-                        }
+                        int key = x * 32768 + y;
+                        if (this.gridLocationMap.containsKey(key))
+                            ret.addAll(filterCap(this.gridLocationMap.get(key)));
                     }
-                    for (int y = startY - hCells + 1; y < startY + hCells; y++)
-                    {
-                        for (int x : new int[] {startX - hCells, startX + hCells})
-                        {
-                            int key = x * 32768 + y;
-                            if (this.gridLocationMap.containsKey(key))
-                                ret.addAll(filterCap(this.gridLocationMap.get(key)));
-                        }
-                    }
-                    if (ret.size() > 0)
-                        break;
                 }
+                for (int y = startY - hCells + 1; y < startY + hCells; y++)
+                {
+                    for (int x : new int[] {startX - hCells, startX + hCells})
+                    {
+                        int key = x * 32768 + y;
+                        if (this.gridLocationMap.containsKey(key))
+                            ret.addAll(filterCap(this.gridLocationMap.get(key)));
+                    }
+                }
+                if (ret.size() > 0)
+                    break;
             }
         }
 
         // choose one (reproducible) value from the found locations
         if (ret.size() == 0)
         {
-            System.err.println(this.model.getSimulator().getSimulatorTime() + ": ALL LOCATIONS FOR TYPE " + this
-                    + " are full! cap=" + this.totalCapacity + ", use=" + this.numberPersons);
+            // System.err.println(
+            // this.model.getSimulator().getSimulatorTime() + ": ALL LOCATIONS FOR TYPE " + this + " are full! cap="
+            // + this.totalCapacity + ", use=" + this.numberPersons + ", reserved=" + this.numberReserved);
+            this.failedAllocationAttempts++;
             return null;
         }
         if (ret.size() == 1)
@@ -487,8 +532,8 @@ public class LocationType extends LocalEventProducer
      */
     public void reportCapacityProblem(final Location location, final int nrPersons)
     {
-        if (nrPersons > this.capacityProblemMap.get(location))
-            this.capacityProblemMap.put(location, nrPersons);
+        if (nrPersons > this.capacityOverflowMap.get(location))
+            this.capacityOverflowMap.put(location, nrPersons);
     }
 
     /**
@@ -497,14 +542,24 @@ public class LocationType extends LocalEventProducer
      */
     public void reportCapacityProblems()
     {
-        for (Location location : this.capacityProblemMap.keys(new Location[0]))
+        for (Location location : this.capacityOverflowMap.keys(new Location[0]))
         {
-            int nr = this.capacityProblemMap.get(location);
+            int nr = this.capacityOverflowMap.get(location);
             System.out.println(this.model.getSimulator().getSimulatorTime() + ": " + nr + " persons in " + location
                     + ". Surface=" + location.getTotalSurfaceM2() + "m2. Capacity/m2=" + this.capPersonsPerM2 + ". Persons/m2 "
                     + (nr / location.getTotalSurfaceM2()));
+            this.fireEvent(CAPACITY_VIOLATION_EVENT, new Object[] {location, nr, location.getTotalSurfaceM2(),
+                    this.capPersonsPerM2, nr / location.getTotalSurfaceM2()});
         }
-        this.capacityProblemMap.clear();
+        this.capacityOverflowMap.clear();
+        this.fireEvent(CAPACITY_ALLOCATION_EVENT, new Object[] {this, this.failedAllocationAttempts, this.totalCapacity,
+                this.numberPersons, this.numberReserved});
+        if (this.failedAllocationAttempts > 0)
+        {
+            System.out.println(this.model.getSimulator().getSimulatorTime() + ": " + this.failedAllocationAttempts
+                    + " persons could not go to " + this.name + " in the past hour");
+            this.failedAllocationAttempts = 0;
+        }
         try
         {
             this.model.getSimulator().scheduleEventRel(TimeUnit.convert(60.0, TimeUnit.MINUTE), this, "reportCapacityProblems",
@@ -623,6 +678,14 @@ public class LocationType extends LocalEventProducer
     public boolean isInfectInSublocation()
     {
         return this.infectInSublocation;
+    }
+
+    /**
+     * @return sizeFactor
+     */
+    public double getSizeFactor()
+    {
+        return this.sizeFactor;
     }
 
     /** {@inheritDoc} */
