@@ -29,7 +29,7 @@ public class NearestLocator implements LocatorInterface
 
     /** the type of location to return, e.g. "playground" */
     private final LocationType activityLocationType;
-    
+
     /** local reproducible stream. */
     private StreamInterface stream = null;
 
@@ -54,12 +54,14 @@ public class NearestLocator implements LocatorInterface
     @Override
     public Location getLocation(final Person person)
     {
+        // ResultWriter.logXls(person.getModel().getSimulator().getSimulatorTime() + "\t" + person.getClass().getSimpleName()
+        // + "\t" + person.getCurrentActivity() + "\tNL\t" + person.getId());
         Location startLocation = this.startLocator.getLocation(person);
         if (this.activityLocationType.getLocationTypeId() == person.getModel().getLocationTypeHouse().getLocationTypeId())
         {
             return person.getHomeLocation();
         }
-        
+
         Location nearestLocation = this.activityLocationType.getNearestLocation(startLocation);
         if (this.activityLocationType.getFractionActivities() < 1.0 || this.activityLocationType.getFractionOpen() < 1.0)
         {
@@ -80,7 +82,7 @@ public class NearestLocator implements LocatorInterface
                     }
                 }
             }
-            
+
             LocationType alt = this.activityLocationType.getAlternativeLocationType();
             if (person.getModel().getLocationTypeHouse().getLocationTypeId() == alt.getLocationTypeId())
                 return person.getHomeLocation();

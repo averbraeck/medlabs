@@ -77,6 +77,8 @@ public class RandomLocatorChoiceCap implements LocatorInterface
     @Override
     public Location getLocation(final Person person)
     {
+        // ResultWriter.logXls(person.getModel().getSimulator().getSimulatorTime() + "\t" + person.getClass().getSimpleName()
+        // + "\t" + person.getCurrentActivity() + "\tRLC-cap\t" + person.getId());
         MedlabsModelInterface model = person.getModel();
         Location startLocation = this.startLocator.getLocation(person);
         double prob = this.reproducible ? person.getModel().getReproducibleJava2Random().nextDouble(person.hashCode() + 1)

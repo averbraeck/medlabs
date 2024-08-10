@@ -68,6 +68,8 @@ public class RandomLocator implements LocatorInterface
     @Override
     public Location getLocation(final Person person)
     {
+        // ResultWriter.logXls(person.getModel().getSimulator().getSimulatorTime() + "\t" + person.getClass().getSimpleName()
+        // + "\t" + person.getCurrentActivity() + "\tRL\t" + person.getId());
         MedlabsModelInterface model = person.getModel();
         Location startLocation = this.startLocator.getLocation(person);
 

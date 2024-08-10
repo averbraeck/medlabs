@@ -69,6 +69,8 @@ public class NearestLocatorChoiceCap implements LocatorInterface
     @Override
     public Location getLocation(final Person person)
     {
+        // ResultWriter.logXls(person.getModel().getSimulator().getSimulatorTime() + "\t" + person.getClass().getSimpleName()
+        // + "\t" + person.getCurrentActivity() + "\tNLC-cap\t" + person.getId());
         Location startLocation = this.startLocator.getLocation(person);
         double prob = this.reproducible ? person.getModel().getReproducibleJava2Random().nextDouble(person.hashCode())
                 : person.getModel().getU01().draw();

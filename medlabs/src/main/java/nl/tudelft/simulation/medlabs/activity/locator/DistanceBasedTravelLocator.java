@@ -1,7 +1,6 @@
 
 package nl.tudelft.simulation.medlabs.activity.locator;
 
-import nl.tudelft.simulation.medlabs.activity.TravelActivity;
 import nl.tudelft.simulation.medlabs.location.Location;
 import nl.tudelft.simulation.medlabs.person.Person;
 
@@ -20,14 +19,13 @@ import nl.tudelft.simulation.medlabs.person.Person;
  * @author Mingxin Zhang
  * @author <a href="https://www.tudelft.nl/averbraeck">Alexander Verbraeck</a>
  */
-public class DistanceBasedTravelLocator implements LocatorInterface
+public class DistanceBasedTravelLocator implements DistanceBasedLocatorInterface
 {
     /** {@inheritDoc} */
     @Override
-    public Location getLocation(final Person person)
+    public Location getLocation(final Person person, final Location startLocation, final Location endLocation)
     {
-        TravelActivity activity = (TravelActivity) person.getCurrentActivity();
-        double distanceM = activity.getStartLocation(person).distanceM(activity.getEndLocation(person));
+        double distanceM = startLocation.distanceM(endLocation);
         if (distanceM < 1000)
         {
             return person.getModel().getLocationWalk();

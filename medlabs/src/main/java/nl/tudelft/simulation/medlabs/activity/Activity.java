@@ -95,6 +95,15 @@ public abstract class Activity extends AbstractModelNamed
     public abstract void finishActivity(Person person);
 
     /**
+     * Return the activityLocator.
+     * @return LocatorInterface; the activityLocator
+     */
+    public LocatorInterface getActivityLocator()
+    {
+        return this.activityLocator;
+    }
+    
+    /**
      * Return the activity location for this activity for a given person.
      * @param person Person; the person to return the activity location for
      * @return Location; the location given by the locator specific for this person

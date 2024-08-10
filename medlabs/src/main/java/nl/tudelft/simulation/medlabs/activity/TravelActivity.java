@@ -1,5 +1,6 @@
 package nl.tudelft.simulation.medlabs.activity;
 
+import nl.tudelft.simulation.medlabs.activity.locator.DistanceBasedLocatorInterface;
 import nl.tudelft.simulation.medlabs.activity.locator.LocatorInterface;
 import nl.tudelft.simulation.medlabs.location.Location;
 import nl.tudelft.simulation.medlabs.model.MedlabsModelInterface;
@@ -55,9 +56,14 @@ public abstract class TravelActivity extends Activity
     @Override
     public void startActivity(final Person person)
     {
-        Location travelLocation = this.getActivityLocation(person);
         Location oldLocation = person.getCurrentLocation();
         Location toLocation = getEndLocation(person);
+        Location travelLocation = null;
+        if (getActivityLocator() instanceof DistanceBasedLocatorInterface)
+            travelLocation =
+                    ((DistanceBasedLocatorInterface) getActivityLocator()).getLocation(person, oldLocation, toLocation);
+        else
+            travelLocation = getActivityLocation(person);
         double activityDuration = this.getDuration(person, oldLocation, toLocation);
 
         if (Double.isNaN(activityDuration) || activityDuration <= 0)

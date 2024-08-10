@@ -55,6 +55,8 @@ public class NearestLocatorCap implements LocatorInterface
     @Override
     public Location getLocation(final Person person)
     {
+        // ResultWriter.logXls(person.getModel().getSimulator().getSimulatorTime() + "\t" + person.getClass().getSimpleName()
+        // + "\t" + person.getCurrentActivity() + "\tNL-cap\t" + person.getId());
         Location startLocation = this.startLocator.getLocation(person);
         if (this.activityLocationType.getLocationTypeId() == person.getModel().getLocationTypeHouse().getLocationTypeId())
         {
