@@ -43,6 +43,9 @@ public class ResultWriter implements EventListener
     /** */
     private static final long serialVersionUID = 20201005L;
 
+    // /** the logXls writer. */
+    // private static PrintWriter logXlsWriter;
+
     /** the model. */
     private final MedlabsModelInterface model;
 
@@ -106,6 +109,12 @@ public class ResultWriter implements EventListener
     /** The file with the offspring per infectious person per location. */
     private PrintWriter offspringLocationWriter;
 
+    /** The file with the capacity violations per location. */
+    private PrintWriter capacityViolationWriter;
+
+    /** The file with the capacity allocation problems per location. */
+    private PrintWriter capacityAllocationProblemWriter;
+
     /**
      * Create a writer of results to file.
      * @param model the model
@@ -118,6 +127,8 @@ public class ResultWriter implements EventListener
 
         try
         {
+            // logXlsWriter = new PrintWriter(outputPath + "/log.xls");
+
             this.locationTypeWriter = new PrintWriter(outputPath + "/locationTypeNrs.csv");
             writeLocationTypeHeader();
             writeLocationTypeLine();
@@ -202,6 +213,18 @@ public class ResultWriter implements EventListener
             this.offspringLocationWriter = new PrintWriter(outputPath + "/offspringLocation.csv");
             writeOffspringLocationHeader();
             model.getDiseaseMonitor().addListener(this, DiseaseMonitor.OFFSPRING_EVENT);
+
+            this.capacityViolationWriter = new PrintWriter(outputPath + "/capacityViolations.csv");
+            writeCapacityViolationHeader();
+
+            this.capacityAllocationProblemWriter = new PrintWriter(outputPath + "/capacityAllocationProblems.csv");
+            writeCapacityAllocationProblemHeader();
+
+            for (LocationType locationType : model.getLocationTypeList())
+            {
+                locationType.addListener(this, LocationType.CAPACITY_VIOLATION_EVENT);
+                locationType.addListener(this, LocationType.CAPACITY_ALLOCATION_EVENT);
+            }
         }
         catch (IOException ioe)
         {
@@ -233,6 +256,16 @@ public class ResultWriter implements EventListener
             }
         }
     }
+
+    // /**
+    // * Write an xls-string to the log writer.
+    // * @param s String; the string to write (tab-delimited)
+    // */
+    // public static void logXls(final String s)
+    // {
+    // logXlsWriter.println(s);
+    // logXlsWriter.flush();
+    // }
 
     private void writeLocationTypeHeader()
     {
@@ -837,6 +870,64 @@ public class ResultWriter implements EventListener
         this.offspringLocationWriter.flush();
     }
 
+    /* ************************************* CAPACITYVIOLATIONS ************************************** */
+
+    private void writeCapacityViolationHeader()
+    {
+        this.capacityViolationWriter
+                .println("\"Time(h)\",\"location\",\"nrPersons\"" + ",\"surface(m2)\",\"capacityPerM2\",\"personsPerM2\"");
+        this.capacityViolationWriter.flush();
+    }
+
+    private void writeCapacityViolationLine(final Object[] content)
+    {
+        double time = this.model.getSimulator().getSimulatorTime();
+        Location location = (Location) content[0];
+        int nrPersons = (int) content[1];
+        double surface = (double) content[2];
+        double capacityPerM2 = (double) content[3];
+        double personsPerM2 = (double) content[4];
+        //@formatter:off
+        this.capacityViolationWriter.println(
+                  time + ",\"" 
+                + location.toString() + "\"," 
+                + nrPersons + ","
+                + surface + ","
+                + capacityPerM2 + ","
+                + personsPerM2);
+        //@formatter:on
+        this.capacityViolationWriter.flush();
+    }
+
+    /* ********************************* CAPACITYALLOCATIONPROBLEM ********************************* */
+
+    private void writeCapacityAllocationProblemHeader()
+    {
+        this.capacityAllocationProblemWriter
+                .println("\"Time(h)\",\"locationType\",\"nrProblems\",\"totalCapacity\",\"nrPersons\",\"nrReserved\"");
+        this.capacityAllocationProblemWriter.flush();
+    }
+
+    private void writeCapacityAllocationProblemLine(final Object[] content)
+    {
+        double time = this.model.getSimulator().getSimulatorTime();
+        LocationType locationType = (LocationType) content[0];
+        int nrProblems = (int) content[1];
+        int totCapacity = (int) content[2];
+        int nrPersons = (int) content[3];
+        int nrReserved = (int) content[4];
+        //@formatter:off
+        this.capacityAllocationProblemWriter.println(
+                  time + ",\"" 
+                + locationType.getName() + "\"," 
+                + nrProblems + ","
+                + totCapacity + ","
+                + nrPersons + ","
+                + nrReserved);
+        //@formatter:on
+        this.capacityAllocationProblemWriter.flush();
+    }
+
     /* ****************************************** NOTIFY ******************************************** */
 
     /** {@inheritDoc} */
@@ -911,6 +1002,14 @@ public class ResultWriter implements EventListener
         else if (event.getType().equals(DiseaseMonitor.OFFSPRING_EVENT))
         {
             writeOffspringLocationLine((Object[]) event.getContent());
+        }
+        else if (event.getType().equals(LocationType.CAPACITY_VIOLATION_EVENT))
+        {
+            writeCapacityViolationLine((Object[]) event.getContent());
+        }
+        else if (event.getType().equals(LocationType.CAPACITY_ALLOCATION_EVENT))
+        {
+            writeCapacityAllocationProblemLine((Object[]) event.getContent());
         }
     }
 
