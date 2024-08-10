@@ -53,6 +53,12 @@ public class ConstructSEIRModel
     /** the model. */
     private final SEIRModel model;
 
+    /** Location type house. */
+    LocationType houseType;
+
+    /** Location type work. */
+    LocationType workType;
+
     /**
      * Constructor of the model reader.
      * @param model the model
@@ -110,8 +116,10 @@ public class ConstructSEIRModel
     {
         this.model.getLocationTypeIndexMap().remove((byte) 0);
         this.model.getLocationTypeNameMap().remove("house");
-        new LocationType(this.model, (byte) 0, "house", Location.class, HouseAnimation.class, true, true, 1.0, false, 0.25);
-        new LocationType(this.model, (byte) 1, "work", Location.class, WorkplaceAnimation.class, true, true, 1.0, false, 0.25);
+        this.houseType = new LocationType(this.model, (byte) 0, "house", Location.class, HouseAnimation.class, true, true, 1.0,
+                false, 0.25, 1.0);
+        this.workType = new LocationType(this.model, (byte) 1, "work", Location.class, WorkplaceAnimation.class, true, true,
+                1.0, false, 0.25, 1.0);
     }
 
     private void makeLocations() throws Exception
@@ -120,7 +128,7 @@ public class ConstructSEIRModel
         // make n houses numbered 0 to n-1, 100 m2 without sublocations.
         for (int i = 0; i < numberPersons; i++)
         {
-            new Location(this.model, i, (byte) 0, 4.0f + (1.0f * i) / 1000.0f, 52.0f, (short) 1, 100.0f);
+            new Location(this.model, i, this.houseType, 4.0f + (1.0f * i) / 1000.0f, 52.0f, (short) 1, 100.0f);
         }
 
         // make m workplaces numbered 100_000 to 100_000 + m - 1, x m2 with y sublocations.
@@ -129,7 +137,7 @@ public class ConstructSEIRModel
         float workplaceSize = (float) this.model.getParameterValueDouble("settings.WorkplaceSize");
         for (int i = 0; i < numberWorkplaces; i++)
         {
-            new Location(this.model, 100_000 + i, (byte) 1, 4.0f + (1.0f * i) / 1000.0f, 52.1f, numberSublocations,
+            new Location(this.model, 100_000 + i, this.workType, 4.0f + (1.0f * i) / 1000.0f, 52.1f, numberSublocations,
                     workplaceSize);
         }
 
