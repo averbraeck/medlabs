@@ -234,7 +234,7 @@ public interface MedlabsModelInterface extends SimpleModelInterface
     }
 
     /**
-     * Return a composed x-y key index of the cell for the given latitude and longitude, relaive to the center of the city map
+     * Return a composed x-y key index of the cell for the given latitude and longitude, relative to the center of the city map
      * with coordinates (0, 0).
      * @param lat float; the latitude for which to calculate the key-index of the cell
      * @param lon float; the latitude for which to calculate the key-index of the cell
@@ -242,7 +242,29 @@ public interface MedlabsModelInterface extends SimpleModelInterface
      */
     default int gridKeyLatLon(final float lat, final float lon)
     {
-        return 32768 * lonToGridX(lon) + latToGridY(lat);
+        return gridKeyXY(lonToGridX(lon), latToGridY(lat));
+    }
+
+    /**
+     * Return a composed x-y key index of the cell for the given latitude and longitude, relative to the center of the city map
+     * with coordinates (0, 0).
+     * @param gridX int; the x grid value (lon) for which to calculate the key-index of the cell
+     * @param gridY int; the y grid value (lat) for which to calculate the key-index of the cell
+     * @return int; the key-index of the cell with respect the center of the city map
+     */
+    default int gridKeyXY(final int gridX, final int gridY)
+    {
+        return 32768 * gridX + gridY;
+    }
+    
+    /**
+     * Translate distance in meters to grid cells (ceiling value).
+     * @param distance double; the number of meters to convert
+     * @return int; the number of grid cells (rounded up) belonging to the distance
+     */
+    default int metersToGridCells(final double distance)
+    {
+        return (int) Math.ceil(distance / getGridSizeM());
     }
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////
