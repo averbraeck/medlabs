@@ -29,6 +29,7 @@ import nl.tudelft.simulation.medlabs.disease.DiseaseProgression;
 import nl.tudelft.simulation.medlabs.disease.DiseaseTransmission;
 import nl.tudelft.simulation.medlabs.location.Location;
 import nl.tudelft.simulation.medlabs.location.LocationType;
+import nl.tudelft.simulation.medlabs.output.ResultWriter;
 import nl.tudelft.simulation.medlabs.person.Person;
 import nl.tudelft.simulation.medlabs.person.PersonMonitor;
 import nl.tudelft.simulation.medlabs.person.PersonType;
@@ -130,6 +131,9 @@ public abstract class AbstractMedlabsModel extends AbstractDsolModel<Double, Sim
 
     /** the active policies. */
     private Map<String, Policy> activePolicyMap = new HashMap<>();
+    
+    /** the result writer. */
+    private ResultWriter resultWriter;
 
     /**
      * Construct the model and set the simulator.
@@ -157,8 +161,10 @@ public abstract class AbstractMedlabsModel extends AbstractDsolModel<Double, Sim
     {
         try
         {
+            System.out.println("Used seed in the AbstractMedlabsModel: " + getParameterValueLong("generic.Seed"));
             this.randomStream = new MersenneTwister(getParameterValueLong("generic.Seed") + 1L);
             this.reproducibleJava2Random = new ReproducibleRandomGenerator(getParameterValueLong("generic.Seed") + 2L);
+            this.streamInformation.addStream("default", new MersenneTwister(getParameterValueLong("generic.Seed")));
             this.u01 = new DistUniform(this.randomStream, 0.0, 1.0);
 
             // create the activity monitor. TODO: maybe move to actual model?
@@ -465,6 +471,22 @@ public abstract class AbstractMedlabsModel extends AbstractDsolModel<Double, Sim
     public String getPropertyFilename()
     {
         return this.propertyFilename;
+    }
+
+    /**
+     * @return resultWriter
+     */
+    public ResultWriter getResultWriter()
+    {
+        return this.resultWriter;
+    }
+
+    /**
+     * @param resultWriter set resultWriter
+     */
+    public void setResultWriter(final ResultWriter resultWriter)
+    {
+        this.resultWriter = resultWriter;
     }
 
 }

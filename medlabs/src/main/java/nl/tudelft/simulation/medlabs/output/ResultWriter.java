@@ -1,11 +1,16 @@
 package nl.tudelft.simulation.medlabs.output;
 
+import java.io.BufferedOutputStream;
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.rmi.RemoteException;
 import java.util.List;
 import java.util.Map;
+import java.util.zip.GZIPOutputStream;
 
 import org.djutils.event.Event;
 import org.djutils.event.EventListener;
@@ -65,7 +70,7 @@ public class ResultWriter implements EventListener
     private PrintWriter deathsAgeWriter;
 
     /** The person dump file. */
-    private PrintWriter personDumpWriter;
+    private BufferedWriter personDumpWriter;
 
     /** The file with detailed information about an infection. */
     private PrintWriter infectedPersonWriter;
@@ -153,7 +158,11 @@ public class ResultWriter implements EventListener
             int personDumpInterval = model.getParameterValueInt("generic.PersonDumpIntervalDays");
             if (personDumpInterval > 0)
             {
-                this.personDumpWriter = new PrintWriter(outputPath + "/personDump.csv");
+                FileOutputStream fos = new FileOutputStream(new File(outputPath + "/personDump.csv.gz"));
+                BufferedOutputStream bos = new BufferedOutputStream(fos, 128 * 1024);
+                GZIPOutputStream gos = new GZIPOutputStream(bos);
+                OutputStreamWriter osw = new OutputStreamWriter(gos, "UTF-8");
+                this.personDumpWriter = new BufferedWriter(osw, 128 * 1024);
                 writePersonDumpHeader();
                 writePersonDump(personDumpInterval);
             }
@@ -229,6 +238,25 @@ public class ResultWriter implements EventListener
         catch (IOException ioe)
         {
             throw new MedlabsRuntimeException(ioe);
+        }
+    }
+
+    /**
+     * Close the GZip files at the end of the run.
+     */
+    public void closeFiles()
+    {
+        try
+        {
+            int personDumpInterval = this.model.getParameterValueInt("generic.PersonDumpIntervalDays");
+            if (personDumpInterval > 0)
+            {
+                this.personDumpWriter.close();
+            }
+        }
+        catch (Exception e)
+        {
+            //
         }
     }
 
@@ -391,41 +419,56 @@ public class ResultWriter implements EventListener
         // this.personDumpWriter.println("\"Time(h)\",\"personId\",\"personType\",\"Age\",\"Gender\",\"homeId\",\"homeSubId\","
         // + "\"homeLat\",\"homeLon\",\"diseasePhase\",\"workId\",\"schoolId\"");
 
-        this.personDumpWriter.println("\"Time(h)\",\"personId\",\"personType\",\"Age\",\"Gender\",\"homeId\",\"homeSubId\","
-                + "\"currentActivity\"," + "\"currentLat\",\"currentLon\","
-                + "\"homeLat\",\"homeLon\",\"diseasePhase\",\"workId\",\"schoolId\"");
+        try
+        {
+            this.personDumpWriter.write("\"Time(h)\",\"personId\",\"personType\",\"Age\",\"Gender\",\"homeId\",\"homeSubId\","
+                    + "\"currentActivity\"," + "\"currentLat\",\"currentLon\","
+                    + "\"homeLat\",\"homeLon\",\"diseasePhase\",\"workId\",\"schoolId\"\n");
 
-        this.personDumpWriter.flush();
+            this.personDumpWriter.flush();
+        }
+        catch (IOException ioe)
+        {
+            System.err.println("Error writing header to personDumpWriter. Error: " + ioe.getMessage());
+        }
     }
 
     private void writePersonDump(final int personDumpInterval)
     {
         double time = this.model.getSimulator().getSimulatorTime();
-        for (Person person : this.model.getPersonMap().valueCollection())
+        try
         {
-            this.personDumpWriter.print(time + "," + person.getId());
-            this.personDumpWriter.print(",\"" + person.getClass().getSimpleName() + "\"");
-            this.personDumpWriter.print("," + person.getAge());
-            this.personDumpWriter.print("," + (person.getGenderFemale() ? "\"F\"" : "\"M\""));
-            this.personDumpWriter.print("," + person.getHomeLocation().getId());
-            this.personDumpWriter.print("," + person.getHomeSubLocationIndex());
+            for (Person person : this.model.getPersonMap().valueCollection())
+            {
+                this.personDumpWriter.write(time + "," + person.getId());
+                this.personDumpWriter.write(",\"" + person.getClass().getSimpleName() + "\"");
+                this.personDumpWriter.write("," + person.getAge());
+                this.personDumpWriter.write("," + (person.getGenderFemale() ? "\"F\"" : "\"M\""));
+                this.personDumpWriter.write("," + person.getHomeLocation().getId());
+                this.personDumpWriter.write("," + person.getHomeSubLocationIndex());
 
-            this.personDumpWriter.print("," + person.getCurrentActivity());
+                this.personDumpWriter.write("," + person.getCurrentActivity());
 
-            Location currentLocation = this.model.getLocationMap().get(person.getCurrentLocation().getId());
-            this.personDumpWriter.print("," + currentLocation.getLatitude());
-            this.personDumpWriter.print("," + currentLocation.getLongitude());
+                Location currentLocation = this.model.getLocationMap().get(person.getCurrentLocation().getId());
+                this.personDumpWriter.write("," + currentLocation.getLatitude());
+                this.personDumpWriter.write("," + currentLocation.getLongitude());
 
-            Location homeLocation = this.model.getLocationMap().get(person.getHomeLocation().getId());
-            this.personDumpWriter.print("," + homeLocation.getLatitude());
-            this.personDumpWriter.print("," + homeLocation.getLongitude());
-            this.personDumpWriter.print(",\"" + person.getDiseasePhase().getName() + "\"");
-            this.personDumpWriter.print("," + (person instanceof Worker ? ((Worker) person).getWorkLocation().getId() : -1));
-            this.personDumpWriter
-                    .print("," + (person instanceof Student ? ((Student) person).getSchoolLocation().getId() : -1));
-            this.personDumpWriter.println();
+                Location homeLocation = this.model.getLocationMap().get(person.getHomeLocation().getId());
+                this.personDumpWriter.write("," + homeLocation.getLatitude());
+                this.personDumpWriter.write("," + homeLocation.getLongitude());
+                this.personDumpWriter.write(",\"" + person.getDiseasePhase().getName() + "\"");
+                this.personDumpWriter
+                        .write("," + (person instanceof Worker ? ((Worker) person).getWorkLocation().getId() : -1));
+                this.personDumpWriter
+                        .write("," + (person instanceof Student ? ((Student) person).getSchoolLocation().getId() : -1));
+                this.personDumpWriter.write("\n");
+            }
+            this.personDumpWriter.flush();
         }
-        this.personDumpWriter.flush();
+        catch (IOException ioe)
+        {
+            System.err.println("Error writing to personDumpWriter. Error: " + ioe.getMessage());
+        }
 
         // this.model.getSimulator().scheduleEventRel(24.0 * personDumpInterval, this, "writePersonDump",
         // new Object[] { personDumpInterval });
