@@ -13,34 +13,18 @@ OpenJDK Runtime Environment (build 17.0.2+8-86)
 OpenJDK 64-Bit Server VM (build 17.0.2+8-86, mixed mode, sharing)
 ```
 
-When the version is 17 or higher, Java can run the heros model.
+When the version is 17 or higher, Java can run the medlabs models.
 
 
 ### 1.2. Download the executable jar, and input files
 
-Download the contents of the `jar` folder and unpack into a folder on disk, preferaby one without spaces in the file path. It should have the following content:
+Download the contents of the `jar` folder and unpack into a folder on disk, preferably one without spaces in the file path. It should have the following content:
 
 ```
-|-- medlabs-heros-full-2.1.4.jar
+|-- medlabs-full-2.2.0.jar
 |-- default.properties
-|-- alpha-distance.properties
 |-- data
-    |-- thehague
-        |-- activities
-        |   |-- activityschedule.xlsx
-        |-- epidemiology
-        |   |-- infection_rates.csv
-        |   |-- transition_probabilities.xlsx
-        |-- locations
-        |   |-- locationtypes.csv
-        |   |-- locations.csv.gz
-        |   |-- thehague.osm.csv [description of files used in animation]
-        |   |-- thehague.osm.pbf [example openstreetmap file for background]
-        |   |-- haaglanden.osm.pbf [example OSM file of a wider region]
-        |-- people
-        |   |-- people.csv.gz
-        |-- policies
-            |-- HardLockdown_00.csv [could be many policies]
+    |-- placeholder.properties
 ```
 
 
@@ -49,10 +33,10 @@ Download the contents of the `jar` folder and unpack into a folder on disk, pref
 Go into the folder of the jar file, and run it with:
 
 ```
-java -jar medlabs-heros-full-2.1.4.jar
+java -jar medlabs-full-2.2.0.jar ./default.properties
 ```
 
-It will find the file `default.properties` and read the information to find all other files needed to run the experiment. It will show a confirmation screen of the configuration in `default.properties`:
+It will use the file `default.properties` and read the information to find all other files needed to run the experiment. It will show a confirmation screen of the configuration in `default.properties`:
 
 ![](images/open-screen.png)
 
@@ -61,10 +45,10 @@ Final tweaks can be made here, after which the model runs in interactive mode.
 
 ### 1.4. Command line arguments
 
-The running of the jar file takes three arguments:
+The running of the jar file takes two arguments:
 
 ```
-java -jar medlabs-heros-full-2.1.4.jar properties_file [batch|interactive] seed
+java -jar medlabs-full-2.2.0.jar properties_file [batch|interactive] seed
 ```
 
 The properties file name defaults to `/default.properties` where the `/` means that the properties file is searched for at the same place where the jar file resides. See the location of `default.properties` in the folder structure at section 1.2 above.
@@ -80,13 +64,12 @@ The third argument is the seed to use for the random number generators. In case 
 It is possible to run an experiment without animation (which will also run a lot faster than the interactive model). When a model starts in batch mode, no animation or user input is requested. The `OutputPath` where all model output is placed, is appended with `-seed-###` where `###` is the seed value. In this way, many replications can be started in parallel by, e.g., calling (in Linux):
 
 ```
-java -jar medlabs-heros-full-2.1.4.jar /exp4.properties batch 10 &
-java -jar medlabs-heros-full-2.1.4.jar /exp4.properties batch 20 &
-java -jar medlabs-heros-full-2.1.4.jar /exp4.properties batch 30 &
-java -jar medlabs-heros-full-2.1.4.jar /exp4.properties batch 40 &
-java -jar medlabs-heros-full-2.1.4.jar /exp4.properties batch 50 &
+java -jar medlabs-full-2.2.0.jar ./exp4.properties batch 10 &
+java -jar medlabs-full-2.2.0.jar ./exp4.properties batch 20 &
+java -jar medlabs-full-2.2.0.jar ./exp4.properties batch 30 &
+java -jar medlabs-full-2.2.0.jar ./exp4.properties batch 40 &
+java -jar medlabs-full-2.2.0.jar ./exp4.properties batch 50 &
 ```
 
 Now, 5 experiments will be started in parallel using the same properties file but a different random seed for the experiment. Under Windows, something similar can be done using a `.BAT` file that starts 5 parallel command prompts to run the 5 medlabs-heros experiments.
-
 
