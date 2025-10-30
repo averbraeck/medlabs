@@ -1,5 +1,5 @@
 # MEDLABS
-## Agent-Based Simulation for Disease Spread in Cities and Regions
+# Agent-Based Simulation for Disease Spread in Cities and Regions
 
 ## 1. Installing and running a medlabs study
 
