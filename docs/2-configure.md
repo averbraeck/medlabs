@@ -8,28 +8,7 @@ The main properties file looks, e.g., as follows:
 
 ```
 # path for the input files
-generic.InputPath = /data/thehague
-
-# path for the person file (blank means standard people.csv.gz file under generic.InputPath) 
-generic.PersonFilePath = people/people.csv.gz
-
-# path for the locations file (blank means standard locations.csv.gz file under generic.InputPath)
-generic.LocationsFilePath = locations/locations.csv.gz
-
-# path for the locationtypes file (blank means standard locationtypes.csv file under generic.InputPath)
-generic.LocationTypesFilePath = locations/locationtypes.csv
-
-# path for the activitypatterns file (blank means standard activityschedules.xlsx file under generic.InputPath)
-generic.ActivityFilePath = activities/activityschedules_cap.xlsx
-
-# path for the probability based infection ratios for locations such as satellite cities
-generic.ProbRatioFilePath = epidemiology/infection_rates.csv
- 
-# path for the csv control file for the map (animation - only loaded in interactive mode)
-generic.osmControlFile = locations/thehague.osm.csv
-
-# path for the osm map file (animation - only loaded in interactive mode)
-generic.osmMapFile = locations/haaglanden.osm.pbf
+generic.InputPath = ./data
 
 # write output files?
 generic.WriteOutput = true
@@ -46,34 +25,50 @@ generic.Seed = 111
 # interval for dumping person data, no dump if value = 0
 generic.PersonDumpIntervalDays = 0
 
+
+# SETTINGS FOR BUILDING THE MODEL
+
+# number of persons in the model 
+settings.NumberPersons = 1000
+
+# number of workplaces in the model 
+settings.NumberWorkplaces = 10
+
+# number of sublocations for each workplace
+settings.NumberSublocations = 10
+
+# workplace size in m2 (for 100 people)
+settings.WorkplaceSize = 1000.0
+
 # number of people infected at t=0
-policies.NumberInfected = 100
-
-# lowest age of people infected at t=0
-policies.MinAgeInfected = 0
-
-# highest age of people infected at t=0
-policies.MaxAgeInfected = 100
-
-# policy file for locations (can be blank)
-policies.LocationPolicyFile = 
-
-# policy file for disease parameters (can be blank)
-policies.DiseasePolicyFile = 
+settings.NumberInfected = 1
 
 
-# INCLUDE FILE FOR DISEASE
-generic.diseasePropertiesFile = /alpha-distance.properties
+# SEIR TRANSMISSION MODEL PARAMETERS
 
-# whether the model is area based or distance based
-generic.diseasePropertiesModel = distance
+# base contagiousness parameter
+SEIR.contagiousness = 0.5
+
+# initial variable for personal protection factor, to be multiplied with base contagiousness
+SEIR.beta = 1.0
+
+# rough calculation constant to indicate first day of contagiousness of an exposed person (days)
+SEIR.t_e_min = 2.0
+
+# rough calculation constant to indicate peak day of contagiousness of an exposed person (days)
+SEIR.t_e_mode = 7.0
+
+# rough calculation constant to indicate last day of contagiousness of an exposed person (days)
+SEIR.t_e_max = 12.0
+
+# threshold for the transmission calculation. Set to 1 minute (seconds)
+SEIR.calculation_threshold = 60
 ```
 
 The following parameters are key:
 
-- `generic.InputPath` indicates where the other files (except `generic.diseasePropertiesFile` and the output path) can be found. In the above example, the folder is `/data/thehague`. This means that the file paths for people, locations, activities, etc. can all be found in the folder `/data/thehague`, where the first `/` is relative to the location of the jar file that is being executed. 
-- `generic.diseasePropertiesModel` can take two values: `distance` or `area`. This chooses one of two available disease transmission models, where one is based on the number of persons in an area, and the other is based on average distance between an infectious and a susceptible person. 
-- `generic.PersonDumpIntervalDays` does not dump all persons in the model (490,000 for the The Hague model) with all their properties. When the interval is set at a N days, all persons in the model dump their state to a file every N days. This csv file can grow very large, therefore the default value is 0.
+- `generic.InputPath` indicates where the other files (except the output path) can be found. In the above example, the folder is `./data`. This means that the file paths for people, locations, activities, etc. can all be found in the folder `./data`, where the `./` is relative to the location of the jar file that is being executed. Note that the SEIR demo model does not use any data at the moment.
+- `generic.PersonDumpIntervalDays` does not dump all persons in the model with all their properties. When the interval is set at a N days, all persons in the model dump their state to a file every N days. This csv file can grow very large, therefore the default value is 0.
 - All other parameters are explained in the comments above the parameter.
 - The input files for people, locations, activities, etc. are discussed in the [input files](3-input.md) document.
 
