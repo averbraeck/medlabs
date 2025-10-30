@@ -96,9 +96,7 @@ How many persons of type X were infected by persons of type Y, at what day, in w
 ```
 "time","location_type","infecting_person_type","Infant","KindergartenStudent",
     "PrimarySchoolStudent","SecondarySchoolStudent","CollegeStudent","UniversityStudent",
-    "Worker","Pensioner","Unemployed","WeekendWorker","EssentialWorker",
-    "WorkerSatelliteToCity","WorkerCityToSatellite","WorkerSatelliteToSatellite",
-    "WorkerCountryToCity"
+    "Worker","Pensioner","Unemployed","WeekendWorker","EssentialWorker"
 528,"Accommodation","Infant",0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
 528,"Accommodation","KindergartenStudent",1,0,0,0,0,0,0,0,0,1,0,0,0,0,0
 528,"Accommodation","PrimarySchoolStudent",0,0,9,1,0,0,5,0,0,0,0,0,0,0,0
@@ -110,10 +108,6 @@ How many persons of type X were infected by persons of type Y, at what day, in w
 528,"Accommodation","Unemployed",0,1,0,0,0,0,0,0,1,0,0,0,0,0,0
 528,"Accommodation","WeekendWorker",0,0,0,1,1,0,6,0,0,0,0,0,0,0,0
 528,"Accommodation","EssentialWorker",0,0,1,0,1,0,1,0,0,0,0,0,0,0,0
-528,"Accommodation","WorkerSatelliteToCity",0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
-528,"Accommodation","WorkerCityToSatellite",0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
-528,"Accommodation","WorkerSatelliteToSatellite",0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
-528,"Accommodation","WorkerCountryToCity",0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
 ```
 
 Note that the *infected* person numbers are in the rows. 
@@ -127,18 +121,17 @@ How many persons of type X were infected per day?
 ```
 "time","Infant","KindergartenStudent","PrimarySchoolStudent","SecondarySchoolStudent",
     "CollegeStudent","UniversityStudent","Worker","Pensioner","Unemployed",
-    "WeekendWorker","EssentialWorker","WorkerSatelliteToCity",
-    "WorkerCityToSatellite","WorkerSatelliteToSatellite","WorkerCountryToCity"
-24,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
-48,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
-72,1,0,15,5,0,2,39,1,0,3,1,0,0,0,0
-96,2,0,23,10,1,3,58,9,0,1,0,0,0,0,0
-120,1,1,19,7,0,0,33,3,3,0,0,0,0,0,0
-144,1,1,6,5,2,1,62,14,9,1,1,0,0,0,0
-168,0,1,11,6,1,0,35,2,3,5,1,0,0,0,0
-192,1,4,100,24,0,5,139,7,5,6,3,0,0,0,0
-216,2,16,86,28,5,10,148,11,4,4,5,0,0,0,0
-240,0,23,90,23,3,5,150,8,2,7,5,0,0,0,0
+    "WeekendWorker","EssentialWorker"
+24,0,0,0,0,0,0,0,0,0,0,0
+48,0,0,0,0,0,0,0,0,0,0,0
+72,1,0,15,5,0,2,39,1,0,3,1
+96,2,0,23,10,1,3,58,9,0,1,0
+120,1,1,19,7,0,0,33,3,3,0,0
+144,1,1,6,5,2,1,62,14,9,1,1
+168,0,1,11,6,1,0,35,2,3,5,1
+192,1,4,100,24,0,5,139,7,5,6,3
+216,2,16,86,28,5,10,148,11,4,4,5
+240,0,23,90,23,3,5,150,8,2,7,5
 ```
 
 
@@ -149,24 +142,18 @@ How many persons of type X were infected by persons of type Y, at what day, over
 ```
 "time","infecting_person_type","Infant","KindergartenStudent",
     "PrimarySchoolStudent","SecondarySchoolStudent","CollegeStudent","UniversityStudent",
-    "Worker","Pensioner","Unemployed","WeekendWorker","EssentialWorker",
-    "WorkerSatelliteToCity","WorkerCityToSatellite","WorkerSatelliteToSatellite",
-    "WorkerCountryToCity"
-480,"Infant",2,1,0,0,0,0,3,0,1,1,0,0,0,0,0
-480,"KindergartenStudent",0,0,0,0,0,0,3,0,1,0,0,0,0,0,0
-480,"PrimarySchoolStudent",0,0,12,2,0,0,13,0,2,0,0,0,0,0,0
-480,"SecondarySchoolStudent",0,0,1,5,0,0,6,0,1,0,0,0,0,0,0
-480,"CollegeStudent",0,0,0,1,0,0,1,1,0,0,0,0,0,0,0
-480,"UniversityStudent",0,0,0,0,0,0,1,0,0,0,0,0,0,0,0
-480,"Worker",3,0,8,12,8,0,169,25,16,8,0,0,0,0,0
-480,"Pensioner",0,0,0,0,0,0,8,2,1,0,0,0,0,0,0
-480,"Unemployed",2,0,1,2,0,0,11,0,3,0,0,0,0,0,0
-480,"WeekendWorker",2,2,2,2,1,0,6,1,1,5,1,0,0,0,0
-480,"EssentialWorker",0,0,0,0,0,0,8,1,0,5,1,0,0,0,0
-480,"WorkerSatelliteToCity",0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
-480,"WorkerCityToSatellite",0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
-480,"WorkerSatelliteToSatellite",0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
-480,"WorkerCountryToCity",0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+    "Worker","Pensioner","Unemployed","WeekendWorker","EssentialWorker"
+480,"Infant",2,1,0,0,0,0,3,0,1,1,0
+480,"KindergartenStudent",0,0,0,0,0,0,3,0,1,0,0
+480,"PrimarySchoolStudent",0,0,12,2,0,0,13,0,2,0,0
+480,"SecondarySchoolStudent",0,0,1,5,0,0,6,0,1,0,0
+480,"CollegeStudent",0,0,0,1,0,0,1,1,0,0,0
+480,"UniversityStudent",0,0,0,0,0,0,1,0,0,0,0
+480,"Worker",3,0,8,12,8,0,169,25,16,8,0
+480,"Pensioner",0,0,0,0,0,0,8,2,1,0,0
+480,"Unemployed",2,0,1,2,0,0,11,0,3,0,0
+480,"WeekendWorker",2,2,2,2,1,0,6,1,1,5,1
+480,"EssentialWorker",0,0,0,0,0,0,8,1,0,5,1
 ```
 
 Note that the *infected* person numbers are in the rows. 
@@ -328,18 +315,18 @@ To make a graph of the infections per location type over time, this file reports
 "Time(h)","walk","bike","car","Accommodation","Workplace","Retail","Mall","BarRestaurant",
     "FoodBeverage","Supermarket","Kindergarten","PrimarySchool","SecondarySchool","College",
     "University","Religion","Police","FireStation","Pharmacy","Healthcare","Hospital",
-    "Recreation","Park","Satellite accommodation","Satellite workplace"
-175.0,0,0,0,79,3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
-176.0,0,0,0,3,1,0,0,0,0,0,0,2,1,0,0,0,0,0,0,0,0,0,0,0,0
-177.0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0
-178.0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,2,0,0,0
-179.0,0,0,0,1,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
-180.0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
-181.0,0,0,0,0,0,0,0,0,0,0,4,24,6,0,1,0,0,0,0,0,0,0,0,0,0
-182.0,0,0,0,0,22,0,0,1,0,0,0,41,7,0,2,0,0,0,0,0,0,0,0,0,0
-183.0,0,0,0,1,47,0,0,1,1,1,0,2,0,0,0,0,2,0,0,0,0,0,0,0,0
-184.0,0,0,0,0,2,0,0,0,9,9,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
-185.0,0,0,0,0,0,0,0,1,3,3,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0
+    "Recreation","Park"
+175.0,0,0,0,79,3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+176.0,0,0,0,3,1,0,0,0,0,0,0,2,1,0,0,0,0,0,0,0,0,0,0
+177.0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0
+178.0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,2,0
+179.0,0,0,0,1,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+180.0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+181.0,0,0,0,0,0,0,0,0,0,0,4,24,6,0,1,0,0,0,0,0,0,0,0
+182.0,0,0,0,0,22,0,0,1,0,0,0,41,7,0,2,0,0,0,0,0,0,0,0
+183.0,0,0,0,1,47,0,0,1,1,1,0,2,0,0,0,0,2,0,0,0,0,0,0
+184.0,0,0,0,0,2,0,0,0,9,9,0,0,0,0,0,0,0,0,0,0,0,0,0
+185.0,0,0,0,0,0,0,0,1,3,3,0,0,0,0,0,0,0,0,1,0,0,0,0
 ```
 
 
@@ -369,12 +356,12 @@ The file `locationTypeNrs.csv` lists per half hour how many people are in one of
 "Time(h)","walk","bike","car","Accommodation","Workplace","Retail","Mall","BarRestaurant",
     "FoodBeverage","Supermarket","Kindergarten","PrimarySchool","SecondarySchool",
     "College","University","Religion","Police","FireStation","Pharmacy","Healthcare",
-    "Hospital","Recreation","Park","Satellite accommodation","Satellite workplace"
-6.0,0,0,0,553667,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
-6.5,9853,73767,27366,388268,44431,1769,7,1460,442,188,629,2197,1361,243,269,26,472,5,56,231,407,220,0,0,0
-7.0,6064,37592,7548,203993,242402,9294,34,7532,2290,998,3760,12819,7775,1798,1915,164,2631,33,307,1268,2323,1127,0,0,0
-7.5,6202,11025,749,156513,277965,10525,40,8575,2611,1130,8751,31575,19167,4656,5256,184,3017,35,350,1437,2642,1262,0,0,0
-8.0,1258,2474,170,127932,277965,10525,40,8575,2611,1130,13998,50271,30650,7996,9145,184,3017,35,350,1437,2642,1262,0,0,0
+    "Hospital","Recreation","Park"
+6.0,0,0,0,553667,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+6.5,9853,73767,27366,388268,44431,1769,7,1460,442,188,629,2197,1361,243,269,26,472,5,56,231,407,220,0
+7.0,6064,37592,7548,203993,242402,9294,34,7532,2290,998,3760,12819,7775,1798,1915,164,2631,33,307,1268,2323,1127,0
+7.5,6202,11025,749,156513,277965,10525,40,8575,2611,1130,8751,31575,19167,4656,5256,184,3017,35,350,1437,2642,1262,0
+8.0,1258,2474,170,127932,277965,10525,40,8575,2611,1130,13998,50271,30650,7996,9145,184,3017,35,350,1437,2642,1262,0
 ```
 
 
@@ -451,20 +438,18 @@ This file stores the *cumulative* number of persons of type X that were infected
 ```
 "time","location_type","infecting_person_type","Infant","KindergartenStudent",
     "PrimarySchoolStudent","SecondarySchoolStudent","CollegeStudent","UniversityStudent",
-    "Worker","Pensioner","Unemployed","WeekendWorker","EssentialWorker",
-    "WorkerSatelliteToCity","WorkerCityToSatellite","WorkerSatelliteToSatellite",
-    "WorkerCountryToCity"
-528,"Supermarket","Infant",0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
-528,"Supermarket","KindergartenStudent",0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
-528,"Supermarket","PrimarySchoolStudent",0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
-528,"Supermarket","SecondarySchoolStudent",0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
-528,"Supermarket","CollegeStudent",0,0,0,0,0,1,1,0,0,0,0,0,0,0,0
-528,"Supermarket","UniversityStudent",0,0,0,0,0,0,11,0,0,1,0,0,0,0,0
-528,"Supermarket","Worker",0,0,0,0,3,7,488,31,29,18,3,0,0,0,0
-528,"Supermarket","Pensioner",0,0,0,0,0,0,12,12,1,1,1,0,0,0,0
-528,"Supermarket","Unemployed",0,0,0,0,0,0,17,0,1,0,0,0,0,0,0
-528,"Supermarket","WeekendWorker",0,0,0,0,0,1,34,3,1,4,1,0,0,0,0
-528,"Supermarket","EssentialWorker",0,0,0,0,0,1,19,7,1,4,2,0,0,0,0
+    "Worker","Pensioner","Unemployed","WeekendWorker","EssentialWorker"
+528,"Supermarket","Infant",0,0,0,0,0,0,0,0,0,0,0
+528,"Supermarket","KindergartenStudent",0,0,0,0,0,0,0,0,0,0,0
+528,"Supermarket","PrimarySchoolStudent",0,0,0,0,0,0,0,0,0,0,0
+528,"Supermarket","SecondarySchoolStudent",0,0,0,0,0,0,0,0,0,0,0
+528,"Supermarket","CollegeStudent",0,0,0,0,0,1,1,0,0,0,0
+528,"Supermarket","UniversityStudent",0,0,0,0,0,0,11,0,0,1,0
+528,"Supermarket","Worker",0,0,0,0,3,7,488,31,29,18,3
+528,"Supermarket","Pensioner",0,0,0,0,0,0,12,12,1,1,1
+528,"Supermarket","Unemployed",0,0,0,0,0,0,17,0,1,0,0
+528,"Supermarket","WeekendWorker",0,0,0,0,0,1,34,3,1,4,1
+528,"Supermarket","EssentialWorker",0,0,0,0,0,1,19,7,1,4,2
 ```
 
 Note that the cumulative number of *infected* person types are in the rows. The *infecting* person types are in the columns.
@@ -478,18 +463,17 @@ What is the *cumulative* number of persons of type X who were infected up to thi
 ```
 "time","Infant","KindergartenStudent","PrimarySchoolStudent","SecondarySchoolStudent",
     "CollegeStudent","UniversityStudent","Worker","Pensioner","Unemployed",
-    "WeekendWorker","EssentialWorker","WorkerSatelliteToCity",
-    "WorkerCityToSatellite","WorkerSatelliteToSatellite","WorkerCountryToCity"
-24,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
-48,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
-72,1,0,15,5,0,2,39,1,0,3,1,0,0,0,0
-96,3,0,38,15,1,5,97,10,0,4,1,0,0,0,0
-120,4,1,57,22,1,5,130,13,3,4,1,0,0,0,0
-144,5,2,63,27,3,6,192,27,12,5,2,0,0,0,0
-168,5,3,74,33,4,6,227,29,15,10,3,0,0,0,0
-192,6,7,174,57,4,11,366,36,20,16,6,0,0,0,0
-216,8,23,260,85,9,21,514,47,24,20,11,0,0,0,0
-240,8,46,350,108,12,26,664,55,26,27,16,0,0,0,0
+    "WeekendWorker","EssentialWorker"
+24,0,0,0,0,0,0,0,0,0,0,0
+48,0,0,0,0,0,0,0,0,0,0,0
+72,1,0,15,5,0,2,39,1,0,3,1
+96,3,0,38,15,1,5,97,10,0,4,1
+120,4,1,57,22,1,5,130,13,3,4,1
+144,5,2,63,27,3,6,192,27,12,5,2
+168,5,3,74,33,4,6,227,29,15,10,3
+192,6,7,174,57,4,11,366,36,20,16,6
+216,8,23,260,85,9,21,514,47,24,20,11
+240,8,46,350,108,12,26,664,55,26,27,16
 ```
 
 
@@ -500,20 +484,18 @@ What is the *cumulative* number of persons of type X who were infected by person
 ```
 "time","infecting_person_type","Infant","KindergartenStudent",
     "PrimarySchoolStudent","SecondarySchoolStudent","CollegeStudent","UniversityStudent",
-    "Worker","Pensioner","Unemployed","WeekendWorker","EssentialWorker",
-    "WorkerSatelliteToCity","WorkerCityToSatellite","WorkerSatelliteToSatellite",
-    "WorkerCountryToCity"
-480,"Infant",4,2,0,1,0,1,8,0,2,1,0,0,0,0,0
-480,"KindergartenStudent",13,55,0,0,0,1,45,0,3,1,0,0,0,0,0
-480,"PrimarySchoolStudent",3,1,470,27,2,3,234,4,20,11,3,0,0,0,0
-480,"SecondarySchoolStudent",0,2,20,112,2,3,87,2,4,2,2,0,0,0,0
-480,"CollegeStudent",0,0,0,1,4,1,14,3,1,0,0,0,0,0,0
-480,"UniversityStudent",0,1,5,3,2,11,36,2,2,1,0,0,0,0,0
-480,"Worker",27,32,114,90,28,27,1400,56,74,55,15,0,0,0,0
-480,"Pensioner",0,0,0,1,1,0,34,61,2,3,2,0,0,0,0
-480,"Unemployed",8,1,6,4,0,0,34,1,4,3,1,0,0,0,0
-480,"WeekendWorker",3,4,8,7,1,2,51,5,3,29,11,0,0,0,0
-480,"EssentialWorker",1,0,1,1,0,1,31,4,0,21,23,0,0,0,0
+    "Worker","Pensioner","Unemployed","WeekendWorker","EssentialWorker"
+480,"Infant",4,2,0,1,0,1,8,0,2,1,0
+480,"KindergartenStudent",13,55,0,0,0,1,45,0,3,1,0
+480,"PrimarySchoolStudent",3,1,470,27,2,3,234,4,20,11,3
+480,"SecondarySchoolStudent",0,2,20,112,2,3,87,2,4,2,2
+480,"CollegeStudent",0,0,0,1,4,1,14,3,1,0,0
+480,"UniversityStudent",0,1,5,3,2,11,36,2,2,1,0
+480,"Worker",27,32,114,90,28,27,1400,56,74,55,15
+480,"Pensioner",0,0,0,1,1,0,34,61,2,3,2
+480,"Unemployed",8,1,6,4,0,0,34,1,4,3,1
+480,"WeekendWorker",3,4,8,7,1,2,51,5,3,29,11
+480,"EssentialWorker",1,0,1,1,0,1,31,4,0,21,23
 ```
 
 Note that the cumulative number of *infected* person types are in the rows. The *infecting* person types are in the columns.
