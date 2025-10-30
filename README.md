@@ -17,11 +17,10 @@ This documentation explains how to run a medlabs model, what configuration files
 3. [Input files](docs/3-input.md)<br>
    3.1. [Disease properties file](docs/3-1-input-disease.md).<br>
    3.2. [Activity schedules](docs/3-2-input-activities.md).<br>
-   3.3. [Probabilistic infection rates](docs/3-3-input-infection-rates.md).<br>
-   3.4. [People](docs/3-4-input-people.md).<br>
-   3.5. [Location types](docs/3-5-input-location-types.md).<br>
-   3.6. [Locations](docs/3-6-input-locations.md).<br>
-   3.7. [Policies](docs/3-7-input-policies.md).<br>
+   3.3. [People](docs/3-3-input-people.md).<br>
+   3.4. [Location types](docs/3-4-input-location-types.md).<br>
+   3.5. [Locations](docs/3-5-input-locations.md).<br>
+   3.6. [Policies](docs/3-6-input-policies.md).<br>
 4. [Output files](docs/4-output.md)
 5. [Exploring and adapting the code](docs/5-code.md)
 6. [Literature](docs/6-literature.md)
