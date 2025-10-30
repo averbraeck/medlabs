@@ -1,4 +1,5 @@
-# MEDLABS - Agent-Based Simulation for Disease Spread in Cities and Regions
+# MEDLABS
+# Agent-Based Simulation for Disease Spread in Cities and Regions
 
 ## 3.1. Input files: Disease properties file
 

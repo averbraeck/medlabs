@@ -1,4 +1,5 @@
-# MEDLABS - Agent-Based Simulation for Disease Spread in Cities and Regions
+# MEDLABS
+# Agent-Based Simulation for Disease Spread in Cities and Regions
 
 ## 5. medlabs code
 
@@ -22,7 +23,7 @@ The medlabs library build on further libraries that are used. A partial dependen
 There is an 'executable jar' in the folder `jar` that contains the heros library plus all libraries on which it is dependent, as well as a set of input files for The Hague to run the model on 490,000 citizens. After copying the contents of that file to a folder on your computer (preferably without spaces in the entire file path), you can start the interactive application with:
 
 ```
-java -jar medlabs-heros-full-2.1.4.jar
+java -jar medlabs-full-2.1.4.jar
 ```
 
 See the [installation instructions](1-install.md) for more information about installation and running the application in batch mode.

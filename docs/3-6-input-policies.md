@@ -1,4 +1,5 @@
-# MEDLABS - Agent-Based Simulation for Disease Spread in Cities and Regions
+# MEDLABS
+# Agent-Based Simulation for Disease Spread in Cities and Regions
 
 ## 3.7. Input files: Policies
 
@@ -18,7 +19,6 @@ Time(d),LocationType,FractionOpen,FractionActivities,AlternativeLocation,ReportA
 10.0,University,0.0,0.0,Accommodation,UniversityToHome
 10.0,Recreation,0.0,0.0,Accommodation,StayHome
 10.0,Park,0.0,0.0,Accommodation,StayHome
-10.0,Satellite workplace,0.0,0.0,Accommodation,SatelliteWorkToHome
 40.0,Workplace,1.0,1.0,Workplace,Workplace
 40.0,Retail,1.0,1.0,Retail,Retail
 40.0,Mall,1.0,1.0,Mall,Mall
@@ -31,7 +31,6 @@ Time(d),LocationType,FractionOpen,FractionActivities,AlternativeLocation,ReportA
 40.0,University,1.0,1.0,University,University
 40.0,Recreation,1.0,1.0,Recreation,Recreation
 40.0,Park,1.0,1.0,Park,Park
-40.0,Satellite workplace,1.0,1.0,Satellite workplace,Satellite workplace
 ```
 
 This policy causes a total lockdown from day 10 till day 40. Workplaces, schools and universities, retail, bars and restaurants, and recreation and parks will all be closed between these days. At day 10, the fraction of activities reduces to 0.0 (the activity schedules will not include these locations anymore), and the fraction open as well (the locations will not be available for people to enter). At day 40, it is increased to 1.0 again. it is also possible to limit access to, e.g., 20% of the original capacity by setting `FractionActivities` to 0.2. 

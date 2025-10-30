@@ -1,4 +1,5 @@
-# MEDLABS - Agent-Based Simulation for Disease Spread in Cities and Regions
+# MEDLABS
+# Agent-Based Simulation for Disease Spread in Cities and Regions
 
 ## 3.5. Input files: Location types
 
@@ -29,8 +30,6 @@ Healthcare,MedServiceAnimation,FALSE,TRUE,FALSE,1,1,TRUE,0.25,1.0
 Hospital,HospitalAnimation,FALSE,TRUE,FALSE,1,1,TRUE,0.25,1.0
 Recreation,RecreationAnimation,FALSE,TRUE,FALSE,1,1,TRUE,0.2,1.9
 Park,ParkAnimation,FALSE,FALSE,FALSE,1,1,TRUE,0.1,1.0
-Satellite accommodation,SatelliteAccAnimation,FALSE,FALSE,FALSE,1,1,FALSE,0.25,1.0
-Satellite workplace,SatelliteWorkAnimation,FALSE,FALSE,FALSE,1,1,FALSE,0.25,1.0
 ```
 
 The above example location type configuration file was a bit shortened for readability; for the `animationClass`, typically the full path is given: `nl.tudelft.simulation.medlabs.location.animation.defaults.HouseAnimation` instead of just `HouseAnimation`.
