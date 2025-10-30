@@ -72,5 +72,5 @@ java -jar medlabs-full-2.2.0.jar ./exp4.properties batch 40 &
 java -jar medlabs-full-2.2.0.jar ./exp4.properties batch 50 &
 ```
 
-Now, 5 experiments will be started in parallel using the same properties file but a different random seed for the experiment. Under Windows, something similar can be done using a `.BAT` file that starts 5 parallel command prompts to run the 5 medlabs-heros experiments.
+Now, 5 experiments will be started in parallel using the same properties file but a different random seed for the experiment. Under Windows, something similar can be done using a `.BAT` file that starts 5 parallel command prompts to run the 5 medlabs experiments.
 

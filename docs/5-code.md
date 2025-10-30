@@ -5,9 +5,9 @@
 
 ### 5.1. Generic setup of the code
 
-The code has been developed in java, and builds heavily on the DSOL simulation library for fast and efficient execution of large-scale object-oriented simulation models. medlabs-heros is a small shell around the medlabs library, which contains the logic for executing activity-based disease modeling in cities. The medlabs-heros library adds the specifics for the Covid-19 disease transmission model and disease progression model, as well as some extra person types and policies. Some input files are different from the standard medlabs input files, so a specific model factory (`ConstructHerosModel`) is available to instantiate the model. See the [literature list](6-literature.md) for further references for the medlabs library and the DSOL simulation library. 
+The code has been developed in Java, and builds heavily on the DSOL simulation library for fast and efficient execution of large-scale object-oriented simulation models. The medlabs library contains the logic for executing activity-based disease modeling in cities. See the [literature list](6-literature.md) for further references for the medlabs library and the DSOL simulation library. 
 
-The medlabs library build on further libraries that are used. A partial dependency stack of the of the libraries can be depicted as follows:
+A partial dependency stack of the of the libraries for medlabs can be depicted as follows:
 
 <table>
   <tr><td>MEDLABS disease transmission library (https://github.com/averbraeck/medlabs)</td></tr>
@@ -20,10 +20,10 @@ The medlabs library build on further libraries that are used. A partial dependen
 
 ### 5.2. Runnable jar
 
-There is an 'executable jar' in the folder `jar` that contains the heros library plus all libraries on which it is dependent, as well as a set of input files for The Hague to run the model on 490,000 citizens. After copying the contents of that file to a folder on your computer (preferably without spaces in the entire file path), you can start the interactive application with:
+There is an 'executable jar' in the folder `jar` that contains the medlabd library and demo plus all libraries on which it is dependentAfter copying the contents of that file to a folder on your computer (preferably without spaces in the entire file path), you can start the interactive application with:
 
 ```
-java -jar medlabs-full-2.1.4.jar
+java -jar medlabs-full-2.2.0.jar
 ```
 
 See the [installation instructions](1-install.md) for more information about installation and running the application in batch mode.
@@ -47,15 +47,13 @@ For **CentOS / RedHat** versions of Linux, use the command `sudo yum install jav
 
 Eclipse is an open-source development environment for, amongst others, Java projects. The Eclipse development environment is available for Windows, Mac, and Linux. You can find Eclipse at [https://www.eclipse.org/](https://www.eclipse.org/). Probably the Eclipse IDE for Java developers fits best: [https://www.eclipse.org/downloads/packages/release/2025-09/r/eclipse-ide-java-developers](https://www.eclipse.org/downloads/packages/release/2025-09/r/eclipse-ide-java-developers). There are versions for Windows, MacOS and Linux, for multiple hardware architectures.
 
-medlabs-heros is dependent on several external libraries to function properly. The easiest way to run a DSOL program is to have Apache Maven figure out what libraries are needed for medlabs-heros to function. [Apache Maven](https://maven.apache.org/) is a flexible and open source build tool that, amongst a large set of functions, enables programmers to automatically resolve dependencies and easily build their project. The Eclipse Java installations all contain Maven, making it really easy to set-up, develop, and run a simulation for medlabs. 
+medlabs is dependent on several external libraries to function properly. The easiest way to run a medlabs executable is to have Apache Maven figure out what libraries are needed for medlabs to function. [Apache Maven](https://maven.apache.org/) is a flexible and open source build tool that, amongst a large set of functions, enables programmers to automatically resolve dependencies and easily build their project. The Eclipse Java installations all contain Maven, making it really easy to set-up, develop, and run a simulation for medlabs. 
 
-The code for medlabs-heros is on github at [https://github.com/averbraeck/medlabs-heros](https://github.com/averbraeck/medlabs-heros). In addition, the IDE will need the medlabs project, since medlabs-heros is just a thin shell around the medlabs library. All logic for running a disease simulation is in the medlabs library. 
-
-To create a project in which you can play with medlabs/medlabs-heros, install and start Eclipse. The first time, create a blank project at a location where you want to store the Eclipse Java project, and press `Launch`:
+To create a project in which you can play with medlabs, install and start Eclipse. The first time, create a blank project at a location where you want to store the Eclipse Java project, and press `Launch`:
 
 ![](images/code-eclipse.png)
 
-In Eclipse, load both the git for medlabs and for medlabs-heros as projects. The easiest way is to load a project is go into github for the repository. **Start with medlabs** at [https://github.com/averbraeck/medlabs](https://github.com/averbraeck/medlabs). Click on `<> Code` and use the COPY button next to the git address:
+In Eclipse, load the git for medlabs as a project. The easiest way is to load a project is go into github for the repository at [https://github.com/averbraeck/medlabs](https://github.com/averbraeck/medlabs). Click on `<> Code` and use the COPY button next to the git address:
 
 ![](images/code-github.png)
 
@@ -99,6 +97,4 @@ The package explorer view might be a bit easier for navigation than the project 
 
 ![](images/code-package-explorer3.png)
 
-Repeat this for the medlabs-heros git as well, and you will have both the medlabs code and the medlabs-heros code in the Eclipse IDE. You can now inspect and adapt the code, and run experiments from the IDE.
-
-In case you want to have your own version of medlabs or medlabs-heros that you can maintain on github, fork the project on github, and clone your forked project instead. The permissive license of medlabs and all libraries on which medlabs is dependent allows you to use the library for any purpose, and create your own version based on the available code.
+In case you want to have your own version of medlabs that you can maintain on github, fork the project on github, and clone your forked project instead. The permissive license of medlabs and all libraries on which medlabs is dependent allows you to use the library for any purpose, and create your own version based on the available code.

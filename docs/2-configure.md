@@ -79,13 +79,13 @@ The following parameters are key:
 Multiple instances of a main properties file can exist, and these files can be in multiple directories. Typically, they are placed in the same directory as the jar file that is run to execute the model. When two files, `lockdown.properties` and `normal.properties` exist, each with their own parameters and files on which they are dependent, they can be run with:
 
 ```
-java -jar medlabs-heros-full-2.1.4.jar /normal.properties
+java -jar medlabs-full-2.2.0.jar ./normal.properties
 ```
 
 or
 
 ```
-java -jar medlabs-heros-full-2.1.4.jar /lockdown.properties
+java -jar medlabs-full-2.2.0.jar ./lockdown.properties
 ```
 
 Without the `batch` argument, both of the above runs of the application would be in interactive mode.
