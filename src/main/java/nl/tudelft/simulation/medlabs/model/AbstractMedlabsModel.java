@@ -78,7 +78,7 @@ public abstract class AbstractMedlabsModel extends AbstractDsolModel<Double, Sim
     /** the map of person types by person class. */
     Map<Class<? extends Person>, PersonType> personTypeClassMap = new LinkedHashMap<>();
 
-    /** the simulator. */
+    /** interactive run? */
     protected boolean interactive = true;
 
     /** the map of all location types by name. */
